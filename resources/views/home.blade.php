@@ -39,7 +39,7 @@
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
                 <h1 class="text-3xl md:text-4xl font-extrabold mb-4 leading-tight">Selamat Datang di TesYuk!</h1>
                 <p class="text-slate-300 mb-8 max-w-lg mx-auto">Dapatkan kesempatan untuk menguji aplikasi baru sebelum peluncuran</p>
-                <a href="/pilih-paket" class="inline-block bg-white text-slate-900 px-10 py-3 rounded-xl font-bold hover:bg-slate-100 transition shadow-lg">Mulai Mendaftar</a>
+                <a href="/register" class="inline-block bg-white text-slate-900 px-10 py-3 rounded-xl font-bold hover:bg-slate-100 transition shadow-lg">Mulai Mendaftar</a>
             </div>
 
             <div class="flex flex-col lg:flex-row gap-10">

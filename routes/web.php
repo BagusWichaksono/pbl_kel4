@@ -2,27 +2,32 @@
 
 use Illuminate\Support\Facades\Route;
 
-// 1. Halaman Landing Page Utama
+// Halaman Landing Page Utama
 Route::get('/', function () {
-    return view('preview');
+    return view('home');
 });
 
-// 2. Halaman Dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
+// Halaman Dashboard Developer
+Route::get('/dashboard-dev', function () {
+    return view('dashboard-dev');
 });
 
-// 3. Halaman Pilih Paket
+// Halaman Dashboard Tester
+Route::get('/dashboard-tester', function () {
+    return view('dashboard-tester');
+});
+
+// Halaman Pilih Paket
 Route::get('/paket', function () {
     return view('paket');
 });
 
-// 4. Halaman Login
+// Halaman Login
 Route::get('/login', function () {
     return view('login');
 });
 
-// 5. Halaman Register
+// Halaman Register
 Route::get('/register', function () {
     return view('register');
 });
