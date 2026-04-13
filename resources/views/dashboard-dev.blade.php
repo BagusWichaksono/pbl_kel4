@@ -30,11 +30,11 @@
     <div class="flex flex-1">
         <aside class="w-64 bg-white border-r border-slate-200 p-6 space-y-4 hidden md:block">
             <a href="#" class="flex items-center gap-3 p-3 rounded-xl bg-slate-100 text-blue-600 font-semibold border border-slate-200"><i class="ph-fill ph-house text-xl"></i>Dashboard</a>
-            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-coin text-xl"></i>Pilih Paket</a>
-            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-user text-xl"></i>Pembayaran</a>
-            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-coin text-xl"></i>Upload Aplikasi</a>
-            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-coin text-xl"></i>ACC Tester</a>
-            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-coin text-xl"></i>Hasil testing</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-crown-simple text-xl"></i>Pilih Paket</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-coins text-xl"></i>Pembayaran</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-upload text-xl"></i>Upload Aplikasi</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-list-checks text-xl"></i>ACC Tester</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition text-slate-500"><i class="ph-fill ph-chalkboard text-xl"></i>Hasil testing</a>
 
         </aside>
 
