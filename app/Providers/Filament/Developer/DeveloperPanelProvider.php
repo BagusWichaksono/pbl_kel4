@@ -25,9 +25,9 @@ class DeveloperPanelProvider extends PanelProvider
         return $panel
             ->id('developer')
             ->path('developer')
-            ->login()
+            //->login()
             ->brandName('TesYuk!')
-            //->brandLogo(asset('images/logo.png'))
+            // ->brandLogo(asset('assets/logo.png'))
             ->colors([
                 'primary' => Color::Amber,
             ])

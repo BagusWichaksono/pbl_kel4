@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Poppins', 'sans-serif'] } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
     </script>
 </head>
+
 <body class="bg-[#F8FAFC] min-h-screen flex items-center justify-center p-6">
     <div class="max-w-4xl w-full">
+        <a href="/" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold mb-6 transition">
+            <i class="ph-bold ph-arrow-left"></i> Kembali ke Home
+        </a>
+
         <div class="text-center mb-12">
             <h1 class="text-3xl font-extrabold text-slate-900">Pilih Langkah Awalmu</h1>
             <p class="text-slate-500 mt-2">Daftar sebagai penguji atau validasi aplikasimu sekarang</p>
@@ -30,7 +44,7 @@
                     <li class="flex items-center gap-3"><i class="ph-bold ph-check text-green-500"></i> Laporan Standar</li>
                     <li class="flex items-center gap-3 opacity-40"><i class="ph-bold ph-x text-slate-400"></i> Prioritas Listing</li>
                 </ul>
-                <a href="/register-custom" class="block w-full py-4 bg-slate-100 text-slate-800 text-center font-bold rounded-xl hover:bg-slate-200 transition">Pilih Reguler</a>
+                <a href="/register" class="block w-full py-4 bg-slate-100 text-slate-800 text-center font-bold rounded-xl hover:bg-slate-200 transition">Pilih Reguler</a>
             </div>
 
             <div class="bg-white p-8 rounded-3xl border-2 border-slate-900 shadow-xl flex flex-col relative transform md:-translate-y-4">
@@ -45,9 +59,10 @@
                     <li class="flex items-center gap-3"><i class="ph-bold ph-check text-green-500"></i> Analytics UI/UX Detail</li>
                     <li class="flex items-center gap-3"><i class="ph-bold ph-check text-green-500"></i> Prioritas Halaman Utama</li>
                 </ul>
-                <a href="/register-custom" class="block w-full py-4 bg-slate-900 text-white text-center font-bold rounded-xl hover:bg-slate-800 transition">Pilih VIP</a>
+                <a href="/register" class="block w-full py-4 bg-slate-900 text-white text-center font-bold rounded-xl hover:bg-slate-800 transition">Pilih VIP</a>
             </div>
         </div>
     </div>
 </body>
+
 </html>

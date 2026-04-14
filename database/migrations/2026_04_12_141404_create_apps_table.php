@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('apps', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('developer_id')->constrained('developer_profiles')->cascadeOnDelete();
-            $table->string('app_name');
-            $table->text('description');
-            $table->string('playstore_link')->nullable();
-            $table->enum('status', ['open', 'closed'])->default('open');
+            
+            // Kolom-kolom untuk form Filament
+            $table->string('name');
+            $table->string('platform');
+            $table->string('app_link');
+            $table->text('description')->nullable(); // Menambahkan nullable() agar aman jika kosong
+            $table->string('status')->default('draft');
+            
             $table->timestamps();
         });
     }
