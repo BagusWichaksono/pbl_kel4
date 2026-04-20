@@ -15,8 +15,15 @@
     </script>
 </head>
 
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white p-10 rounded-[32px] border border-slate-200 max-w-md w-full shadow-2xl shadow-slate-200/50 my-8">
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6 relative">
+
+    <a href="/" class="absolute top-6 left-6 md:top-8 md:left-8 flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 shadow-sm hover:shadow-md hover:text-blue-600 hover:border-blue-200 transition-all group z-10">
+        <i class="ph-bold ph-arrow-left text-lg group-hover:-translate-x-1 transition-transform"></i>
+        <span class="hidden md:block">Kembali ke Beranda</span>
+        <span class="block md:hidden">Kembali</span>
+    </a>
+
+    <div class="bg-white p-10 rounded-[32px] border border-slate-200 max-w-md w-full shadow-2xl shadow-slate-200/50 my-8 mt-20 md:mt-8">
         <div class="text-center mb-8">
             <img src="{{ asset('assets/logo.png') }}" class="w-20 h-20 bg-slate-900 rounded-[30px] mx-auto mb-10 flex items-center justify-center shadow-xl rotate-3 hover:rotate-0 transition-transform">
             <h1 class="text-2xl font-bold text-slate-900">Buat Akun Baru</h1>
@@ -38,7 +45,7 @@
             
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Email</label>
-                <input type="email" name="email" placeholder="nama@gmail.com" required value="{{ old('email') }}" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none transition placeholder:text-slate-300">
+                <input type="email" name="email" placeholder="nama@email.com" required value="{{ old('email') }}" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none transition placeholder:text-slate-300">
             </div>
 
             <div class="pt-2">
@@ -48,13 +55,10 @@
                     <label class="relative block cursor-pointer group h-full">
                         <input type="radio" name="role" value="developer" class="peer sr-only" required>
                         <div class="flex flex-col items-center justify-center text-center gap-3 p-4 h-full rounded-2xl border-2 border-slate-200 bg-white transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:ring-1 peer-checked:ring-blue-600 hover:border-blue-300 relative">
-                            
                             <i class="ph-fill ph-check-circle text-blue-600 text-xl absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity"></i>
-
                             <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 transition-colors group-hover:bg-blue-100 group-hover:text-blue-600 peer-checked:bg-blue-600 peer-checked:text-white mt-2">
                                 <i class="ph-fill ph-monitor text-2xl"></i>
                             </div>
-                            
                             <div>
                                 <h4 class="text-sm font-bold text-slate-900">Developer</h4>
                                 <p class="text-[10px] font-medium text-slate-500 mt-0.5">Pembuat Aplikasi</p>
@@ -65,9 +69,7 @@
                     <label class="relative block cursor-pointer group h-full">
                         <input type="radio" name="role" value="tester" class="peer sr-only" required>
                         <div class="flex flex-col items-center justify-center text-center gap-3 p-4 h-full rounded-2xl border-2 border-slate-200 bg-white transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:ring-1 peer-checked:ring-blue-600 hover:border-blue-300 relative">
-                            
                             <i class="ph-fill ph-check-circle text-blue-600 text-xl absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity"></i>
-
                             <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 transition-colors group-hover:bg-blue-100 group-hover:text-blue-600 peer-checked:bg-blue-600 peer-checked:text-white mt-2">
                                 <div class="flex items-end justify-center -mb-1">
                                     <div class="relative">
@@ -80,7 +82,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div>
                                 <h4 class="text-sm font-bold text-slate-900">Tester</h4>
                                 <p class="text-[10px] font-medium text-slate-500 mt-0.5">Penguji Aplikasi</p>
