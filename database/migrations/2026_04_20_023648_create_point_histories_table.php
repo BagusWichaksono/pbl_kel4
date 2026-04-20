@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('point_histories', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->integer('price')->default(0);
-            $table->text('description')->nullable();
+            $table->foreignId('tester_id')->constrained('users')->cascadeOnDelete();
+            $table->integer('amount');
+            $table->enum('type', ['credit', 'debit']);
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriptions');
+        Schema::dropIfExists('point_histories');
     }
 };

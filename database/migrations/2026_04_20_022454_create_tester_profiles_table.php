@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('tester_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->integer('total_point')->default(0);
-            $table->unsignedBigInteger('badge_id')->nullable(); // Dibuat nullable dulu karena tabel badges belum ada
+            $table->string('e_wallet_provider')->nullable();
+            $table->string('e_wallet_number')->nullable();
+            $table->integer('points')->default(0);
             $table->timestamps();
         });
     }
