@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
@@ -47,12 +47,12 @@ Route::post('/login', function (Request $request) {
     // 2. Cek ke Database
     if (Auth::attempt($credentials)) {
 
-    $request->session()->regenerate();
+        $request->session()->regenerate();
 
-    $user = Auth::user();
+        $user = Auth::user();
 
-    return redirect('/' . $user->role);
-}
+        return redirect('/' . $user->role);
+    }
 
     // 4. Jika password salah atau email tidak ada di DB
     return back()->withErrors([
@@ -75,8 +75,16 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         'name' => $validated['name'],
         'email' => $validated['email'],
         'password' => Hash::make($validated['password']),
-        'role' => $validated['role'] 
+        'role' => $validated['role']
     ]);
+
+    // Jika user adalah tester, otomatis buat tester_profile
+    if ($user->role === 'tester') {
+        $user->testerProfile()->create([
+            'e_wallet_provider' => null,
+            'e_wallet_number' => null
+        ]);
+    }
 
     // 3. Setelah berhasil daftar, otomatis ke halaman login dan muncul notif
     return redirect('/login')->with('success', 'Data Anda telah disimpan! Silahkan login.');
