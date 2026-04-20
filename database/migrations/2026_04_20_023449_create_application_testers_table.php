@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('developer_profiles', function (Blueprint $table) {
+        Schema::create('application_testers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('company_name', 100)->nullable();
-            $table->foreignId('subscription_id')->nullable()->constrained('subscriptions')->nullOnDelete();
+            $table->foreignId('application_id')->constrained('applications')->cascadeOnDelete();
+            $table->foreignId('tester_id')->constrained('users')->cascadeOnDelete();
+            $table->enum('status', ['active', 'dropped', 'completed'])->default('active');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('developer_profiles');
+        Schema::dropIfExists('application_testers');
     }
 };
