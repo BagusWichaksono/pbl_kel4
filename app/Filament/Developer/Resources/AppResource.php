@@ -33,27 +33,11 @@ class AppResource extends Resource
                 Forms\Components\Section::make('Informasi Utama')
                     ->description('Masukkan detail aplikasi yang ingin divalidasi oleh Tester.')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        Forms\Components\TextInput::make('title')
                             ->label('Nama Aplikasi')
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Contoh: Sistem Kasir UMKM'),
-                            
-                        Forms\Components\Select::make('platform')
-                            ->label('Platform Target')
-                            ->options([
-                                'android' => 'Android (APK)',
-                                'ios' => 'iOS (TestFlight)',
-                                'web' => 'Website / Web App',
-                            ])
-                            ->required(),
-
-                        Forms\Components\TextInput::make('app_link')
-                            ->label('Link URL / Tempat Download File')
-                            ->url()
-                            ->required()
-                            ->maxLength(255)
-                            ->placeholder('https://...'),
                             
                         Forms\Components\Textarea::make('description')
                             ->label('Skenario Pengujian (Instruksi untuk Tester)')
@@ -62,15 +46,44 @@ class AppResource extends Resource
                             ->columnSpanFull()
                             ->placeholder('Contoh: Tolong test fitur keranjang belanja dan proses checkout...'),
 
-                        Forms\Components\Select::make('status')
-                            ->label('Status Rilis')
+                        Forms\Components\FileUpload::make('payment_proof')
+                            ->label('Bukti Pembayaran')
+                            ->image()
+                            ->directory('payment_proofs')
+                            ->columnSpanFull(),
+
+                        Forms\Components\Actions::make([
+                            Forms\Components\Actions\Action::make('show_qris')
+                                ->label('Tampilkan Barcode QRIS')
+                                ->icon('heroicon-m-qr-code')
+                                ->color('primary')
+                                ->modalHeading('Scan Barcode QRIS')
+                                ->modalContent(fn () => new \Illuminate\Support\HtmlString('<div class="flex justify-center flex-col items-center gap-4"><img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=Pembayaran+Aplikasi+PBL" alt="QRIS Barcode" class="w-64 h-64 rounded-lg shadow-md" /><p class="text-sm text-gray-500">Silakan bayar menggunakan e-wallet atau m-banking dengan scan barcode ini.</p></div>'))
+                                ->modalSubmitAction(false)
+                                ->modalCancelAction(false)
+                        ])->columnSpanFull(),
+
+                        Forms\Components\Select::make('payment_status')
+                            ->label('Status Pembayaran')
                             ->options([
-                                'draft' => 'Draft (Belum Dites)',
-                                'active' => 'Aktif (Sedang Dites)',
-                                'finished' => 'Selesai (Siap Rilis)',
+                                'pending' => 'Pending',
+                                'valid' => 'Valid',
+                                'invalid' => 'Tidak Valid',
                             ])
-                            ->default('draft')
-                            ->required(),
+                            ->default('pending')
+                            ->disabled()
+                            ->dehydrated(false),
+
+                        Forms\Components\Select::make('testing_status')
+                            ->label('Status Pengujian')
+                            ->options([
+                                'open' => 'Terbuka',
+                                'in_progress' => 'Sedang Dites',
+                                'completed' => 'Selesai',
+                            ])
+                            ->default('open')
+                            ->disabled()
+                            ->dehydrated(false),
                     ])->columns(2),
             ]);
     }
@@ -79,28 +92,28 @@ class AppResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('title')
                     ->label('Nama Aplikasi')
                     ->searchable()
                     ->weight('bold'),
                     
-                Tables\Columns\TextColumn::make('platform')
-                    ->label('Platform')
+                Tables\Columns\TextColumn::make('payment_status')
+                    ->label('Status Pembayaran')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'android' => 'success',
-                        'ios' => 'info',
-                        'web' => 'warning',
+                        'pending' => 'warning',
+                        'valid' => 'success',
+                        'invalid' => 'danger',
                         default => 'gray',
                     }),
                     
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                Tables\Columns\TextColumn::make('testing_status')
+                    ->label('Status Pengujian')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'draft' => 'gray',
-                        'active' => 'success',
-                        'finished' => 'primary',
+                        'open' => 'gray',
+                        'in_progress' => 'info',
+                        'completed' => 'success',
                         default => 'gray',
                     }),
                     
@@ -110,12 +123,12 @@ class AppResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                // Filter berdasarkan status
-                Tables\Filters\SelectFilter::make('status')
+                // Filter berdasarkan status pengujian
+                Tables\Filters\SelectFilter::make('testing_status')
                     ->options([
-                        'draft' => 'Draft',
-                        'active' => 'Aktif',
-                        'finished' => 'Selesai',
+                        'open' => 'Terbuka',
+                        'in_progress' => 'Sedang Dites',
+                        'completed' => 'Selesai',
                     ]),
             ])
             ->actions([
