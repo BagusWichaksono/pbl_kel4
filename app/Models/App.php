@@ -9,12 +9,20 @@ class App extends Model
 {
     use HasFactory;
 
+    protected $table = 'applications';
+
     // BLOK INI UNTUK MENGIZINKAN SIMPAN DATA
     protected $fillable = [
-        'name',
-        'platform',
-        'app_link',
+        'developer_id',
+        'title',
         'description',
-        'status',
+        'payment_proof',
+        'payment_status',
+        'testing_status',
     ];
+
+    public function developer()
+    {
+        return $this->belongsTo(User::class, 'developer_id');
+    }
 }

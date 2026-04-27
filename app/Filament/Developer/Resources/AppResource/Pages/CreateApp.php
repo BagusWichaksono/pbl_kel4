@@ -9,4 +9,10 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateApp extends CreateRecord
 {
     protected static string $resource = AppResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['developer_id'] = auth()->id();
+        return $data;
+    }
 }
