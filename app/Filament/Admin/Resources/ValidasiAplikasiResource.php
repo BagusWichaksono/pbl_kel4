@@ -17,6 +17,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ViewAction;
+use Illuminate\Support\Facades\Auth;
 
 
 class ValidasiAplikasiResource extends Resource
@@ -117,5 +118,12 @@ class ValidasiAplikasiResource extends Resource
             // 'create' => Pages\CreateValidasiAplikasi::route('/create'),
             'edit' => Pages\EditValidasiAplikasi::route('/{record}/edit'),
         ];
+    }
+    // Tambahkan method
+    public static function canViewAny(): bool
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        return $user !== null && $user->isAdminOrSuperAdmin();
     }
 }

@@ -37,24 +37,29 @@ Route::get('/register', function () {
 });
 
 // RUTE LOGIN ASLI (DATABASE AUTH)
+// RUTE LOGIN ASLI (DATABASE AUTH)
 Route::post('/login', function (Request $request) {
-    // 1. Validasi inputan form
     $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
+        'email'    => 'required|email',
+        'password' => 'required',
     ]);
 
-    // 2. Cek ke Database
     if (Auth::attempt($credentials)) {
-
         $request->session()->regenerate();
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        return redirect('/' . $user->role);
+        // Tentukan redirect berdasarkan role
+        return match($user->role) {
+            'super_admin' => redirect('/admin'),
+            'admin'       => redirect('/admin'),
+            'developer'   => redirect('/developer'),
+            'tester'      => redirect('/tester'),
+            default       => redirect('/'),
+        };
     }
 
-    // 4. Jika password salah atau email tidak ada di DB
     return back()->withErrors([
         'email' => 'Email atau password salah!',
     ])->onlyInput('email');
