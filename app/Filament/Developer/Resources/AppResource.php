@@ -40,7 +40,7 @@ class AppResource extends Resource
                             ->placeholder('Contoh: Sistem Kasir UMKM'),
                             
                         Forms\Components\Textarea::make('description')
-                            ->label('Skenario Pengujian (Instruksi untuk Tester)')
+                            ->label('Deskripsi Aplikasi')
                             ->required()
                             ->rows(4)
                             ->columnSpanFull()
@@ -123,13 +123,13 @@ class AppResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                // Filter berdasarkan status pengujian
-                Tables\Filters\SelectFilter::make('testing_status')
-                    ->options([
-                        'open' => 'Terbuka',
-                        'in_progress' => 'Sedang Dites',
-                        'completed' => 'Selesai',
-                    ]),
+                // // Filter berdasarkan status pengujian
+                // Tables\Filters\SelectFilter::make('testing_status')
+                //     ->options([
+                //         'open' => 'Terbuka',
+                //         'in_progress' => 'Sedang Dites',
+                //         'completed' => 'Selesai',
+                //     ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
