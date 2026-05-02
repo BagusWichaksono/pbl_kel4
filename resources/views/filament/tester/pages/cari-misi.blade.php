@@ -31,13 +31,13 @@
                 <p class="text-sm text-slate-500">Pilih aplikasi yang ingin kamu uji dan kumpulkan poinnya.</p>
             </div>
             <div class="relative w-full md:w-72">
-                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
                 {{-- wire:model → search di Livewire component --}}
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="search"
                     placeholder="Cari nama aplikasi..."
-                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:ring-blue-500"
                 >
             </div>
         </div>
