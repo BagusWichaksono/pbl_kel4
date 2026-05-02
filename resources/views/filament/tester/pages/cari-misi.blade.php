@@ -1,304 +1,298 @@
+
 <x-filament-panels::page>
-    <style>
-        .misi-container { font-family: 'Inter', system-ui, sans-serif; }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-        /* Header */
-        .misi-hero {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            border-radius: 1rem;
-            padding: 2rem 2rem;
-            color: white;
-            margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .misi-hero::before {
-            content: '';
-            position: absolute;
-            top: -3rem;
-            right: -3rem;
-            width: 10rem;
-            height: 10rem;
-            background: rgba(255,255,255,0.04);
-            border-radius: 50%;
-        }
-        .misi-hero::after {
-            content: '';
-            position: absolute;
-            bottom: -2rem;
-            left: 30%;
-            width: 6rem;
-            height: 6rem;
-            background: rgba(255,255,255,0.03);
-            border-radius: 50%;
-        }
-        .misi-hero-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.375rem; position: relative; z-index: 1; }
-        .misi-hero-sub { font-size: 0.875rem; color: #94a3b8; position: relative; z-index: 1; }
-
-        /* Search Bar */
-        .misi-search-wrapper {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-        .misi-search-input {
-            flex: 1;
-            min-width: 200px;
-            padding: 0.625rem 1rem 0.625rem 2.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            background: #f8fafc;
-            transition: all 0.2s;
-            outline: none;
-        }
-        .misi-search-input:focus { border-color: #0f172a; box-shadow: 0 0 0 3px rgba(15,23,42,0.08); background: white; }
-        .misi-search-box { position: relative; flex: 1; min-width: 200px; }
-        .misi-search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            pointer-events: none;
-        }
-        .misi-count {
-            font-size: 0.8125rem;
-            font-weight: 700;
-            color: #64748b;
-            white-space: nowrap;
-        }
-        .misi-count span { color: #0f172a; }
-
-        /* Card Grid */
-        .misi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.25rem;
-        }
-
-        /* Card */
-        .misi-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .misi-card:hover {
-            border-color: #cbd5e1;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
-        }
-        .misi-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-        .misi-card-icon {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: white;
-            flex-shrink: 0;
-        }
-        .misi-card-badges { display: flex; gap: 0.375rem; flex-wrap: wrap; }
-        .misi-badge {
-            padding: 0.1875rem 0.625rem;
-            border-radius: 9999px;
-            font-size: 0.6875rem;
-            font-weight: 700;
-        }
-        .misi-badge-slot { background: #dbeafe; color: #2563eb; }
-        .misi-badge-slot-full { background: #fee2e2; color: #dc2626; }
-        .misi-badge-days { background: #f0fdf4; color: #16a34a; }
-        .misi-badge-ended { background: #fef2f2; color: #dc2626; }
-
-        .misi-card-title { font-size: 1.0625rem; font-weight: 700; color: #0f172a; margin-bottom: 0.375rem; transition: color 0.2s; }
-        .misi-card:hover .misi-card-title { color: #2563eb; }
-        .misi-card-desc { font-size: 0.8125rem; color: #64748b; line-height: 1.5; margin-bottom: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .misi-card-developer { font-size: 0.75rem; color: #94a3b8; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.375rem; }
-
-        .misi-card-footer { border-top: 1px solid #f1f5f9; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; }
-
-        /* Buttons */
-        .btn-daftar {
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.625rem;
-            font-size: 0.8125rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-            background: #0f172a;
-            color: white;
-        }
-        .btn-daftar:hover { background: #1e293b; box-shadow: 0 4px 12px rgba(15,23,42,0.2); }
-        .btn-registered {
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.625rem;
-            font-size: 0.8125rem;
-            font-weight: 700;
-            border: 1px solid #d1fae5;
-            background: #ecfdf5;
-            color: #059669;
-            cursor: default;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-        .btn-full {
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.625rem;
-            font-size: 0.8125rem;
-            font-weight: 700;
-            border: 1px solid #fee2e2;
-            background: #fef2f2;
-            color: #dc2626;
-            cursor: default;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-        .btn-ended {
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.625rem;
-            font-size: 0.8125rem;
-            font-weight: 700;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            color: #94a3b8;
-            cursor: default;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-
-        .misi-card-max { font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
-
-        /* Empty state */
-        .misi-empty {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-        }
-        .misi-empty svg { width: 4rem; height: 4rem; margin: 0 auto 1rem; color: #cbd5e1; }
-        .misi-empty h4 { font-size: 1.0625rem; font-weight: 700; color: #475569; margin-bottom: 0.375rem; }
-        .misi-empty p { font-size: 0.8125rem; color: #94a3b8; }
-    </style>
-
-    <div class="misi-container">
-        {{-- Hero Header --}}
-        <div class="misi-hero">
-            <div class="misi-hero-title">Cari Misi Testing</div>
-            <div class="misi-hero-sub">Pilih aplikasi yang ingin kamu uji. Selesaikan misi, kirim feedback, dan kumpulkan poin!</div>
-        </div>
-
-        {{-- Search Bar --}}
-        <div class="misi-search-wrapper">
-            <div class="misi-search-box">
-                <svg class="misi-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama aplikasi atau developer..." class="misi-search-input">
+    {{-- x-data: state modal Alpine.js--}}
+    <div
+        class="space-y-6"
+        x-data="{
+            open: false,
+            app: {
+                title: '', desc: '', initial: '', color: '',
+                developer: '', testers: 0, maxTesters: 0,
+                slotLeft: 0, isFull: false, isEnded: false,
+                endDate: '', remainingDays: null, reward: 0
+            },
+            openModal(data) {
+                this.app  = data;
+                this.open = true;
+            },
+            closeModal() {
+                this.open = false;
+            }
+        }"
+        @keydown.escape.window="closeModal()"
+    >
+        {{-- ── Header & Search ── --}}
+        <div class="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900">Misi Tersedia</h2>
+                <p class="text-sm text-slate-500">Pilih aplikasi yang ingin kamu uji dan kumpulkan poinnya.</p>
             </div>
-            <div class="misi-count">
-                <span>{{ $this->applications->count() }}</span> aplikasi tersedia
+            <div class="relative w-full md:w-72">
+                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                {{-- wire:model → search di Livewire component --}}
+                <input
+                    type="text"
+                    wire:model.live.debounce.300ms="search"
+                    placeholder="Cari nama aplikasi..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                >
             </div>
         </div>
 
+        {{-- ── Grid Misi ── --}}
         @if($this->applications->count() > 0)
-            <div class="misi-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($this->applications as $app)
                     @php
-                        $colors = ['#0f172a', '#7c3aed', '#2563eb', '#059669', '#d97706', '#dc2626', '#0891b2', '#7c3aed'];
-                        $colorIndex = $app->id % count($colors);
-                        $bgColor = $colors[$colorIndex];
-                        $initial = strtoupper(substr($app->title, 0, 1));
-                        $isRegistered = $this->isRegistered($app->id);
-                        $isFull = $app->testers_count >= $app->max_testers;
-                        $isEnded = $app->end_date && $app->end_date->isPast();
-                        $remainingDays = $app->end_date ? (int) max(0, now()->diffInDays($app->end_date, false)) : null;
-                        $slotLeft = $app->max_testers - $app->testers_count;
+                        $colors     = ['#0f172a','#7c3aed','#2563eb','#059669','#d97706','#dc2626','#0891b2'];
+                        $bgColor    = $colors[$app->id % count($colors)];
+                        $initial    = strtoupper(substr($app->title, 0, 1));
+                        $isRegistered  = $this->isRegistered($app->id);
+                        $isFull     = $app->testers_count >= $app->max_testers;
+                        $isEnded    = $app->end_date && $app->end_date->isPast();
+                        $remainingDays = $app->end_date
+                            ? (int) max(0, now()->diffInDays($app->end_date, false))
+                            : null;
+                        $slotLeft      = $app->max_testers - $app->testers_count;
+                        $developerName = $app->developer ? $app->developer->name : 'Unknown Developer';
+                        $endDateLabel  = $app->end_date
+                            ? $app->end_date->format('d M Y')
+                            : 'Tidak ada batas';
+                        $reward = $app->reward_points ?? 0;
                     @endphp
-                    <div class="misi-card">
+
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition group">
                         <div>
-                            <div class="misi-card-header">
-                                <div class="misi-card-icon" style="background-color: {{ $bgColor }};">
+                            {{-- Icon + Badge status --}}
+                            <div class="flex justify-between items-start mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl"
+                                    style="background-color: {{ $bgColor }};"
+                                >
                                     {{ $initial }}
                                 </div>
-                                <div class="misi-card-badges">
-                                    @if($isFull)
-                                        <span class="misi-badge misi-badge-slot-full">Slot Penuh</span>
-                                    @else
-                                        <span class="misi-badge misi-badge-slot">{{ $slotLeft }} slot tersisa</span>
-                                    @endif
 
-                                    @if($isEnded)
-                                        <span class="misi-badge misi-badge-ended">Berakhir</span>
-                                    @elseif($remainingDays !== null)
-                                        <span class="misi-badge misi-badge-days">{{ $remainingDays }} hari lagi</span>
-                                    @endif
-                                </div>
+                                {{-- Badge status --}}
+                                @if($isEnded)
+                                    <span class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">Berakhir</span>
+                                @elseif($isFull)
+                                    <span class="bg-slate-100 text-slate-500 text-xs font-bold px-3 py-1 rounded-full">Slot Penuh</span>
+                                @elseif($isRegistered)
+                                    <span class="bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1 rounded-full">Terdaftar</span>
+                                @elseif($remainingDays !== null && $remainingDays <= 3)
+                                    <span class="bg-orange-100 text-orange-600 text-xs font-bold px-3 py-1 rounded-full">{{ $remainingDays }}h lagi</span>
+                                @else
+                                    <span class="bg-emerald-100 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full">Baru</span>
+                                @endif
                             </div>
-                            <div class="misi-card-title">{{ $app->title }}</div>
-                            <div class="misi-card-desc">{{ $app->description ?? 'Tidak ada deskripsi.' }}</div>
-                            <div class="misi-card-developer">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                {{ $app->developer ? $app->developer->name : 'Unknown Developer' }}
+
+                            {{-- Judul + deskripsi, klik buka modal --}}
+                            <div
+                                class="cursor-pointer"
+                                @click="openModal({
+                                    title:         {{ json_encode($app->title) }},
+                                    desc:          {{ json_encode($app->description ?? '') }},
+                                    initial:       {{ json_encode($initial) }},
+                                    color:         {{ json_encode($bgColor) }},
+                                    developer:     {{ json_encode($developerName) }},
+                                    testers:       {{ $app->testers_count }},
+                                    maxTesters:    {{ $app->max_testers }},
+                                    slotLeft:      {{ $slotLeft }},
+                                    isFull:        {{ $isFull ? 'true' : 'false' }},
+                                    isEnded:       {{ $isEnded ? 'true' : 'false' }},
+                                    endDate:       {{ json_encode($endDateLabel) }},
+                                    remainingDays: {{ $remainingDays ?? 'null' }},
+                                    reward:        {{ $reward }}
+                                })"
+                            >
+                                <h3 class="font-bold text-lg text-slate-900 mb-1 group-hover:text-blue-600 transition">
+                                    {{ $app->title }}
+                                </h3>
+                                <p class="text-sm text-slate-500 mb-1 line-clamp-2">
+                                    {{ $app->description ?? 'Tidak ada deskripsi.' }}
+                                </p>
+                                <span class="inline-flex items-center gap-1 text-xs text-blue-500 font-semibold mb-3 hover:text-blue-700 transition">
+                                    <i class="ph ph-info"></i> Lihat detail
+                                </span>
                             </div>
+
+                            {{-- Developer --}}
+                            <p class="text-xs text-slate-400 flex items-center gap-1 mb-4">
+                                <i class="ph ph-user"></i> {{ $developerName }}
+                            </p>
                         </div>
-                        <div class="misi-card-footer">
-                            <div class="misi-card-max">{{ $app->testers_count }}/{{ $app->max_testers }} Tester</div>
 
+                        {{-- Footer card --}}
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                            {{-- Reward poin --}}
+                            <div class="flex items-center gap-1 font-bold text-amber-500">
+                                <i class="ph-fill ph-coin"></i>
+                                {{ number_format($reward, 0, ',', '.') }}
+                            </div>
+
+                            {{-- Tombol aksi --}}
                             @if($isRegistered)
-                                <span class="btn-registered">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                    Sudah Terdaftar
+                                <span class="flex items-center gap-1 bg-emerald-50 text-emerald-600 border border-emerald-200 text-sm font-bold px-4 py-2 rounded-lg">
+                                    <i class="ph ph-check-circle"></i> Terdaftar
                                 </span>
                             @elseif($isEnded)
-                                <span class="btn-ended">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                                    Sesi Berakhir
+                                <span class="flex items-center gap-1 bg-slate-100 text-slate-400 text-sm font-bold px-4 py-2 rounded-lg">
+                                    <i class="ph ph-x-circle"></i> Berakhir
                                 </span>
                             @elseif($isFull)
-                                <span class="btn-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                                    Slot Penuh
+                                <span class="flex items-center gap-1 bg-slate-100 text-slate-400 text-sm font-bold px-4 py-2 rounded-lg">
+                                    <i class="ph ph-prohibit"></i> Slot Penuh
                                 </span>
                             @else
-                                <button wire:click="daftarMisi({{ $app->id }})" wire:confirm="Yakin ingin mendaftar sebagai tester di '{{ $app->title }}'?" class="btn-daftar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                    Daftar Misi
+                                <button
+                                    wire:click="daftarMisi({{ $app->id }})"
+                                    wire:confirm="Yakin ingin mendaftar sebagai tester di '{{ $app->title }}'?"
+                                    class="flex items-center gap-1 bg-slate-900 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-slate-800 transition"
+                                >
+                                    <i class="ph ph-plus"></i> Ambil Misi
                                 </button>
                             @endif
                         </div>
                     </div>
                 @endforeach
             </div>
+
         @else
-            <div class="misi-empty">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <h4>Belum Ada Misi Tersedia</h4>
-                <p>Belum ada aplikasi yang siap untuk diuji. Cek kembali nanti ya!</p>
+            {{-- Empty state --}}
+            <div class="flex flex-col items-center justify-center bg-white rounded-2xl border border-slate-200 py-20 text-center">
+                <i class="ph ph-magnifying-glass text-slate-300 text-6xl mb-4"></i>
+                <h4 class="font-bold text-slate-600 mb-1">Belum Ada Misi Tersedia</h4>
+                <p class="text-sm text-slate-400">Belum ada aplikasi yang siap untuk diuji. Cek kembali nanti ya!</p>
             </div>
         @endif
-    </div>
+
+        {{-- MODAL DETAIL — Alpine.js  --}}
+        <div
+            x-show="open"
+            x-cloak
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style="background: rgba(15,23,42,0.5); backdrop-filter: blur(4px);"
+            @click.self="closeModal()"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div
+                x-show="open"
+                x-transition:enter="transition ease-out duration-250"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                class="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+            >
+                {{-- Modal Header --}}
+                <div class="flex items-center gap-4 p-6 pb-5 border-b border-slate-100">
+                    <div
+                        class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0"
+                        x-text="app.initial"
+                        :style="'background-color: ' + app.color"
+                    ></div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="font-bold text-lg text-slate-900 leading-snug" x-text="app.title"></h2>
+                        <p class="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                            <i class="ph ph-user"></i>
+                            <span x-text="app.developer"></span>
+                        </p>
+                    </div>
+                    <button
+                        @click="closeModal()"
+                        class="w-8 h-8 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-red-50 hover:border-red-200 hover:text-red-500 transition flex-shrink-0"
+                        aria-label="Tutup"
+                    >
+                        <i class="ph ph-x text-sm"></i>
+                    </button>
+                </div>
+
+                {{-- Modal Badges --}}
+                <div class="flex gap-2 flex-wrap px-6 py-3 border-b border-slate-100 bg-slate-50">
+                    {{-- Slot badge --}}
+                    <span
+                        class="text-xs font-bold px-3 py-1 rounded-full"
+                        :class="app.isFull
+                            ? 'bg-red-100 text-red-600'
+                            : 'bg-blue-100 text-blue-600'"
+                        x-text="app.isFull ? 'Slot Penuh' : app.slotLeft + ' slot tersisa'"
+                    ></span>
+
+                    {{-- Berakhir badge --}}
+                    <span
+                        x-show="app.isEnded"
+                        class="text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-600"
+                    >Berakhir</span>
+
+                    {{-- Hari lagi badge --}}
+                    <span
+                        x-show="!app.isEnded && app.remainingDays !== null"
+                        x-text="app.remainingDays + ' hari lagi'"
+                        class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-600"
+                    ></span>
+                </div>
+
+                {{-- Modal Body --}}
+                <div class="flex-1 overflow-y-auto p-6 space-y-5">
+
+                    {{-- Stats --}}
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 text-center">
+                            <div class="font-extrabold text-slate-900 text-base leading-none mb-1" x-text="app.testers + '/' + app.maxTesters"></div>
+                            <div class="text-xs text-slate-400 font-semibold">Tester</div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 text-center">
+                            <div class="font-extrabold text-slate-900 text-base leading-none mb-1" x-text="app.isFull ? '0' : app.slotLeft"></div>
+                            <div class="text-xs text-slate-400 font-semibold">Slot Tersisa</div>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 text-center">
+                            <div class="font-extrabold text-amber-500 text-base leading-none mb-1 flex items-center justify-center gap-1">
+                                <i class="ph-fill ph-coin text-sm"></i>
+                                <span x-text="app.reward.toLocaleString('id-ID')"></span>
+                            </div>
+                            <div class="text-xs text-amber-400 font-semibold">Reward Poin</div>
+                        </div>
+                    </div>
+
+                    {{-- Deskripsi --}}
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Deskripsi Aplikasi</p>
+                        <p
+                            class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap"
+                            x-show="app.desc && app.desc.trim() !== ''"
+                            x-text="app.desc"
+                        ></p>
+                        <p
+                            class="text-sm text-slate-400 italic"
+                            x-show="!app.desc || app.desc.trim() === ''"
+                        >Tidak ada deskripsi tersedia.</p>
+                    </div>
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="p-4 border-t border-slate-100 flex justify-end">
+                    <button
+                        type="button"
+                        @click="closeModal()"
+                        class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm px-5 py-2.5 rounded-xl transition"
+                    >
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+        {{-- END MODAL --}}
+
+    </div>{{-- END x-data --}}
 </x-filament-panels::page>
