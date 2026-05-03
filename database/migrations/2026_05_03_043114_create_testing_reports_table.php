@@ -13,12 +13,11 @@ return new class extends Migration
 {
     Schema::create('testing_reports', function (Blueprint $table) {
         $table->id();
-        // Mengaitkan bukti ini dengan tugas tester di aplikasi tertentu
         $table->foreignId('application_tester_id')->constrained('application_testers')->cascadeOnDelete();
-        $table->string('file_bukti'); // Path untuk file screenshot/video
-        $table->text('catatan')->nullable(); // Penjelasan hasil tes
-        $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending'); // Untuk di-acc Developer
-        $table->text('alasan_penolakan')->nullable(); // Jika developer menolak bukti
+        $table->string('file_bukti');
+        $table->text('catatan')->nullable();
+        $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending');
+        $table->text('alasan_penolakan')->nullable();
         $table->timestamps();
     });
 }
