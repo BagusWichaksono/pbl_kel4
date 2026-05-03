@@ -1,4 +1,3 @@
-
 <x-filament-panels::page>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -47,12 +46,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($this->applications as $app)
                     @php
-                        $colors     = ['#0f172a','#7c3aed','#2563eb','#059669','#d97706','#dc2626','#0891b2'];
-                        $bgColor    = $colors[$app->id % count($colors)];
-                        $initial    = strtoupper(substr($app->title, 0, 1));
+                        // Memastikan semua variabel terdefinisi di dalam loop
+                        $colors        = ['#0f172a','#7c3aed','#2563eb','#059669','#d97706','#dc2626','#0891b2'];
+                        $bgColor       = $colors[$app->id % count($colors)];
+                        $initial       = strtoupper(substr($app->title, 0, 1));
                         $isRegistered  = $this->isRegistered($app->id);
-                        $isFull     = $app->testers_count >= $app->max_testers;
-                        $isEnded    = $app->end_date && $app->end_date->isPast();
+                        $isFull        = $app->testers_count >= $app->max_testers;
+                        $isEnded       = $app->end_date && $app->end_date->isPast();
                         $remainingDays = $app->end_date
                             ? (int) max(0, now()->diffInDays($app->end_date, false))
                             : null;
@@ -61,7 +61,7 @@
                         $endDateLabel  = $app->end_date
                             ? $app->end_date->format('d M Y')
                             : 'Tidak ada batas';
-                        $reward = $app->reward_points ?? 0;
+                        $reward        = $app->reward_points ?? 0;
                     @endphp
 
                     <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition group">
@@ -70,8 +70,7 @@
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl"
-                                    style="background-color: {{ $bgColor }};"
-                                >
+                                    @style(['background-color: ' . $bgColor])                                >
                                     {{ $initial }}
                                 </div>
 
