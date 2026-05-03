@@ -25,18 +25,18 @@ class TestingReportResource extends Resource
     {
         return $table
             ->columns([
-                // Mengakses nama aplikasi melalui relasi applicationTester -> app
+                // Mengakses nama aplikasi
                 Tables\Columns\TextColumn::make('applicationTester.app.name')
                     ->label('Nama Aplikasi')
                     ->searchable()
                     ->sortable(),
 
-                // Mengakses nama tester melalui relasi applicationTester -> tester/user
+                // Mengakses nama tester
                 Tables\Columns\TextColumn::make('applicationTester.user.name')
                     ->label('Nama Tester')
                     ->searchable(),
 
-                // Menambahkan kolom status dengan warna
+                // Menambahkan kolom status
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -53,7 +53,7 @@ class TestingReportResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Lihat Detail'),
@@ -85,18 +85,15 @@ class TestingReportResource extends Resource
 
                 Section::make('Bukti Pengujian')
                     ->schema([
-                        // Disesuaikan dengan nama kolom di database: file_bukti
                         ImageEntry::make('file_bukti')
                             ->label('Bukti Screenshot')
                             ->columnSpanFull()
                             ->height(300),
 
-                        // Disesuaikan dengan nama kolom di database: catatan
                         TextEntry::make('catatan')
                             ->label('Catatan/Ulasan Laporan')
                             ->columnSpanFull(),
 
-                        // Menampilkan alasan penolakan jika ada
                         TextEntry::make('alasan_penolakan')
                             ->label('Alasan Penolakan (Jika ada)')
                             ->columnSpanFull(),
