@@ -66,7 +66,7 @@
 
                     <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition group">
                         <div>
-                            {{-- Icon + Badge status --}}
+                            {{-- `Icon + Badge status --}}
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl"
