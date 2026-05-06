@@ -5,103 +5,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - TesYuk!</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Poppins', 'sans-serif'] } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        winter: {
+                            900: '#141c33',
+                            700: '#2f456f',
+                            500: '#5374ac',
+                            300: '#8bafd0',
+                            50: '#eff5fa'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
     </script>
+    <style>
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: radial-gradient(circle, rgba(139, 175, 208, 0.15) 1px, transparent 1px);
+        }
+
+        .text-gradient-tes {
+            background: linear-gradient(to right, #141c33, #2f456f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .text-gradient-yuk {
+            background: linear-gradient(to right, #5374ac, #8bafd0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        input:focus {
+            transform: scale(1.01);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #8bafd0;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6 relative">
+<body class="bg-winter-50 min-h-screen flex items-center justify-center p-6 py-12 md:py-20 relative bg-grid-pattern font-sans antialiased overflow-y-auto custom-scrollbar">
 
-    <a href="/" class="absolute top-6 left-6 md:top-8 md:left-8 flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 shadow-sm hover:shadow-md hover:text-blue-600 hover:border-blue-200 transition-all group z-10">
-        <i class="ph-bold ph-arrow-left text-lg group-hover:-translate-x-1 transition-transform"></i>
-        <span class="hidden md:block">Kembali ke Beranda</span>
-        <span class="block md:hidden">Kembali</span>
-    </a>
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40">
+        <div class="absolute top-[5%] left-[-10%] w-[600px] h-[600px] bg-winter-300 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[5%] right-[-10%] w-[500px] h-[500px] bg-winter-500 rounded-full blur-[120px]"></div>
+    </div>
 
-    <div class="bg-white p-10 rounded-[32px] border border-slate-200 max-w-md w-full shadow-2xl shadow-slate-200/50 my-8 mt-20 md:mt-8">
-        <div class="text-center mb-8">
-            <img src="{{ asset('assets/logo.png') }}" class="w-20 h-20 bg-slate-900 rounded-[30px] mx-auto mb-10 flex items-center justify-center shadow-xl rotate-3 hover:rotate-0 transition-transform">
-            <h1 class="text-2xl font-bold text-slate-900">Buat Akun Baru</h1>
-            <p class="text-slate-500 text-sm mt-2">Mulai perjalananmu di TesYuk!</p>
+    <div class="bg-white/90 backdrop-blur-2xl p-8 lg:p-10 rounded-[2.5rem] border border-white max-w-md w-full shadow-[0_50px_100px_-20px_rgba(20,28,51,0.15)] relative z-10">
+
+        <a href="/" class="absolute top-6 left-6 w-10 h-10 bg-winter-50 hover:bg-winter-100 rounded-xl flex items-center justify-center border border-winter-300/30 transition-all group group-hover:shadow-md">
+            <i class="ph-bold ph-x text-winter-900 group-hover:rotate-90 transition-transform"></i>
+        </a>
+
+        <div class="text-center mb-10 mt-4">
+            <h1 class="font-black text-5xl tracking-tighter mb-2 flex justify-center items-baseline">
+                <span class="text-gradient-tes">REGIS</span>
+                <span class="text-gradient-yuk">TER</span>
+            </h1>
+            <p class="text-winter-700/80 text-sm font-medium mt-3">Mulai pengujianmu hari ini</p>
         </div>
 
         <form action="/register" method="POST" class="space-y-4">
-            @csrf 
-            @if ($errors->any())
-                <div class="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold mb-4">
-                    Terdapat kesalahan, pastikan email belum terdaftar.
-                </div>
-            @endif
+            @csrf
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Nama Lengkap</label>
-                <input type="text" name="name" placeholder="Masukkan nama" required value="{{ old('name') }}" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none transition placeholder:text-slate-300">
+                <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Nama</label>
+                <input type="text" name="name" placeholder="Masukkan nama" required value="{{ old('name') }}"
+                    class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium">
             </div>
-            
+
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Email</label>
-                <input type="email" name="email" placeholder="nama@email.com" required value="{{ old('email') }}" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none transition placeholder:text-slate-300">
+                <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Email</label>
+                <input type="email" name="email" placeholder="nama@email.com" required value="{{ old('email') }}"
+                    class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium">
             </div>
 
             <div class="pt-2">
-                <label class="block text-xs font-bold text-slate-500 uppercase ml-1 mb-3">Daftar Sebagai</label>
+                <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-3 text-center">Daftar Sebagai</label>
                 <div class="grid grid-cols-2 gap-4">
-                    
-                    <label class="relative block cursor-pointer group h-full">
+
+                    <label class="relative block cursor-pointer group">
                         <input type="radio" name="role" value="developer" class="peer sr-only" required>
-                        <div class="flex flex-col items-center justify-center text-center gap-3 p-4 h-full rounded-2xl border-2 border-slate-200 bg-white transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:ring-1 peer-checked:ring-blue-600 hover:border-blue-300 relative">
-                            <i class="ph-fill ph-check-circle text-blue-600 text-xl absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity"></i>
-                            <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 transition-colors group-hover:bg-blue-100 group-hover:text-blue-600 peer-checked:bg-blue-600 peer-checked:text-white mt-2">
-                                <i class="ph-fill ph-monitor text-2xl"></i>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-winter-300/20 bg-white transition-all peer-checked:border-winter-500 peer-checked:bg-winter-50 peer-checked:ring-4 peer-checked:ring-winter-500/10 hover:border-winter-300 hover:shadow-md">
+                            <div class="w-10 h-10 bg-winter-50 rounded-xl flex items-center justify-center text-winter-500 group-hover:scale-110 transition-transform peer-checked:bg-winter-500 peer-checked:text-white mb-2">
+                                <i class="ph-fill ph-code text-xl"></i>
                             </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-900">Developer</h4>
-                                <p class="text-[10px] font-medium text-slate-500 mt-0.5">Pembuat Aplikasi</p>
-                            </div>
+                            <h4 class="text-xs font-bold text-winter-900">Developer</h4>
                         </div>
                     </label>
 
-                    <label class="relative block cursor-pointer group h-full">
+                    <label class="relative block cursor-pointer group">
                         <input type="radio" name="role" value="tester" class="peer sr-only" required>
-                        <div class="flex flex-col items-center justify-center text-center gap-3 p-4 h-full rounded-2xl border-2 border-slate-200 bg-white transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:ring-1 peer-checked:ring-blue-600 hover:border-blue-300 relative">
-                            <i class="ph-fill ph-check-circle text-blue-600 text-xl absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity"></i>
-                            <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 transition-colors group-hover:bg-blue-100 group-hover:text-blue-600 peer-checked:bg-blue-600 peer-checked:text-white mt-2">
-                                <div class="flex items-end justify-center -mb-1">
-                                    <div class="relative">
-                                        <i class="ph-fill ph-monitor text-[26px]"></i>
-                                        <i class="ph-bold ph-check text-slate-100 group-hover:text-blue-100 peer-checked:text-blue-600 transition-colors text-[10px] absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
-                                    </div>
-                                    <div class="relative -ml-2 mb-0.5">
-                                        <i class="ph-fill ph-device-mobile text-[18px]"></i>
-                                        <i class="ph-bold ph-check text-slate-100 group-hover:text-blue-100 peer-checked:text-blue-600 transition-colors text-[8px] absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
-                                    </div>
-                                </div>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-winter-300/20 bg-white transition-all peer-checked:border-winter-500 peer-checked:bg-winter-50 peer-checked:ring-4 peer-checked:ring-winter-500/10 hover:border-winter-300 hover:shadow-md text-center">
+                            <div class="w-10 h-10 bg-winter-50 rounded-xl flex items-center justify-center text-winter-500 group-hover:scale-110 transition-transform peer-checked:bg-winter-500 peer-checked:text-white mb-2">
+                                <i class="ph-fill ph-device-mobile text-xl"></i>
                             </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-900">Tester</h4>
-                                <p class="text-[10px] font-medium text-slate-500 mt-0.5">Penguji Aplikasi</p>
-                            </div>
+                            <h4 class="text-xs font-bold text-winter-900">Tester</h4>
                         </div>
                     </label>
-                    
+
                 </div>
             </div>
 
-            <div class="pt-2">
-                <label class="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Password</label>
-                <input type="password" name="password" placeholder="•••••" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none transition placeholder:text-slate-300">
+            <div class="space-y-4 pt-2">
+                <div class="group">
+                    <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Kata Sandi</label>
+                    <input type="password" name="password" placeholder="•••••" required
+                        class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all">
+                </div>
+                <div class="group">
+                    <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Konfirmasi Kata Sandi</label>
+                    <input type="password" name="password_confirmation" placeholder="•••••" required
+                        class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all">
+                </div>
             </div>
-            
-            <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition shadow-lg mt-6">DAFTAR SEKARANG</button>
+
+            <button type="submit" class="w-full bg-winter-900 text-white py-4 rounded-2xl font-bold hover:bg-winter-700 hover:-translate-y-1 active:scale-95 transition-all shadow-xl shadow-winter-900/20 mt-6 uppercase">
+                Daftar
+            </button>
         </form>
 
-        <p class="text-center text-sm text-slate-500 mt-8">
-            Sudah punya akun? <a href="/login" class="text-slate-900 font-bold hover:underline">Masuk di sini</a>
+        <p class="text-center text-sm text-winter-700/80 font-medium mt-6">
+            Sudah punya akun? <a href="/login" class="text-winter-500 font-bold hover:text-winter-700 transition-colors underline decoration-2 underline-offset-4">Login di sini</a>
         </p>
     </div>
 </body>

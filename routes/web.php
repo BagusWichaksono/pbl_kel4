@@ -36,8 +36,6 @@ Route::get('/register', function () {
     return view('register');
 });
 
-// RUTE LOGIN ASLI (DATABASE AUTH)
-// RUTE LOGIN ASLI (DATABASE AUTH)
 Route::post('/login', function (Request $request) {
     $credentials = $request->validate([
         'email'    => 'required|email',
