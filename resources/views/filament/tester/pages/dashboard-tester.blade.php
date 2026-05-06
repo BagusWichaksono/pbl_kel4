@@ -28,9 +28,6 @@
                     <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <i class="ph-fill ph-coins text-3xl text-amber-500"></i>
                     </div>
-                    <h3 class="font-bold text-lg text-slate-900">12.500 Poin</h3>
-                    <p class="text-xs text-slate-500 mb-4">Terkumpul dari 5 aplikasi</p>
-                    <p class="font-bold text-sm text-amber-600">Status: Siap Ditarik</p>
                 </div>
 
                 <!-- Card 2: Misi -->
@@ -38,9 +35,6 @@
                     <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <i class="ph-fill ph-check-circle text-3xl text-blue-600"></i>
                     </div>
-                    <h3 class="font-bold text-lg text-slate-900">5 Misi Selesai</h3>
-                    <p class="text-xs text-slate-500 mb-4">Bulan ini</p>
-                    <p class="font-bold text-sm text-blue-600">Status: Aktif Mencari</p>
                 </div>
             </div>
         </div>

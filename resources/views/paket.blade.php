@@ -24,7 +24,7 @@
 <body class="bg-[#F8FAFC] min-h-screen flex items-center justify-center p-6">
     <div class="max-w-4xl w-full">
         <a href="/" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold mb-6 transition">
-            <i class="ph-bold ph-arrow-left"></i> Kembali ke Home
+            <i class="ph-bold ph-x text-3xl"></i>
         </a>
 
         <div class="text-center mb-12">
