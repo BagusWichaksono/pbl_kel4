@@ -25,12 +25,6 @@
 
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-6 relative">
 
-    <a href="/" class="absolute top-6 left-6 md:top-8 md:left-8 flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 shadow-sm hover:shadow-md hover:text-blue-600 hover:border-blue-200 transition-all group z-10">
-        <i class="ph-bold ph-arrow-left text-lg group-hover:-translate-x-1 transition-transform"></i>
-        <span class="hidden md:block">Kembali ke Beranda</span>
-        <span class="block md:hidden">Kembali</span>
-    </a>
-
     <div class="bg-white p-10 rounded-[32px] border border-slate-200 max-w-md w-full shadow-2xl shadow-slate-200/50">
         <div class="text-center mb-10">
             <img src="{{ asset('assets/logo.png') }}" class="w-20 h-20 bg-slate-900 rounded-[30px] mx-auto mb-10 flex items-center justify-center shadow-xl rotate-3 hover:rotate-0 transition-transform">
