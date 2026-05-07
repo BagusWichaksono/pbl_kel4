@@ -223,7 +223,7 @@
             <div class="lg:w-1/2" data-aos="fade-right">
                 <span class="text-xs font-bold uppercase tracking-widest text-winter-500 bg-winter-50 px-4 py-1 rounded-full mb-6 inline-block border border-winter-300/30">Visi & Misi</span>
                 <h2 class="text-4xl lg:text-5xl font-black mb-8 leading-tight">Menjaga Kualitas <br> Ekosistem Digital.</h2>
-                <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! lahir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback nyata seringkali sulit didapat secara cepat dan akurat.</p>
+                <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback nyata seringkali sulit didapat secara cepat dan akurat.</p>
                 <div class="grid grid-cols-2 gap-8">
                     <div>
                         <h4 class="text-3xl font-black text-winter-900">50+</h4>
