@@ -65,7 +65,7 @@
     </style>
 </head>
 
-<body class="bg-winter-50 min-h-screen flex items-center justify-center p-6 py-12 md:py-20 relative bg-grid-pattern font-sans antialiased overflow-y-auto custom-scrollbar">
+<body id="page-content" class="bg-winter-50 min-h-screen flex items-center justify-center p-6 py-12 md:py-20 relative bg-grid-pattern font-sans antialiased overflow-y-auto custom-scrollbar opacity-0 transition-opacity duration-500 ease-in-out">
 
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40">
         <div class="absolute top-[5%] left-[-10%] w-[600px] h-[600px] bg-winter-300 rounded-full blur-[120px]"></div>
@@ -97,7 +97,7 @@
 
             <div>
                 <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Email</label>
-                <input type="email" name="email" placeholder="nama@email.com" required value="{{ old('email') }}"
+                <input type="email" name="email" placeholder="nama@gmail.com" required value="{{ old('email') }}"
                     class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium">
             </div>
 
@@ -150,6 +150,27 @@
             Sudah punya akun? <a href="/login" class="text-winter-500 font-bold hover:text-winter-700 transition-colors underline decoration-2 underline-offset-4">Login di sini</a>
         </p>
     </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(() => {
+                document.getElementById('page-content').classList.remove('opacity-0');
+            });
+        });
+
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.hostname === window.location.hostname && this.getAttribute('href') !== '#' && !this.getAttribute('href').startsWith('#') && this.target !== '_blank') {
+                    e.preventDefault(); 
+                    let destination = this.href;
+                    document.getElementById('page-content').classList.add('opacity-0');
+                    setTimeout(() => {
+                        window.location.href = destination;
+                    }, 500); 
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

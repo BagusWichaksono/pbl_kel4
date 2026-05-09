@@ -12,7 +12,8 @@ class CreateApp extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['developer_id'] = auth()->id();
+        $data['developer_id'] = \Illuminate\Support\Facades\Auth::id();
+        
         return $data;
     }
 }

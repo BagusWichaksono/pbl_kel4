@@ -94,7 +94,8 @@
         
     </style>
 </head>
-<body class="bg-winter-50 text-winter-900 font-sans antialiased overflow-x-hidden bg-grid-pattern" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 50)">
+
+<body id="page-content" class="bg-winter-50 text-winter-900 font-sans antialiased overflow-x-hidden bg-grid-pattern opacity-0 transition-opacity duration-500 ease-in-out" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 50)">
         
     <nav 
         class="fixed w-full top-0 z-[1000] transition-all duration-500"
@@ -223,7 +224,7 @@
             <div class="lg:w-1/2" data-aos="fade-right">
                 <span class="text-xs font-bold uppercase tracking-widest text-winter-500 bg-winter-50 px-4 py-1 rounded-full mb-6 inline-block border border-winter-300/30">Visi & Misi</span>
                 <h2 class="text-4xl lg:text-5xl font-black mb-8 leading-tight">Menjaga Kualitas <br> Ekosistem Digital.</h2>
-                <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! lahir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback nyata seringkali sulit didapat secara cepat dan akurat.</p>
+                <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback nyata seringkali sulit didapat secara cepat dan akurat.</p>
                 <div class="grid grid-cols-2 gap-8">
                     <div>
                         <h4 class="text-3xl font-black text-winter-900">50+</h4>
@@ -371,13 +372,13 @@
 
     <footer class="bg-winter-900 text-white py-20">
         <div class="max-w-7xl mx-auto px-6 text-center">
-            <h3 class="text-3xl font-black mb-10">Tingkatkan Kualitas Aplikasimu Sekarang.</h3>
+            <h3 class="text-3xl font-black mb-10">TesYuk!</h3>
             <div class="flex justify-center gap-6 mb-16">
-                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-instagram-logo"></i></a>
-                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-github-logo"></i></a>
-                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-linkedin-logo"></i></a>
+                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-email-logo"></i></a>
+                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-whatsapp-logo"></i></a>
+                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-youtube-logo"></i></a>
             </div>
-            <p class="text-sm text-winter-500">© 2026 TesYuk! • Solusi Validasi Aplikasi Modern Terpercaya</p>
+            <p class="text-sm text-winter-500">© 2026 TesYuk! • Solusi Validasi Aplikasi Terpercaya</p>
         </div>
     </footer>
 
@@ -387,6 +388,27 @@
             duration: 1000,
             once: true,
             mirror: false,
+        });
+
+        // ANIMASI TRANSISI HALAMAN
+        window.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(() => {
+                document.getElementById('page-content').classList.remove('opacity-0');
+            });
+        });
+
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Abaikan jika link itu anchor/scroll ke bawah (seperti #fitur, #tentang)
+                if (this.hostname === window.location.hostname && this.getAttribute('href') !== '#' && !this.getAttribute('href').startsWith('#') && this.target !== '_blank') {
+                    e.preventDefault(); 
+                    let destination = this.href;
+                    document.getElementById('page-content').classList.add('opacity-0');
+                    setTimeout(() => {
+                        window.location.href = destination;
+                    }, 500); 
+                }
+            });
         });
     </script>
 </body>

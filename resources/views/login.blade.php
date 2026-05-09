@@ -39,7 +39,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #8bafd0; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-winter-50 min-h-screen flex items-center justify-center p-6 py-12 relative overflow-y-auto custom-scrollbar bg-grid-pattern font-sans antialiased">
+<body id="page-content" class="bg-winter-50 min-h-screen flex items-center justify-center p-6 py-12 relative overflow-y-auto custom-scrollbar bg-grid-pattern font-sans antialiased opacity-0 transition-opacity duration-500 ease-in-out">
 
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40">
         <div class="absolute top-[10%] right-[-5%] w-[500px] h-[500px] bg-winter-300 rounded-full blur-[120px]"></div>
@@ -70,7 +70,7 @@
             @csrf
             <div class="group">
                 <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-2 group-focus-within:text-winter-700 transition-colors">Email</label>
-                <input name="email" type="email" placeholder="nama@email.com" value="{{ old('email') }}" required 
+                <input name="email" type="email" placeholder="nama@gmail.com" value="{{ old('email') }}" required 
                     class="w-full px-6 py-4 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium shadow-sm">
                 @error('email')
                     <p class="text-red-500 text-xs mt-1.5 ml-1 font-bold">{{ $message }}</p>
@@ -92,5 +92,26 @@
             Belum punya akun? <a href="/register" class="text-winter-500 font-bold hover:text-winter-700 transition-colors underline decoration-2 underline-offset-4">Daftar Sekarang</a>
         </p>
     </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(() => {
+                document.getElementById('page-content').classList.remove('opacity-0');
+            });
+        });
+
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.hostname === window.location.hostname && this.getAttribute('href') !== '#' && !this.getAttribute('href').startsWith('#') && this.target !== '_blank') {
+                    e.preventDefault(); 
+                    let destination = this.href;
+                    document.getElementById('page-content').classList.add('opacity-0');
+                    setTimeout(() => {
+                        window.location.href = destination;
+                    }, 500); 
+                }
+            });
+        });
+    </script>
 </body>
 </html>
