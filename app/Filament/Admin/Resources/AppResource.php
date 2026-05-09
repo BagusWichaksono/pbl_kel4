@@ -51,6 +51,10 @@ class AppResource extends Resource
                     ->label('Bukti Pembayaran')
                     ->disabled()
                     ->columnSpanFull(),
+                Forms\Components\FileUpload::make('review_screenshot')
+                    ->label('Bukti Lulus Review Awal')
+                    ->disabled()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -67,6 +71,9 @@ class AppResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('payment_proof')
                     ->label('Bukti Pembayaran')
+                    ->square(),
+                Tables\Columns\ImageColumn::make('review_screenshot')
+                    ->label('Bukti Lulus Review Awal')
                     ->square(),
                 Tables\Columns\TextColumn::make('payment_status')
                     ->label('Status Pembayaran')
