@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class AppResource extends Resource
 {
@@ -39,6 +41,19 @@ class AppResource extends Resource
                             ->maxLength(255)
                             ->placeholder('Contoh: Sistem Kasir UMKM'),
                             
+                        Forms\Components\TextInput::make('platform')
+                            ->label('Platform')
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('Contoh: Android / Web / iOS'),
+                            
+                        Forms\Components\TextInput::make('url')
+                            ->label('URL / Link Aplikasi')
+                            ->url()
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('Contoh: https://play.google.com/...'),
+
                         Forms\Components\Textarea::make('description')
                             ->label('Deskripsi Aplikasi')
                             ->required()
@@ -50,6 +65,7 @@ class AppResource extends Resource
                             ->label('Bukti Pembayaran')
                             ->image()
                             ->directory('payment_proofs')
+                            ->helperText('Biaya Upload Rp 300.000 ke Rekening XXX')
                             ->columnSpanFull(),
 
                         Forms\Components\Actions::make([
@@ -156,5 +172,10 @@ class AppResource extends Resource
             'create' => Pages\CreateApp::route('/create'),
             'edit' => Pages\EditApp::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('developer_id', Auth::id());
     }
 }

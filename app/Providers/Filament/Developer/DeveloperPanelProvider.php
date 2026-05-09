@@ -27,16 +27,17 @@ class DeveloperPanelProvider extends PanelProvider
             ->path('developer')
             //->login()
             ->brandName('TesYuk!')
-            // ->brandLogo(asset('assets/logo.png'))
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Developer/Resources'), for: 'App\\Filament\\Developer\\Resources')
             ->discoverPages(in: app_path('Filament/Developer/Pages'), for: 'App\\Filament\\Developer\\Pages')
             ->pages([
+                \Filament\Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Developer/Widgets'), for: 'App\\Filament\\Developer\\Widgets')
             ->widgets([
+                Widgets\AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
