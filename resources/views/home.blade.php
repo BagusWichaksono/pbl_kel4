@@ -1,48 +1,57 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TesYuk! - Platform Pengujian Aplikasi Terpercaya</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
+
     <script>
-        tailwind.config = { 
-            theme: { 
-                extend: { 
+        tailwind.config = {
+            theme: {
+                extend: {
                     colors: {
                         winter: {
                             900: '#141c33', // Big Stone
                             700: '#2f456f', // San Juan
                             500: '#5374ac', // Wedgewood
                             300: '#8bafd0', // Polo Blue
-                            50:  '#eff5fa', // Black Squeeze
+                            50: '#eff5fa', // Black Squeeze
                         }
                     },
-                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    },
                     animation: {
                         'float': 'float 5s ease-in-out infinite',
                     },
                     keyframes: {
                         float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-15px)' },
+                            '0%, 100%': {
+                                transform: 'translateY(0)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-15px)'
+                            },
                         }
                     }
-                } 
-            } 
+                }
+            }
         }
     </script>
     <style>
-        [x-cloak] { display: none !important; }
-        
+        [x-cloak] {
+            display: none !important;
+        }
+
         /* iPhone Dynamic Island Style */
         .dynamic-island {
             width: 85px;
@@ -61,21 +70,23 @@
             background-size: 40px 40px;
             background-image: radial-gradient(circle, rgba(139, 175, 208, 0.1) 1px, transparent 1px);
         }
-        
+
         /* --- Gradasi Teks Kustom --- */
-        
+
         /* Gradasi untuk "Tes" (Gaya Gelap ke Sedang) */
         .text-gradient-tes {
-            background: linear-gradient(to right, #141c33, #2f456f); /* winter-900 ke winter-700 */
+            background: linear-gradient(to right, #141c33, #2f456f);
+            /* winter-900 ke winter-700 */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-fill-color: transparent;
         }
-        
+
         /* Gradasi untuk "Yuk!" (Gaya Sedang ke Terang) */
         .text-gradient-yuk {
-            background: linear-gradient(to right, #5374ac, #8bafd0); /* winter-500 ke winter-300 */
+            background: linear-gradient(to right, #5374ac, #8bafd0);
+            /* winter-500 ke winter-300 */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -83,7 +94,7 @@
         }
 
         nav a {
-            letter-spacing: 0.15em; 
+            letter-spacing: 0.15em;
         }
 
         .transition-all {
@@ -91,22 +102,20 @@
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 300ms;
         }
-        
     </style>
 </head>
 
 <body id="page-content" class="bg-winter-50 text-winter-900 font-sans antialiased overflow-x-hidden bg-grid-pattern opacity-0 transition-opacity duration-500 ease-in-out" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 50)">
-        
-    <nav 
+
+    <nav
         class="fixed w-full top-0 z-[1000] transition-all duration-500"
-        :class="scrolled ? 'bg-white/70 backdrop-blur-lg border-b border-winter-300/20 py-3 shadow-lg' : 'bg-transparent py-6'"
-    >
+        :class="scrolled ? 'bg-white/70 backdrop-blur-lg border-b border-winter-300/20 py-3 shadow-lg' : 'bg-transparent py-6'">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3 group">
                 <img src="{{ asset('assets/logo.png') }}" class="w-10 h-10 transition-transform group-hover:rotate-6" alt="Logo">
-                
+
                 <div class="h-6 w-px bg-winter-300"></div>
-                
+
                 <span class="font-extrabold text-2xl tracking-tighter flex items-baseline">
                     <span class="text-gradient-tes">Tes</span>
                     <span class="text-gradient-yuk">Yuk!</span>
@@ -136,7 +145,7 @@
 
     <section class="relative pt-48 pb-20 overflow-hidden">
         <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[700px] h-[700px] bg-winter-300/20 rounded-full blur-[150px] -z-10"></div>
-        
+
         <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center" data-aos="fade-up">
             <h1 class="text-5xl lg:text-[72px] font-black leading-[1.1] tracking-tight mb-8">
                 Validasi Aplikasi <br />
@@ -147,7 +156,7 @@
             </p>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                
+
                 <div class="hidden lg:flex lg:col-span-4 flex-col gap-16 text-right" data-aos="fade-right" data-aos-delay="200">
                     <div class="group">
                         <div class="w-14 h-14 bg-white shadow-xl rounded-2xl flex items-center justify-center text-winter-500 ml-auto mb-5 border border-winter-300/20 group-hover:bg-winter-500 group-hover:text-white transition-all">
@@ -169,7 +178,7 @@
                     <div class="absolute inset-0 bg-winter-500/20 blur-[100px] rounded-full scale-75 -z-10"></div>
                     <div class="w-[300px] h-[620px] bg-white rounded-[3.5rem] border-[10px] border-winter-900 shadow-2xl relative overflow-hidden flex flex-col ring-8 ring-winter-900/5">
                         <div class="dynamic-island"></div>
-                        
+
                         <div class="bg-winter-700 pt-14 pb-8 px-6 text-white text-left">
                             <p class="text-[10px] text-winter-300 font-bold uppercase tracking-widest">Saldo Poin</p>
                             <h3 class="text-3xl font-black mt-1">2.450 <span class="text-xs font-normal">pts</span></h3>
@@ -299,18 +308,18 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
-                
+
                 <div class="bg-winter-900 rounded-[2.5rem] p-10 lg:p-12 relative overflow-hidden group shadow-2xl hover:-translate-y-2 hover:shadow-winter-900/40 transition-all duration-500 border border-winter-700/50" data-aos="fade-right">
                     <div class="absolute right-0 top-0 w-96 h-96 bg-winter-700/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-winter-500/30 transition-colors duration-700"></div>
                     <div class="absolute bottom-0 left-0 w-64 h-64 bg-winter-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
-                    
+
                     <div class="relative z-10 flex flex-col h-full">
                         <div class="w-16 h-16 bg-gradient-to-br from-winter-500 to-winter-700 text-white rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-lg shadow-winter-500/30 group-hover:scale-110 transition-transform duration-500">
                             <i class="ph-fill ph-code-block"></i>
                         </div>
-                        
+
                         <h3 class="text-3xl font-black text-white mb-8">Untuk Pengembang</h3>
-                        
+
                         <ul class="space-y-4 mb-12 flex-1">
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
                                 <div class="mt-0.5 bg-winter-700/80 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-300 text-sm"></i></div>
@@ -325,7 +334,7 @@
                                 <span class="text-winter-50/90 text-sm leading-relaxed">Tentukan kriteria target perangkat dan demografi tester yang sangat spesifik.</span>
                             </li>
                         </ul>
-                        
+
                         <a href="/paket" class="mt-auto inline-flex items-center justify-between w-full bg-winter-700/50 hover:bg-winter-500 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 border border-winter-500/30 group/btn">
                             <span>Lihat Skema Biaya</span>
                             <i class="ph-bold ph-arrow-right group-hover/btn:translate-x-2 transition-transform text-xl"></i>
@@ -336,14 +345,14 @@
                 <div class="bg-gradient-to-b from-white to-winter-50 rounded-[2.5rem] p-10 lg:p-12 relative overflow-hidden group shadow-xl hover:shadow-2xl hover:-translate-y-2 hover:shadow-winter-300/40 transition-all duration-500 border border-winter-300/40" data-aos="fade-left">
                     <div class="absolute right-0 top-0 w-96 h-96 bg-winter-300/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-winter-300/40 transition-colors duration-700"></div>
                     <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
-                    
+
                     <div class="relative z-10 flex flex-col h-full">
                         <div class="w-16 h-16 bg-white text-winter-700 rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-lg shadow-winter-300/20 border border-winter-300/30 group-hover:scale-110 transition-transform duration-500">
                             <i class="ph-fill ph-device-mobile"></i>
                         </div>
-                        
+
                         <h3 class="text-3xl font-black text-winter-900 mb-8">Untuk Penguji</h3>
-                        
+
                         <ul class="space-y-4 mb-12 flex-1">
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-white shadow-sm hover:shadow-md transition-all border border-transparent hover:border-winter-300/30">
                                 <div class="mt-0.5 bg-winter-100 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-700 text-sm"></i></div>
@@ -358,7 +367,7 @@
                                 <span class="text-winter-900/80 text-sm leading-relaxed font-medium">Konversikan apresiasi menjadi saldo dompet digital yang langsung cair.</span>
                             </li>
                         </ul>
-                        
+
                         <a href="/register?role=tester" class="mt-auto inline-flex items-center justify-between w-full bg-white hover:bg-winter-50 text-winter-900 font-bold px-8 py-4 rounded-xl transition-all duration-300 border-2 border-winter-300/50 hover:border-winter-500 shadow-sm group/btn">
                             <span>Mulai Hasilkan Pendapatan</span>
                             <i class="ph-bold ph-arrow-right group-hover/btn:translate-x-2 transition-transform text-winter-700 text-xl"></i>
@@ -374,9 +383,9 @@
         <div class="max-w-7xl mx-auto px-6 text-center">
             <h3 class="text-3xl font-black mb-10">TesYuk!</h3>
             <div class="flex justify-center gap-6 mb-16">
-                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-email-logo"></i></a>
+                <!-- <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-mail-send"></i></a> -->
                 <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-whatsapp-logo"></i></a>
-                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-youtube-logo"></i></a>
+                <!-- <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-youtube-logo"></i></a> -->
             </div>
             <p class="text-sm text-winter-500">© 2026 TesYuk! • Solusi Validasi Aplikasi Terpercaya</p>
         </div>
@@ -401,15 +410,16 @@
             link.addEventListener('click', function(e) {
                 // Abaikan jika link itu anchor/scroll ke bawah (seperti #fitur, #tentang)
                 if (this.hostname === window.location.hostname && this.getAttribute('href') !== '#' && !this.getAttribute('href').startsWith('#') && this.target !== '_blank') {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     let destination = this.href;
                     document.getElementById('page-content').classList.add('opacity-0');
                     setTimeout(() => {
                         window.location.href = destination;
-                    }, 500); 
+                    }, 500);
                 }
             });
         });
     </script>
 </body>
+
 </html>
