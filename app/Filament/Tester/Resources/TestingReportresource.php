@@ -16,8 +16,9 @@ class TestingReportResource extends Resource
 {
     protected static ?string $model = TestingReport::class;
 
+    protected static ?string $modelLabel = 'Laporan Bug';
+    protected static ?string $pluralModelLabel = 'Laporan Bug';
     protected static ?string $navigationIcon = 'heroicon-o-bug-ant';
-    protected static ?string $navigationLabel = 'Laporan Bug';
 
     public static function form(Form $form): Form
     {

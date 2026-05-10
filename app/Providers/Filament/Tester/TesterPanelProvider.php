@@ -30,6 +30,7 @@ class TesterPanelProvider extends PanelProvider
             ->path('tester')
             ->login()
             ->profile()
+            ->spa()
             ->brandName(new HtmlString('<span style="background: linear-gradient(135deg, #5374ac, #2f456f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.02em;">TesYuk!</span>'))            ->authGuard('web')
             ->font('Poppins')
             ->sidebarCollapsibleOnDesktop()
@@ -48,18 +49,62 @@ class TesterPanelProvider extends PanelProvider
                 PanelsRenderHook::HEAD_END,
                 fn (): string => "
                 <style>
-                    @keyframes smoothSlideUp {
-                        0% { opacity: 0; transform: translateY(30px); }
-                        100% { opacity: 1; transform: translateY(0); }
+                    /* 1. BACKGROUND & LAYOUT (Vibe Landing Page) */
+                    body, .fi-layout {
+                        background: linear-gradient(180deg, #e4eff8 0%, #ffffff 100%) !important;
+                        background-attachment: fixed !important;
                     }
-                    .fi-main { animation: smoothSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                    .dark body, .dark .fi-layout {
+                        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
+                    }
+                    .fi-main { background: transparent !important; }
 
-                    /* Fix Pojok Kiri Banner & Kontainer */
-                    .fi-main-ctn { padding-top: 0 !important; }
-                    .fi-topbar { background: rgba(255, 255, 255, 0.95) !important; z-index: 30 !important; }
-                    .dark .fi-topbar { background: rgba(20, 28, 51, 0.95) !important; }
+                    /* 2. TOPBAR (Bening & Clean) */
+                    .fi-topbar { 
+                        background: transparent !important; 
+                        border-bottom: none !important; 
+                        box-shadow: none !important; 
+                        backdrop-filter: none !important; 
+                    }
+                    .fi-main-ctn:has(.dashboard-banner) { padding-top: 0 !important; }
 
-                    /* Style Widget Pintar (Support Dark Mode) */
+                    /* 3. SIDEBAR (Glassmorphism & Soft UI) */
+                    .fi-sidebar {
+                        background: rgba(255, 255, 255, 0.4) !important;
+                        backdrop-filter: blur(12px) !important;
+                        border-right: none !important;
+                        box-shadow: 4px 0 24px -5px rgba(83, 116, 172, 0.05) !important;
+                    }
+                    .dark .fi-sidebar { background: rgba(30, 41, 59, 0.4) !important; }
+                    
+                    .fi-sidebar-item-button { border-radius: 9999px !important; }
+                    .fi-topbar .fi-input-wrp { border-radius: 9999px !important; } /* Search bar bulat */
+
+                    /* 4. MODAL & TABEL (Rounded corners) */
+                    .fi-ta-ctn, .fi-modal-window, .fi-section {
+                        border-radius: 24px !important;
+                        border: 1px solid rgba(83, 116, 172, 0.1) !important;
+                        box-shadow: 0 10px 30px -5px rgba(83, 116, 172, 0.05) !important;
+                    }
+
+                    /* 5. HIGHLIGHT MENU AKTIF (Light Mode) */
+                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button {
+                        background-color: #eff5fa !important;
+                        border: 1px solid #d1e1f1 !important;
+                        box-shadow: 0 4px 15px -3px rgba(83, 116, 172, 0.15) !important;
+                        font-weight: 700 !important;
+                    }
+                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-icon { color: #5374ac !important; }
+
+                    /* 6. HIGHLIGHT MENU AKTIF (Dark Mode) */
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button {
+                        background-color: rgba(83, 116, 172, 0.15) !important;
+                        border: 1px solid rgba(83, 116, 172, 0.3) !important;
+                        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.4) !important;
+                        font-weight: 700 !important;
+                    }
+
+                    /* 7. WIDGET CUSTOM CARD (Statistik) */
                     .custom-card-stats {
                         background: white !important;
                         border: 1px solid rgba(83, 116, 172, 0.1) !important;
@@ -68,34 +113,14 @@ class TesterPanelProvider extends PanelProvider
                         display: flex !important;
                         align-items: center !important;
                         gap: 1rem !important;
-                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 20px -2px rgba(83, 116, 172, 0.08) !important;
                     }
-
-                    .dark .custom-card-stats {
-                        background: #1e293b !important; /* Warna Slate 800 */
-                        border-color: rgba(255, 255, 255, 0.1) !important;
-                    }
-
-                    /* Warna Teks Stat */
+                    .dark .custom-card-stats { background: #1e293b !important; }
                     .stat-label { color: #6b7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin: 0; }
                     .stat-value { color: #141c33; font-size: 1.25rem; font-weight: 800; margin: 0; }
-
-                    .dark .stat-label { color: #94a3b8 !important; }
                     .dark .stat-value { color: #f8fafc !important; }
-
-                    .icon-bg {
-                        background: #eff5fa;
-                        padding: 0.75rem;
-                        border-radius: 12px;
-                        color: #5374ac;
-                    }
-
-                    .dark .icon-bg {
-                        background: rgba(83, 116, 172, 0.2) !important;
-                        color: #8bafd0 !important;
-                    }
-
-                    .fi-btn { border-radius: 9999px !important; font-weight: 600 !important; }
+                    .icon-bg { background: #eff5fa; padding: 0.75rem; border-radius: 12px; color: #5374ac; }
+                    .dark .icon-bg { background: rgba(83, 116, 172, 0.2) !important; color: #8bafd0 !important; }
                 </style>
                 "
             )

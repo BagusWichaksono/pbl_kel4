@@ -17,9 +17,9 @@ class PenukaranPoinResource extends Resource
     protected static ?string $model = Withdrawal::class;
 
     protected static ?string $modelLabel = 'Penukaran Poin';
-    protected static ?string $pluralModelLabel = 'Riwayat Penukaran';
+    protected static ?string $pluralModelLabel = 'Penukaran Poin';
+    protected static ?string $navigationLabel = 'Penukaran Poin';
     protected static ?string $navigationIcon = 'heroicon-o-wallet';
-    protected static ?string $navigationLabel = 'Tarik Saldo';
 
     public static function getEloquentQuery(): Builder
     {

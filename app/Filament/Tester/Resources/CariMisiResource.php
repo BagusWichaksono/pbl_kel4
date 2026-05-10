@@ -58,11 +58,16 @@ class CariMisiResource extends Resource
                             ->icon('heroicon-o-device-phone-mobile')
                             ->badge()
                             ->color('info'),
-                            
+
                         Tables\Columns\TextColumn::make('testers_count')
                             ->formatStateUsing(fn ($state, $record) => new HtmlString("<span class='text-sm font-medium text-gray-500'>{$state} / {$record->max_testers} Tester Terisi</span>")),
-                    ])->space(2)->extraAttributes(['class' => 'p-4']),
-                ]),
+                            ])->space(2)->extraAttributes(['class' => 'p-4']),
+
+                        Tables\Columns\TextColumn::make('info')
+                            ->default('Link akses akan dikirim ke email anda oleh Google Play Console setelah kuota terpenuhi.')
+                            ->color('gray')
+                            ->size('xs')
+                        ]),
             ])
             ->filters([
                 //
