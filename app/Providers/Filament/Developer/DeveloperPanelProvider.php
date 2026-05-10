@@ -137,11 +137,8 @@ class DeveloperPanelProvider extends PanelProvider
                         box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5) !important;
                     }
 
-                    /* ========================================= */
-
                     .fi-topbar .fi-input-wrp { border-radius: 9999px !important; }
 
-                    /* 4. MODAL & TABEL (Rounded corners) */
                     .fi-ta-ctn, .fi-modal-window, .fi-section {
                         border-radius: 24px !important;
                         border: 1px solid rgba(83, 116, 172, 0.1) !important;
@@ -170,7 +167,7 @@ class DeveloperPanelProvider extends PanelProvider
                         font-weight: 700 !important;
                     }
 
-                    /* 7. WIDGET CUSTOM CARD STATS */
+                    /* WIDGET CUSTOM CARD STATS */
                     .custom-card-stats {
                         background: white !important;
                         border: 1px solid rgba(83, 116, 172, 0.1) !important;
@@ -194,10 +191,10 @@ class DeveloperPanelProvider extends PanelProvider
             ->renderHook(
                 \Filament\View\PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
                 function () {
-                    if (request()->routeIs('filament.developer.pages.dashboard')) {
+                    if (request()->routeIs('filament.developer.pages.dashboard')) { // Pastikan route-nya sesuai (filament.developer)
                         /** @var \App\Models\User|null $user */
                         $user = Auth::user();
-                        $userName = $user?->name ?? 'Admin';
+                        $userName = $user?->name ?? 'Developer';
 
                         $hour = now()->timezone('Asia/Jakarta')->format('H');
                         $greeting = match(true) {
@@ -207,18 +204,45 @@ class DeveloperPanelProvider extends PanelProvider
                             default => 'Selamat Malam',
                         };
 
+                        // Link dinamis untuk Developer (Sesuaikan dengan nama resource dev kamu nanti)
+                        $urlAddApp = "#"; // Misal: AppResource::getUrl('create')
+                        $urlHistory = "#"; // Misal: TransactionResource::getUrl('index')
+
                         return new HtmlString("
                             <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
                                 <div style='background: linear-gradient(135deg, #141c33 0%, #2f456f 50%, #5374ac 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(20,28,51,0.4);'>
                                     <div style='position: relative; z-index: 10;'>
                                         <h2 style='font-size: 2.25rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;'>{$greeting}, {$userName}!</h2>
-                                        <p style='margin-top: 0.75rem; color: #cbdcf0; max-width: 550px; font-size: 1.125rem; line-height: 1.6;'>Pusat Kendali Aplikasi. Pastikan semua pembayaran dan antrean aplikasi developer tervalidasi dengan baik hari ini.</p>
+                                        <p style='margin-top: 0.75rem; color: #cbdcf0; max-width: 550px; font-size: 1.125rem; line-height: 1.6;'>
+                                            Wujudkan aplikasi impianmu. Pantau progres verifikasi, kelola pengujian, dan siapkan aplikasimu untuk meluncur ke tangan pengguna.
+                                        </p>
                                     </div>
                                     <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px);'></div>
                                     <div style='position: absolute; left: 60%; bottom: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.02); border-radius: 50%; filter: blur(30px);'></div>
                                 </div>
 
                                 <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;'>
+                                    
+                                    <a href='{$urlAddApp}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                        <div class='icon-bg'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 4.5v15m7.5-7.5h-15' /></svg>
+                                        </div>
+                                        <div>
+                                            <p class='stat-label'>Mulai Proyek</p>
+                                            <p class='stat-value' style='font-size: 1.1rem;'>Daftarkan Aplikasi Baru</p>
+                                        </div>
+                                    </a>
+
+                                    <a href='{$urlHistory}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                        <div class='icon-bg'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M9 12h3.75M9 15h3.375M9 18h3.375m1.875-12h7.5c.621 0 1.125.504 1.125 1.125v13.5c0 .621-.504 1.125-1.125 1.125h-7.5c-.621 0-1.125-.504-1.125-1.125V7.125c0-.621.504-1.125 1.125-1.125zm-8.25 1.5H5.25A2.25 2.25 0 003 3.75v16.5a2.25 2.25 0 002.25 2.25h13.5a2.25 2.25 0 002.25-2.25V14.25' /></svg>
+                                        </div>
+                                        <div>
+                                            <p class='stat-label'>Cek Status</p>
+                                            <p class='stat-value' style='font-size: 1.1rem;'>Riwayat & Progres Testing</p>
+                                        </div>
+                                    </a>
+
                                 </div>
                             </div>
                         ");
