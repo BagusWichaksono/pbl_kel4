@@ -86,27 +86,33 @@
             <p class="text-winter-700/80 text-sm font-medium mt-3">Mulai pengujianmu hari ini</p>
         </div>
 
-        <form action="/register" method="POST" class="space-y-4">
+        <form action="/register" method="POST" class="space-y-4" novalidate>
             @csrf
 
             <div>
                 <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Nama</label>
                 <input type="text" name="name" placeholder="Masukkan nama" required value="{{ old('name') }}"
+                    pattern="^[a-zA-Z0-9\s]+$" title="Nama tidak boleh menggunakan simbol (hanya huruf, angka, dan spasi)"
                     class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium">
+                @error('name')
+                    <p class="text-rose-500 text-[10px] mt-1.5 ml-1 font-bold">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Email</label>
                 <input type="email" name="email" placeholder="nama@gmail.com" required value="{{ old('email') }}"
                     class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium">
+                @error('email')
+                    <p class="text-rose-500 text-[10px] mt-1.5 ml-1 font-bold">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="pt-2">
                 <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-3 text-center">Daftar Sebagai</label>
                 <div class="grid grid-cols-2 gap-4">
-
                     <label class="relative block cursor-pointer group">
-                        <input type="radio" name="role" value="developer" class="peer sr-only" required>
+                        <input type="radio" name="role" value="developer" class="peer sr-only" required {{ old('role') == 'developer' ? 'checked' : '' }}>
                         <div class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-winter-300/20 bg-white transition-all peer-checked:border-winter-500 peer-checked:bg-winter-50 peer-checked:ring-4 peer-checked:ring-winter-500/10 hover:border-winter-300 hover:shadow-md">
                             <div class="w-10 h-10 bg-winter-50 rounded-xl flex items-center justify-center text-winter-500 group-hover:scale-110 transition-transform peer-checked:bg-winter-500 peer-checked:text-white mb-2">
                                 <i class="ph-fill ph-code text-xl"></i>
@@ -116,7 +122,7 @@
                     </label>
 
                     <label class="relative block cursor-pointer group">
-                        <input type="radio" name="role" value="tester" class="peer sr-only" required>
+                        <input type="radio" name="role" value="tester" class="peer sr-only" required {{ old('role') == 'tester' ? 'checked' : '' }}>
                         <div class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-winter-300/20 bg-white transition-all peer-checked:border-winter-500 peer-checked:bg-winter-50 peer-checked:ring-4 peer-checked:ring-winter-500/10 hover:border-winter-300 hover:shadow-md text-center">
                             <div class="w-10 h-10 bg-winter-50 rounded-xl flex items-center justify-center text-winter-500 group-hover:scale-110 transition-transform peer-checked:bg-winter-500 peer-checked:text-white mb-2">
                                 <i class="ph-fill ph-device-mobile text-xl"></i>
@@ -124,20 +130,36 @@
                             <h4 class="text-xs font-bold text-winter-900">Tester</h4>
                         </div>
                     </label>
-
                 </div>
+                @error('role')
+                    <p class="text-rose-500 text-[10px] mt-1.5 font-bold text-center">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="space-y-4 pt-2">
-                <div class="group">
+                <div class="group relative">
                     <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Kata Sandi</label>
-                    <input type="password" name="password" placeholder="•••••" required
-                        class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all">
+                    <div class="relative">
+                        <input id="reg-password" type="password" name="password" placeholder="••••••••" required minlength="8" title="Password minimal 8 karakter"
+                            class="w-full pl-5 pr-12 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all">
+                        <button type="button" onclick="togglePassword('reg-password', 'eye-icon-reg')" class="absolute right-4 top-1/2 -translate-y-1/2 text-winter-400 hover:text-winter-700 transition-colors focus:outline-none">
+                            <i id="eye-icon-reg" class="ph-bold ph-eye-closed text-xl"></i>
+                        </button>
+                    </div>
+                    @error('password')
+                        <p class="text-rose-500 text-[10px] mt-1.5 ml-1 font-bold">{{ $message }}</p>
+                    @enderror
                 </div>
-                <div class="group">
+
+                <div class="group relative">
                     <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-1.5">Konfirmasi Kata Sandi</label>
-                    <input type="password" name="password_confirmation" placeholder="•••••" required
-                        class="w-full px-5 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all">
+                    <div class="relative">
+                        <input id="reg-password-confirm" type="password" name="password_confirmation" placeholder="••••••••" required minlength="8"
+                            class="w-full pl-5 pr-12 py-3 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all">
+                        <button type="button" onclick="togglePassword('reg-password-confirm', 'eye-icon-confirm')" class="absolute right-4 top-1/2 -translate-y-1/2 text-winter-400 hover:text-winter-700 transition-colors focus:outline-none">
+                            <i id="eye-icon-confirm" class="ph-bold ph-eye-closed text-xl"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -152,15 +174,66 @@
     </div>
 
     <script>
+        // 1. LOGIKA SAAT HALAMAN DIMUAT (Restore Data & Fade In)
         window.addEventListener('DOMContentLoaded', () => {
+            // Efek Fade In (Bawaan kamu)
             requestAnimationFrame(() => {
-                document.getElementById('page-content').classList.remove('opacity-0');
+                const page = document.getElementById('page-content');
+                if(page) page.classList.remove('opacity-0');
+            });
+
+            // Jalankan fungsi restore data
+            restoreFormData();
+        });
+
+        // 2. LOGIKA AUTO-SAVE KE LOCALSTORAGE
+        // Ambil semua input kecuali password (demi keamanan)
+        const inputsToSave = document.querySelectorAll('input[name="name"], input[name="email"]');
+        const roleRadios = document.querySelectorAll('input[name="role"]');
+
+        // Simpan Nama & Email tiap kali ada perubahan
+        inputsToSave.forEach(input => {
+            input.addEventListener('input', () => {
+                localStorage.setItem('reg_' + input.name, input.value);
             });
         });
 
+        // Simpan Pilihan Role (Developer/Tester)
+        roleRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                localStorage.setItem('reg_role', radio.value);
+            });
+        });
+
+        // 3. FUNGSI UNTUK MENARIK DATA (RESTORE) SETELAH REFRESH
+        function restoreFormData() {
+            inputsToSave.forEach(input => {
+                const savedValue = localStorage.getItem('reg_' + input.name);
+                if (savedValue) input.value = savedValue;
+            });
+
+            const savedRole = localStorage.getItem('reg_role');
+            if (savedRole) {
+                const targetRadio = document.querySelector(`input[name="role"][value="${savedRole}"]`);
+                if (targetRadio) targetRadio.checked = true;
+            }
+        }
+
+        // 4. BERSIHKAN PENYIMPANAN SAAT FORM BERHASIL DI-SUBMIT
+        const registrationForm = document.querySelector('form');
+        if (registrationForm) {
+            registrationForm.addEventListener('submit', () => {
+                localStorage.removeItem('reg_name');
+                localStorage.removeItem('reg_email');
+                localStorage.removeItem('reg_role');
+            });
+        }
+
+        // 5. NAVIGASI SMOOTH (Bawaan kamu - Hijack Link)
         document.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', function(e) {
-                if (this.hostname === window.location.hostname && this.getAttribute('href') !== '#' && !this.getAttribute('href').startsWith('#') && this.target !== '_blank') {
+                const href = this.getAttribute('href');
+                if (this.hostname === window.location.hostname && href !== '#' && !href.startsWith('#') && this.target !== '_blank') {
                     e.preventDefault(); 
                     let destination = this.href;
                     document.getElementById('page-content').classList.add('opacity-0');
@@ -170,6 +243,20 @@
                 }
             });
         });
+
+        // 6. FUNGSI TOGGLE PASSWORD (Bawaan kamu - Poles dikit pakai replace)
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('ph-eye-closed', 'ph-eye'); // Lebih ringkas pakai replace
+            } else {
+                input.type = 'password';
+                icon.classList.replace('ph-eye', 'ph-eye-closed');
+            }
+        }
     </script>
 </body>
 

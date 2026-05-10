@@ -60,7 +60,17 @@ class TestingReportResource extends Resource
                         'rejected' => 'danger',
                         default => 'gray',
                     }),
-            ]);
+            ])
+            ->emptyStateIcon('heroicon-o-bug-ant') // Ikon bug
+            ->emptyStateHeading('Belum Ada Laporan Bug')
+            ->emptyStateDescription('Semua sistem tampaknya berjalan lancar. Jika kamu menemukan masalah, laporkan di sini.')
+            ->emptyStateActions([
+                // Kasih tombol buat bikin laporan langsung dari situ
+                \Filament\Tables\Actions\CreateAction::make()
+                    ->label('Buat Laporan Sekarang')
+                    ->icon('heroicon-m-plus')
+                    ->button(),
+        ]);;
     }
 
     public static function getEloquentQuery(): Builder

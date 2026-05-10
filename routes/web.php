@@ -36,6 +36,7 @@ Route::get('/register', function () {
     return view('register');
 });
 
+// ─── PROSES LOGIN ───
 Route::post('/login', function (Request $request) {
     $credentials = $request->validate([
         'email'    => 'required|email',
@@ -63,17 +64,47 @@ Route::post('/login', function (Request $request) {
     ])->onlyInput('email');
 });
 
-// RUTE PROSES REGISTER (SIMPAN KE DATABASE)
-Route::post('/register', function (Illuminate\Http\Request $request) {
-    // 1. Validasi data yang masuk
+// ─── PROSES REGISTER (SUPER KETAT) ───
+Route::post('/register', function (Request $request) {
     $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email', // Pastikan email belum dipakai
-        'password' => 'required|min:5',
-        'role' => 'required'
+        'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9\s]+$/'],
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8|confirmed', 
+        'role' => 'required|in:developer,tester'
+    ], [
+        // PESAN CUSTOM BAHASA INDONESIA
+        'name.required' => 'Nama wajib diisi.',
+        'name.regex' => 'Nama tidak boleh menggunakan simbol.',
+        'email.required' => 'Email wajib diisi.',
+        'email.email' => 'Format email salah.',
+        'email.unique' => 'Email sudah terdaftar, silakan gunakan email lain.',
+        'password.required' => 'Kata sandi wajib diisi.',
+        'password.min' => 'Kata sandi minimal 8 karakter.',
+        'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+        'role.required' => 'Pilih salah satu peran.',
+    ]);
+    
+    // 1. Validasi data dengan keamanan tambahan (Anti Simbol & Min 8 Karakter)
+    $validated = $request->validate([
+        'name' => [
+            'required', 
+            'string', 
+            'max:255', 
+            'regex:/^[a-zA-Z0-9\s]+$/' // SATPAM ANTI SIMBOL
+        ],
+        'email' => 'required|email|unique:users,email',
+        // Harus ada password_confirmation di form, minimal 8 karakter
+        'password' => 'required|min:8|confirmed', 
+        'role' => 'required|in:developer,tester'
+    ], [
+        // Pesan error custom pakai bahasa Indonesia
+        'name.regex' => 'Nama tidak boleh menggunakan simbol (hanya huruf, angka, dan spasi).',
+        'password.min' => 'Kata sandi terlalu pendek, minimal 8 karakter.',
+        'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+        'email.unique' => 'Email ini sudah terdaftar, silakan gunakan email lain.',
     ]);
 
-    // 2. Simpan ke database dengan password yang sudah di-Hash
+    // 2. Simpan ke database
     $user = User::create([
         'name' => $validated['name'],
         'email' => $validated['email'],
@@ -81,7 +112,7 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         'role' => $validated['role']
     ]);
 
-    // Jika user adalah tester, otomatis buat tester_profile
+    // 3. Jika user adalah tester, otomatis buat tester_profile
     if ($user->role === 'tester') {
         $user->testerProfile()->create([
             'e_wallet_provider' => null,
@@ -89,6 +120,14 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         ]);
     }
 
-    // 3. Setelah berhasil daftar, otomatis ke halaman login dan muncul notif
-    return redirect('/login')->with('success', 'Data Anda telah disimpan! Silahkan login.');
+    // 4. Kembali ke login dengan notif sukses
+    return redirect('/login')->with('success', 'Pendaftaran berhasil! Silakan masuk dengan akun Anda.');
 });
+
+// Tambahan rute untuk Logout biar aman
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect('/login');
+})->name('logout');

@@ -231,7 +231,6 @@
     <section id="tentang" class="py-32 bg-white">
         <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-20 items-center">
             <div class="lg:w-1/2" data-aos="fade-right">
-                <span class="text-xs font-bold uppercase tracking-widest text-winter-500 bg-winter-50 px-4 py-1 rounded-full mb-6 inline-block border border-winter-300/30">Visi & Misi</span>
                 <h2 class="text-4xl lg:text-5xl font-black mb-8 leading-tight">Menjaga Kualitas <br> Ekosistem Digital.</h2>
                 <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback nyata seringkali sulit didapat secara cepat dan akurat.</p>
                 <div class="grid grid-cols-2 gap-8">
@@ -302,7 +301,6 @@
     <section id="fitur" class="py-24 bg-white border-t border-winter-300/20 overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-20" data-aos="fade-up">
-                <span class="text-xs font-bold uppercase tracking-widest text-winter-500 bg-winter-50 px-4 py-1 rounded-full mb-4 inline-block border border-winter-300/30">Value Proposition</span>
                 <h2 class="text-3xl lg:text-5xl font-black text-winter-900 mb-6">Satu Ekosistem, Dua Manfaat.</h2>
                 <p class="text-winter-700/80 max-w-2xl mx-auto text-lg font-medium">Solusi yang dirancang khusus dengan fitur unggulan untuk memenuhi kebutuhan spesifik kedua belah pihak.</p>
             </div>

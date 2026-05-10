@@ -108,9 +108,16 @@ class PenukaranPoinResource extends Resource
                     })
                     ->formatStateUsing(fn (string $state): string => strtoupper($state)),
             ])
-            ->defaultSort('created_at', 'desc')
-            ->actions([
-            ]);
+            ->emptyStateIcon('heroicon-o-wallet') // Ikon dompet
+            ->emptyStateHeading('Belum Ada Riwayat Penarikan')
+            ->emptyStateDescription('Ayo mulai tukar poinmu dengan saldo e-wallet! Klik tombol di bawah untuk membuat penarikan pertama.')
+            ->emptyStateActions([
+                \Filament\Tables\Actions\CreateAction::make()
+                    ->label('Tukar Poin Sekarang')
+                    ->icon('heroicon-m-plus')
+                    ->button(),
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getPages(): array
@@ -118,6 +125,13 @@ class PenukaranPoinResource extends Resource
         return [
             'index' => Pages\ListPenukaranPoins::route('/'),
             'create' => Pages\CreatePenukaranPoin::route('/create'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Tester\Widgets\PenukaranPoinStats::class,
         ];
     }
 }
