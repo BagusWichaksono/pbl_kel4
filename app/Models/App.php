@@ -25,6 +25,7 @@ class App extends Model
         'max_testers',
         'start_date',
         'end_date',
+        'review_screenshot',
     ];
 
     protected $casts = [
