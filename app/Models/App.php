@@ -12,12 +12,13 @@ class App extends Model
 
     protected $table = 'applications';
 
-    // BLOK INI UNTUK MENGIZINKAN SIMPAN DATA
     protected $fillable = [
         'developer_id',
         'title',
         'platform',
-        'url',
+        // 'url' — kolom lama, tidak digunakan lagi di form create.
+        //         Kolom di DB masih ada (nullable) untuk backward-compat,
+        //         tapi input baru tidak mengisinya.
         'description',
         'payment_proof',
         'payment_status',
@@ -25,13 +26,16 @@ class App extends Model
         'max_testers',
         'start_date',
         'end_date',
-        'review_screenshot',
+        // kolom baru: link aplikasi yang dikirim developer ke tester setelah slot penuh
+        'app_url',
     ];
 
     protected $casts = [
         'start_date' => 'date',
-        'end_date' => 'date',
+        'end_date'   => 'date',
     ];
+
+    // ─── Relasi ──────────────────────────────────────────────
 
     public function developer()
     {
@@ -48,6 +52,8 @@ class App extends Model
         return $this->belongsToMany(User::class, 'application_testers', 'application_id', 'tester_id');
     }
 
+    // ─── Helper ──────────────────────────────────────────────
+
     /**
      * Cek apakah jumlah tester sudah mencapai batas maksimal.
      */
@@ -61,7 +67,7 @@ class App extends Model
      */
     public function isTestingActive(): bool
     {
-        if (!$this->start_date || !$this->end_date) {
+        if (! $this->start_date || ! $this->end_date) {
             return false;
         }
 
@@ -73,11 +79,20 @@ class App extends Model
      */
     public function remainingDays(): int
     {
-        if (!$this->end_date) {
+        if (! $this->end_date) {
             return 0;
         }
 
         $remaining = Carbon::now()->diffInDays($this->end_date, false);
+
         return max(0, (int) $remaining);
+    }
+
+    /**
+     * Cek apakah link aplikasi sudah dikirim ke tester.
+     */
+    public function hasAppUrl(): bool
+    {
+        return ! empty($this->app_url);
     }
 }
