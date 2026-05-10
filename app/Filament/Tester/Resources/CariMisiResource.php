@@ -39,34 +39,49 @@ class CariMisiResource extends Resource
             ])
             ->columns([
                 Tables\Columns\Layout\Stack::make([
-                    Tables\Columns\TextColumn::make('title')
-                        ->weight('bold')
-                        ->size('lg')
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('developer.name')
-                        ->icon('heroicon-o-user')
-                        ->color('gray'),
-                    Tables\Columns\TextColumn::make('platform')
-                        ->icon('heroicon-o-device-phone-mobile')
-                        ->badge(),
-                    Tables\Columns\TextColumn::make('testers_count')
-                        ->label('Slot Tester')
-                        ->formatStateUsing(fn ($state, $record) => new HtmlString("<span class='text-sm text-gray-500'>{$state} / {$record->max_testers} Tester Terisi</span>")),
-                ])->space(3),
+                    Tables\Columns\ImageColumn::make('placeholder')
+                        ->defaultImageUrl('https://ui-avatars.com/api/?name=App&background=0D8ABC&color=fff&size=200')
+                        ->height('150px')
+                        ->extraImgAttributes(['class' => 'w-full object-cover rounded-t-xl']),
+                    
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('title')
+                            ->weight('bold')
+                            ->size('lg')
+                            ->searchable(),
+                            
+                        Tables\Columns\TextColumn::make('developer.name')
+                            ->icon('heroicon-o-user')
+                            ->color('gray'),
+                            
+                        Tables\Columns\TextColumn::make('platform')
+                            ->icon('heroicon-o-device-phone-mobile')
+                            ->badge()
+                            ->color('info'),
+                            
+                        Tables\Columns\TextColumn::make('testers_count')
+                            ->formatStateUsing(fn ($state, $record) => new HtmlString("<span class='text-sm font-medium text-gray-500'>{$state} / {$record->max_testers} Tester Terisi</span>")),
+                    ])->space(2)->extraAttributes(['class' => 'p-4']),
+                ]),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\Action::make('daftarMisi')
-                    ->label('Daftar Misi')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('primary')
+                    ->label(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists() ? 'Sudah Diambil' : 'Ambil Misi')
+                    ->icon(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists() ? 'heroicon-o-check-circle' : 'heroicon-o-plus-circle')
+                    ->color(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists() ? 'gray' : 'success')
+                    ->disabled(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists())
+                    ->button()
                     ->requiresConfirmation()
+                    ->modalHeading('Ambil Misi Pengujian')
+                    ->modalDescription('Apakah kamu yakin ingin mengambil misi ini? Kamu harus menyelesaikan instruksi untuk mendapatkan poin.')
                     ->action(function (App $record) {
                         $appId = $record->id;
                         $userId = Auth::id();
 
+                        // Keamanan ganda
                         $isRegistered = ApplicationTester::where('application_id', $appId)
                             ->where('tester_id', $userId)
                             ->exists();
@@ -110,7 +125,8 @@ class CariMisiResource extends Resource
                             ->success()
                             ->send();
                     }),
-            ]);
+            ])
+            ->paginated([9, 18, 36]);
     }
 
     public static function getRelations(): array
