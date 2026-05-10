@@ -79,6 +79,13 @@ class AppResource extends Resource
                                 ->modalCancelAction(false)
                         ])->columnSpanFull(),
 
+                        Forms\Components\FileUpload::make('review_screenshot')
+                            ->label('Bukti Lulus Review Awal')
+                            ->image()
+                            ->directory('review_screenshots')
+                            ->helperText('Upload screenshot bukti aplikasi telah lulus review awal')
+                            ->columnSpanFull(),
+
                         Forms\Components\Select::make('payment_status')
                             ->label('Status Pembayaran')
                             ->options([
