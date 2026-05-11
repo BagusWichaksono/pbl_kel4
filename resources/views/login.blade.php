@@ -77,11 +77,17 @@
                 @enderror
             </div>
             
-            <div class="group">
+            <div class="group relative">
                 <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-2 group-focus-within:text-winter-700 transition-colors">Kata Sandi</label>
-                <input name="password" type="password" placeholder="•••••" required 
-                    class="w-full px-6 py-4 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium shadow-sm">
-            </div>       
+                <div class="relative">
+                    <input id="login-password" name="password" type="password" placeholder="••••••••" required 
+                        class="w-full pl-6 pr-12 py-4 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium shadow-sm">
+                    
+                    <button type="button" onclick="togglePassword('login-password', 'eye-icon-login')" class="absolute right-4 top-1/2 -translate-y-1/2 text-winter-400 hover:text-winter-700 transition-colors focus:outline-none">
+                        <i id="eye-icon-login" class="ph-bold ph-eye-closed text-xl"></i>
+                    </button>
+                </div>
+            </div>
             
             <button type="submit" class="w-full bg-winter-900 text-white py-4 rounded-2xl font-bold hover:bg-winter-700 hover:-translate-y-1 active:scale-95 transition-all shadow-xl shadow-winter-900/20 mt-8">
                 MASUK
@@ -112,6 +118,32 @@
                 }
             });
         });
+
+        // Fungsi untuk toggle password
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('ph-eye-closed');
+                icon.classList.add('ph-eye'); // Ubah ke icon mata terbuka
+            } else {
+                input.type = 'password';
+                icon.classList.remove('ph-eye');
+                icon.classList.add('ph-eye-closed'); // Ubah ke icon mata tertutup
+            }
+        }
+
+        const loginForm = document.querySelector('form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                // Jangan cegah default, biarkan form submit berjalan
+                // Tapi kita picu animasi fade out dulu
+                document.getElementById('page-content').classList.add('opacity-0');
+                document.getElementById('page-content').style.transition = "opacity 0.8s ease-out";
+            });
+        }
     </script>
 </body>
 </html>

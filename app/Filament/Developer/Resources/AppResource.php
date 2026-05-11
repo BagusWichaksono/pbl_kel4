@@ -46,13 +46,6 @@ class AppResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Contoh: Android / Web / iOS'),
-                            
-                        Forms\Components\TextInput::make('url')
-                            ->label('URL / Link Aplikasi')
-                            ->url()
-                            ->required()
-                            ->maxLength(255)
-                            ->placeholder('Contoh: https://play.google.com/...'),
 
                         Forms\Components\Textarea::make('description')
                             ->label('Deskripsi Aplikasi')
