@@ -15,11 +15,15 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $modelLabel = 'Pengguna';
-    protected static ?string $pluralModelLabel = 'Manajemen Pengguna';
+    protected static ?string $modelLabel        = 'Pengguna';
+    protected static ?string $pluralModelLabel  = 'Manajemen Pengguna';
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon  = 'heroicon-o-user-group';
     protected static ?string $navigationLabel = 'Manajemen Pengguna';
+
+    // ─────────────────────────────────────────────────────────
+    //  FORM
+    // ─────────────────────────────────────────────────────────
 
     public static function form(Form $form): Form
     {
@@ -29,19 +33,21 @@ class UserResource extends Resource
                     ->label('Nama')
                     ->required()
                     ->maxLength(255),
+
                 Forms\Components\TextInput::make('email')
                     ->label('Email')
                     ->email()
                     ->required()
                     ->maxLength(255),
+
                 Forms\Components\Select::make('role')
                     ->label('Peran')
                     ->options([
-                        // 'admin' => 'Admin',
                         'developer' => 'Developer',
-                        'tester' => 'Tester',
+                        'tester'    => 'Tester',
                     ])
                     ->required(),
+
                 Forms\Components\TextInput::make('password')
                     ->label('Password')
                     ->password()
@@ -50,40 +56,62 @@ class UserResource extends Resource
             ]);
     }
 
+    // ─────────────────────────────────────────────────────────
+    //  TABLE
+    // ─────────────────────────────────────────────────────────
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama')
-                    ->searchable(),
+                    ->searchable()
+                    ->weight('bold'),
+
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
-                    ->searchable(),
+                    ->searchable()
+                    ->color('gray'),
+
                 Tables\Columns\TextColumn::make('role')
                     ->label('Peran')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'super_admin' => 'danger',
-                        'admin' => 'warning',
                         'developer' => 'info',
-                        'tester' => 'success',
-                        default => 'gray',
+                        'tester'    => 'success',
+                        default     => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'developer' => 'Developer',
+                        'tester'    => 'Tester',
+                        default     => $state,
                     }),
+
+                // Kolom khusus Developer: jumlah aplikasi yang pernah didaftarkan
+                Tables\Columns\TextColumn::make('applications_count')
+                    ->label('Aplikasi')
+                    ->counts('applications')
+                    ->badge()
+                    ->color('info')
+                    ->tooltip('Jumlah aplikasi yang didaftarkan')
+                    ->visibleOn('developer'), // hanya tampil di tab developer (dikontrol via tab)
+
+                // Kolom khusus Tester: poin yang dimiliki
+                Tables\Columns\TextColumn::make('testerProfile.points')
+                    ->label('Poin')
+                    ->badge()
+                    ->color('success')
+                    ->default('0')
+                    ->tooltip('Total poin tester'),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Terdaftar')
                     ->dateTime('d M Y')
                     ->sortable(),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('role')
-                    ->label('Peran')
-                    ->options([
-                        'admin' => 'Admin',
-                        'developer' => 'Developer',
-                        'tester' => 'Tester',
-                    ]),
-            ])
+            ->defaultSort('created_at', 'desc')
+            ->filters([])  // filter role dihapus — sudah digantikan tab
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -97,23 +125,21 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
+            'index'  => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'edit'   => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 
+    // Hanya tampilkan developer dan tester (bukan admin/super_admin)
     public static function getEloquentQuery(): Builder
     {
-        // Di menu ini, hanya tampilkan Developer dan Tester saja
         return parent::getEloquentQuery()->whereIn('role', ['developer', 'tester']);
     }
 }

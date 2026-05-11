@@ -8,6 +8,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\App;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -46,6 +47,11 @@ class User extends Authenticatable implements FilamentUser
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(App::class, 'developer_id');
     }
 
     public function testerProfile()
