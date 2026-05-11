@@ -26,6 +26,27 @@ class AppResource extends Resource
     protected static ?string $navigationGroup = 'Validasi & Keuangan';
     protected static ?int $navigationSort = 2;
 
+    // Badge di sidebar — tampilkan jumlah aplikasi pending
+    public static function getNavigationBadge(): ?string
+    {
+        $count = App::where('payment_status', 'pending')->count();
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        $adaLama = App::where('payment_status', 'pending')
+            ->where('created_at', '<=', now()->subDays(3))
+            ->exists();
+        return $adaLama ? 'danger' : 'warning';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        $count = App::where('payment_status', 'pending')->count();
+        return $count > 0 ? "{$count} aplikasi menunggu verifikasi" : null;
+    }
+
     public static function canViewAny(): bool
     {
         /** @var \App\Models\User|null $user */
@@ -140,7 +161,7 @@ class AppResource extends Resource
                             ]);
                             Notification::make()->title('Aplikasi & Pembayaran Disetujui')->success()->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('reject')
                         ->label('Tolak Aplikasi')
                         ->icon('heroicon-o-x-circle')

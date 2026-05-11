@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Auth;
+use App\Models\App;
 use Illuminate\Support\HtmlString;
 
 class AdminPanelProvider extends PanelProvider
@@ -41,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->font('Poppins')
-            ->sidebarCollapsibleOnDesktop() 
+            ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -65,11 +66,11 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->authGuard('web')
-            
+
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => "
-                <style> 
+                <style>
                     /* 1. BACKGROUND & LAYOUT (Vibe Landing Page) */
                     body, .fi-layout {
                         background: linear-gradient(180deg, #e4eff8 0%, #ffffff 100%) !important;
@@ -81,11 +82,11 @@ class AdminPanelProvider extends PanelProvider
                     .fi-main { background: transparent !important; }
 
                     /* 2. TOPBAR (Bening & Clean) */
-                    .fi-topbar { 
-                        background: transparent !important; 
-                        border-bottom: none !important; 
-                        box-shadow: none !important; 
-                        backdrop-filter: none !important; 
+                    .fi-topbar {
+                        background: transparent !important;
+                        border-bottom: none !important;
+                        box-shadow: none !important;
+                        backdrop-filter: none !important;
                     }
 
                     /* 3. SIDEBAR (Glassmorphism) */
@@ -98,8 +99,8 @@ class AdminPanelProvider extends PanelProvider
                     .dark .fi-sidebar { background: rgba(30, 41, 59, 0.4) !important; }
 
                     /* Transisi dasar dengan efek 'Pegas' (Bouncy) */
-                    .fi-sidebar-item-button, .custom-card-stats { 
-                        border-radius: 9999px !important; 
+                    .fi-sidebar-item-button, .custom-card-stats {
+                        border-radius: 9999px !important;
                         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
                         transform-origin: center center !important;
                     }
@@ -119,7 +120,7 @@ class AdminPanelProvider extends PanelProvider
                     /* Hover Sidebar Light Mode */
                     html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
                         background-color: rgba(83, 116, 172, 0.08) !important;
-                        transform: translateY(-2px) scale(1.01) !important; 
+                        transform: translateY(-2px) scale(1.01) !important;
                         box-shadow: 0 8px 20px -4px rgba(83, 116, 172, 0.15) !important;
                     }
 
@@ -212,6 +213,63 @@ class AdminPanelProvider extends PanelProvider
                         $urlApp = \App\Filament\Admin\Resources\AppResource::getUrl('index');
                         $urlPayment = \App\Filament\Admin\Resources\TransactionResource::getUrl('index');
 
+                        // Hitung pending untuk banner notifikasi
+                        $pendingApps = \App\Models\App::with('developer')
+                            ->where('payment_status', 'pending')
+                            ->orderBy('created_at', 'asc')
+                            ->get();
+                        $pendingCount = $pendingApps->count();
+
+                        // Bangun baris daftar pending
+                        $pendingRows = '';
+                        foreach ($pendingApps as $app) {
+                            $hariMenunggu = $app->created_at->diffInDays(now());
+                            $isLama       = $hariMenunggu >= 3;
+                            $bgRow  = $isLama ? 'background:#fff5f5;border:1px solid #fecaca;' : 'background:#fffbeb;border:1px solid #fde68a;';
+                            $dotClr = $isLama ? '#ef4444' : '#f59e0b';
+                            $badgeBg = $isLama ? 'background:#fee2e2;color:#b91c1c;' : 'background:#fef3c7;color:#92400e;';
+                            $hariLabel = $hariMenunggu === 0 ? 'Baru masuk' : "{$hariMenunggu} hari lalu";
+                            $namaApp = htmlspecialchars($app->title);
+                            $namaDev = htmlspecialchars($app->developer->name ?? '-');
+                            $pendingRows .= "
+                                <div style='{$bgRow} border-radius:12px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;'>
+                                    <div style='display:flex; align-items:center; gap:10px; min-width:0;'>
+                                        <div style='width:8px;height:8px;border-radius:50%;background:{$dotClr};flex-shrink:0;'></div>
+                                        <div style='min-width:0;'>
+                                            <p style='margin:0;font-weight:600;font-size:0.875rem;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>{$namaApp}</p>
+                                            <p style='margin:0;font-size:0.75rem;color:#64748b;'>Developer: {$namaDev}</p>
+                                        </div>
+                                    </div>
+                                    <div style='display:flex;align-items:center;gap:8px;flex-shrink:0;'>
+                                        <span style='{$badgeBg} font-size:0.7rem;font-weight:700;padding:3px 8px;border-radius:999px;'>{$hariLabel}</span>
+                                        <a href='{$urlApp}' style='font-size:0.75rem;padding:4px 10px;border-radius:8px;background:white;border:1px solid #d1d5db;color:#374151;text-decoration:none;font-weight:600;'>Review</a>
+                                    </div>
+                                </div>";
+                        }
+
+                        $bannerPending = '';
+                        if ($pendingCount > 0) {
+                            $badgeLabel  = $pendingCount === 1 ? '1 aplikasi' : "{$pendingCount} aplikasi";
+                            $adaLama     = $pendingApps->first()?->created_at->diffInDays(now()) >= 3;
+                            $bannerColor = $adaLama ? 'linear-gradient(135deg,#991b1b,#dc2626)' : 'linear-gradient(135deg,#92400e,#d97706)';
+                            $bannerPending = "
+                                <div style='border-radius:20px;overflow:hidden;box-shadow:0 8px 24px -4px rgba(0,0,0,0.12);'>
+                                    <div style='background:{$bannerColor};padding:14px 20px;display:flex;align-items:center;justify-content:space-between;'>
+                                        <div style='display:flex;align-items:center;gap:10px;'>
+                                            <span style='font-size:1.25rem;'>🔔</span>
+                                            <div>
+                                                <p style='margin:0;font-weight:800;color:white;font-size:0.95rem;'>Ada {$badgeLabel} menunggu persetujuan!</p>
+                                                <p style='margin:0;color:rgba(255,255,255,0.8);font-size:0.78rem;'>Segera tinjau bukti pembayaran dan MVP mereka.</p>
+                                            </div>
+                                        </div>
+                                        <a href='{$urlApp}' style='background:white;color:#1e293b;font-weight:700;font-size:0.8rem;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;'>Lihat Semua →</a>
+                                    </div>
+                                    <div style='background:#fafafa;padding:12px 16px;display:flex;flex-direction:column;gap:8px;'>
+                                        {$pendingRows}
+                                    </div>
+                                </div>";
+                        }
+
                         return new HtmlString("
                             <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
                                 <div style='background: linear-gradient(135deg, #141c33 0%, #2f456f 50%, #5374ac 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(20,28,51,0.4);'>
@@ -224,7 +282,7 @@ class AdminPanelProvider extends PanelProvider
                                 </div>
 
                                 <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;'>
-                                    
+
                                     <a href='{$urlPayment}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
                                         <div class='icon-bg'>
                                             <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z' /></svg>
@@ -246,6 +304,7 @@ class AdminPanelProvider extends PanelProvider
                                     </a>
 
                                 </div>
+                                {$bannerPending}
                             </div>
                         ");
                     }
