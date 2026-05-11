@@ -26,6 +26,27 @@ class AppResource extends Resource
     protected static ?string $navigationGroup = 'Validasi & Keuangan';
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = App::where('payment_status', 'pending')->count();
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        $adaLama = App::where('payment_status', 'pending')
+            ->where('created_at', '<=', now()->subDays(3))
+            ->exists();
+        return $adaLama ? 'danger' : 'warning';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        $count = App::where('payment_status', 'pending')->count();
+        return $count > 0 ? "{$count} aplikasi menunggu verifikasi" : null;
+    }
+
+
     public static function canViewAny(): bool
     {
         /** @var \App\Models\User|null $user */
@@ -96,6 +117,14 @@ class AppResource extends Resource
                     ->label('Tanggal')
                     ->dateTime('d M Y')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('rejection_reason')
+                    ->label('Alasan Penolakan')
+                    ->wrap()
+                    ->color('danger')
+                    ->icon('heroicon-o-exclamation-circle')
+                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('payment_status')
@@ -129,30 +158,46 @@ class AppResource extends Resource
 
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('approve')
-                        ->label('Terima Aplikasi')
+                        ->label('Approve Semuanya')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
                         ->action(function (App $record) {
                             $record->update([
                                 'payment_status' => 'valid',
-                                'testing_status' => 'open'
+                                'testing_status' => 'approved'
                             ]);
                             Notification::make()->title('Aplikasi & Pembayaran Disetujui')->success()->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('reject')
                         ->label('Tolak Aplikasi')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
-                        ->requiresConfirmation()
-                        ->action(function (App $record) {
+                        ->modalHeading('Tolak Aplikasi')
+                        ->modalDescription('Berikan alasan penolakan yang jelas agar developer dapat memperbaikinya.')
+                        ->modalWidth('lg')
+                        ->form([
+                            \Filament\Forms\Components\Textarea::make('rejection_reason')
+                                ->label('Alasan Penolakan')
+                                ->placeholder('Contoh: Bukti pembayaran tidak jelas / tidak sesuai nominal / gambar buram...')
+                                ->required()
+                                ->rows(4)
+                                ->maxLength(1000)
+                                ->helperText('Alasan ini akan disimpan dan dapat dilihat kembali oleh admin.'),
+                        ])
+                        ->action(function (App $record, array $data) {
                             $record->update([
-                                'payment_status' => 'invalid',
-                                'testing_status' => 'rejected'
+                                'payment_status'   => 'invalid',
+                                'rejection_reason' => $data['rejection_reason'],
                             ]);
-                            Notification::make()->title('Aplikasi Ditolak')->danger()->send();
-                        }),
+                            Notification::make()
+                                ->title('Aplikasi Ditolak')
+                                ->body('Alasan: ' . $data['rejection_reason'])
+                                ->danger()
+                                ->send();
+                        })
+                        ->visible(fn (App $record) => $record->payment_status !== 'invalid'),
                 ])->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([

@@ -26,6 +26,7 @@ class App extends Model
         'start_date',
         'end_date',
         'review_screenshot',
+        'rejection_reason', // ← tambahkan ini
     ];
 
     protected $casts = [
