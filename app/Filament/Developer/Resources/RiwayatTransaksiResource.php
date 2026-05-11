@@ -59,12 +59,7 @@ class RiwayatTransaksiResource extends Resource
                         'valid'   => '✅ Disetujui',
                         'invalid' => '❌ Ditolak',
                         default   => '⏳ Menunggu',
-                    })
-                    ->description(fn (App $record): string =>
-                        $record->payment_status === 'invalid' && ! empty($record->rejection_reason)
-                            ? '⚠️ ' . \Illuminate\Support\Str::limit($record->rejection_reason, 40)
-                            : ''
-                    ),
+                    }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Upload')
