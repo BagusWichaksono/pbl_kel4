@@ -136,7 +136,7 @@ class AppResource extends Resource
                         ->action(function (App $record) {
                             $record->update([
                                 'payment_status' => 'valid',
-                                'testing_status' => 'approved'
+                                'testing_status' => 'open'
                             ]);
                             Notification::make()->title('Aplikasi & Pembayaran Disetujui')->success()->send();
                         }),
