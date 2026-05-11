@@ -3,7 +3,6 @@
 namespace App\Filament\Developer\Resources;
 
 use App\Filament\Developer\Resources\RiwayatTransaksiResource\Pages;
-use App\Filament\Developer\Resources\RiwayatTransaksiResource\Pages\ListRiwayatTransaksis;
 use App\Models\App;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -47,7 +46,7 @@ class RiwayatTransaksiResource extends Resource
                     ->label('Platform')
                     ->badge(),
 
-                // Status pembayaran
+                // Status pembayaran — jika ditolak tampilkan cuplikan alasan di bawah badge
                 Tables\Columns\TextColumn::make('payment_status')
                     ->label('Status Pembayaran')
                     ->badge()
@@ -60,18 +59,12 @@ class RiwayatTransaksiResource extends Resource
                         'valid'   => '✅ Disetujui',
                         'invalid' => '❌ Ditolak',
                         default   => '⏳ Menunggu',
-                    }),
-
-                // Indikator ada penolakan
-                Tables\Columns\IconColumn::make('rejection_reason')
-                    ->label('Ada Penolakan')
-                    ->icon(fn ($state): string => $state
-                        ? 'heroicon-o-exclamation-circle'
-                        : 'heroicon-o-check-circle')
-                    ->color(fn ($state): string => $state ? 'danger' : 'gray')
-                    ->tooltip(fn ($state): string => $state
-                        ? '⚠️ Ada alasan penolakan dari admin'
-                        : 'Tidak ada penolakan'),
+                    })
+                    ->description(fn (App $record): string =>
+                        $record->payment_status === 'invalid' && ! empty($record->rejection_reason)
+                            ? '⚠️ ' . \Illuminate\Support\Str::limit($record->rejection_reason, 40)
+                            : ''
+                    ),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Upload')
