@@ -112,6 +112,13 @@ class AppResource extends Resource
                     ->label('Nama Aplikasi')
                     ->searchable()
                     ->weight('bold'),
+
+                Tables\Columns\TextColumn::make('testers_count')
+                    ->label('Tester')
+                    ->counts('testers')
+                    ->formatStateUsing(fn ($state, $record) => $state . ' / ' . $record->max_testers)
+                    ->badge()
+                    ->color('info'),
                     
                 Tables\Columns\TextColumn::make('payment_status')
                     ->label('Status Pembayaran')
@@ -132,6 +139,12 @@ class AppResource extends Resource
                         'completed' => 'success',
                         default => 'gray',
                     }),
+
+                Tables\Columns\TextColumn::make('start_date')
+                    ->label('Mulai Testing')
+                    ->date('d M Y')
+                    ->placeholder('Belum dimulai')
+                    ->sortable(),
                     
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Upload')
@@ -139,15 +152,14 @@ class AppResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                // // Filter berdasarkan status pengujian
-                // Tables\Filters\SelectFilter::make('testing_status')
-                //     ->options([
-                //         'open' => 'Terbuka',
-                //         'in_progress' => 'Sedang Dites',
-                //         'completed' => 'Selesai',
-                //     ]),
+                //
             ])
             ->actions([
+                Tables\Actions\Action::make('view_testers')
+                    ->label('Lihat Tester')
+                    ->icon('heroicon-o-users')
+                    ->color('info')
+                    ->url(fn (App $record): string => AppResource::getUrl('view-testers', ['record' => $record])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -168,9 +180,10 @@ class AppResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListApps::route('/'),
-            'create' => Pages\CreateApp::route('/create'),
-            'edit' => Pages\EditApp::route('/{record}/edit'),
+            'index'        => Pages\ListApps::route('/'),
+            'create'       => Pages\CreateApp::route('/create'),
+            'edit'         => Pages\EditApp::route('/{record}/edit'),
+            'view-testers' => Pages\ViewAppTesters::route('/{record}/testers'),
         ];
     }
 
