@@ -100,6 +100,15 @@ class AppResource extends Resource
                             ->default('open')
                             ->disabled()
                             ->dehydrated(false),
+                        Forms\Components\Select::make('testerUsers')
+                            ->multiple()
+                            ->relationship(name: 'testerUsers', titleAttribute: 'name', modifyQueryUsing: fn (Builder $query) => $query->where('role', 'tester'))
+                            ->label('Pilih Tester (Khusus VIP)')
+                            ->visible(fn () => Auth::user()->is_vip)
+                            ->columnSpanFull()
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Sebagai pengguna VIP, Anda dapat memilih tester spesifik untuk aplikasi Anda.'),
                     ])->columns(2),
             ]);
     }

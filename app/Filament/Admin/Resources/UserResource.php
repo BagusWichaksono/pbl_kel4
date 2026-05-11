@@ -47,6 +47,10 @@ class UserResource extends Resource
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create'),
+                Forms\Components\Toggle::make('is_vip')
+                    ->label('Status VIP')
+                    ->helperText('Hanya berlaku untuk Developer.')
+                    ->visible(fn (Forms\Get $get) => $get('role') === 'developer'),
             ]);
     }
 
@@ -74,6 +78,11 @@ class UserResource extends Resource
                     ->label('Terdaftar')
                     ->dateTime('d M Y')
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_vip')
+                    ->label('VIP')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-circle'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('role')

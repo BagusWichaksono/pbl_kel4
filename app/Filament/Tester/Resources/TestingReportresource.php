@@ -29,7 +29,7 @@ class TestingReportResource extends Resource
                         Forms\Components\Select::make('application_tester_id')
                             ->label('Pilih Misi Aplikasi')
                             ->relationship('applicationTester', 'id', fn ($query) => $query->where('tester_id', Auth::id()))
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->application->app_name)
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->application->title)
                             ->required()
                             ->searchable(),
 
@@ -50,7 +50,7 @@ class TestingReportResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('applicationTester.application.app_name')->label('Aplikasi'),
+                Tables\Columns\TextColumn::make('applicationTester.application.title')->label('Aplikasi'),
                 Tables\Columns\TextColumn::make('catatan')->label('Temuan')->limit(50),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
