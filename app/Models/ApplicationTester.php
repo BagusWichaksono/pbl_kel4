@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ApplicationTester extends Model
 {
@@ -13,8 +14,8 @@ class ApplicationTester extends Model
         'tester_id',
         'status',
     ];
-
-    public function application()
+    
+    public function application(): BelongsTo
     {
         return $this->belongsTo(App::class, 'application_id');
     }

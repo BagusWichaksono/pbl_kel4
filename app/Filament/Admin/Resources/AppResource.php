@@ -129,7 +129,7 @@ class AppResource extends Resource
 
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('approve')
-                        ->label('Approve Semuanya')
+                        ->label('Terima Aplikasi')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()

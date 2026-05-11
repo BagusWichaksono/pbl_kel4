@@ -12,6 +12,8 @@ use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class TestingReportResource extends Resource
 {
@@ -20,23 +22,29 @@ class TestingReportResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationLabel = 'Hasil Pengujian';
     protected static ?string $pluralModelLabel = 'Daftar Hasil Pengujian';
+    
+
+    // ─── DEVELOPER CUMA BISA LIHAT APLIKASINYA SENDIRI ───
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('applicationTester.application', function (Builder $query) {
+            $query->where('developer_id', Auth::id());
+        });
+    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                // Mengakses nama aplikasi
-                Tables\Columns\TextColumn::make('applicationTester.app.name')
+                Tables\Columns\TextColumn::make('applicationTester.application.name')
                     ->label('Nama Aplikasi')
                     ->searchable()
                     ->sortable(),
 
-                // Mengakses nama tester
                 Tables\Columns\TextColumn::make('applicationTester.user.name')
                     ->label('Nama Tester')
                     ->searchable(),
 
-                // Menambahkan kolom status
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -53,14 +61,16 @@ class TestingReportResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-
+                // Bisa ditambah filter status nanti kalau butuh
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Lihat Detail'),
             ])
             ->bulkActions([
+                // Sebaiknya Developer jangan bisa hapus (Delete) laporan tester. 
+                // Biar jadi arsip yang transparan. Kalau setuju, hapus bagian ini.
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make(), 
                 ]),
             ]);
     }
@@ -101,13 +111,6 @@ class TestingReportResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
@@ -116,6 +119,7 @@ class TestingReportResource extends Resource
         ];
     }
 
+    // Menonaktifkan fitur Buat dan Edit (Murni Read-Only)
     public static function canCreate(): bool
     {
         return false;
