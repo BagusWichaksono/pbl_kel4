@@ -50,7 +50,7 @@ class AppResource extends Resource
                     ->description('Cek bukti pembayaran dan bukti Closed Testing (Google Console).')
                     ->schema([
                         Forms\Components\FileUpload::make('payment_proof')->label('Bukti Pembayaran')->disabled(),
-                        Forms\Components\FileUpload::make('review_screenshot')->label('Bukti Closed Testing (MVP)')->disabled(),
+                        Forms\Components\FileUpload::make('review_screenshot')->label('Bukti Closed Testing')->disabled(),
                     ])->columns(2),
             ]);
     }
@@ -120,7 +120,7 @@ class AppResource extends Resource
                                 <img src="' . asset('storage/' . $record->payment_proof) . '" style="width: 100%; border-radius: 8px;">
                             </div>
                             <div style="border: 1px solid #ddd; padding: 10px; border-radius: 10px;">
-                                <p style="font-weight: bold; margin-bottom: 8px; text-align: center;">2. Bukti Closed Testing (MVP)</p>
+                                <p style="font-weight: bold; margin-bottom: 8px; text-align: center;">2. Bukti Closed Testing</p>
                                 <img src="' . asset('storage/' . $record->review_screenshot) . '" style="width: 100%; border-radius: 8px;">
                             </div>
                         </div>

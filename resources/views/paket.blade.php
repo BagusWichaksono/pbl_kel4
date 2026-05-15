@@ -71,7 +71,7 @@
                 <p class="text-winter-700 text-sm mt-2 mb-8 leading-relaxed relative z-10">Nikmati seluruh fasilitas pengujian tanpa biaya tambahan. Sekali bayar untuk kualitas aplikasi yang lebih baik.</p>
                 <div class="mt-auto relative z-10">
                     <p class="text-4xl font-black text-winter-900 tracking-tight">Rp 300.000</p>
-                    <p class="text-sm font-semibold text-winter-500 mt-1 uppercase tracking-wider">/ Aplikasi (Sekali Bayar)</p>
+                    <p class="text-sm font-semibold text-winter-500 mt-1 uppercase tracking-wider">/Aplikasi </p>
                 </div>
             </div>
 

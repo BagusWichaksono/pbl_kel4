@@ -20,6 +20,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 
 class TesterPanelProvider extends PanelProvider
 {
@@ -28,7 +30,8 @@ class TesterPanelProvider extends PanelProvider
         return $panel
             ->id('tester')
             ->path('tester')
-            ->brandName(new HtmlString('<span style="background: linear-gradient(135deg, #5374ac, #2f456f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.02em;">TesYuk!</span>'))            ->authGuard('web')
+            ->brandName(new HtmlString('<span style="background: linear-gradient(135deg, #5374ac, #2f456f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.02em;">TesYuk!</span>'))            
+            ->authGuard('web')
             ->colors([
                 'primary' => [
                     50 => '#eff5fa', 100 => '#d1e1f1', 200 => '#b3cce2', 300 => '#8bafd0',
@@ -40,127 +43,127 @@ class TesterPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->font('Poppins')
-            ->profile()
-            ->spa()
+            ->profile(\App\Filament\Tester\Pages\CustomEditProfile::class)            
             ->sidebarCollapsibleOnDesktop()
-
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => "
                 <style>
-                    /* 1. BACKGROUND & LAYOUT (Vibe Landing Page) */
-                    body, .fi-layout {
-                        background: linear-gradient(180deg, #e4eff8 0%, #ffffff 100%) !important;
-                        background-attachment: fixed !important;
-                    }
-                    .dark body, .dark .fi-layout {
-                        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
-                    }
+                    /* =========================================================
+                    1. BACKGROUND & LAYOUT UTAMA
+                    ========================================================= */
+                    body, .fi-layout { background-color: #f8fafc !important; }
+                    .dark body, .dark .fi-layout { background-color: #0f172a !important; }
                     .fi-main { background: transparent !important; }
 
-                    /* 2. TOPBAR (Bening & Clean) */
-                    .fi-topbar { 
-                        background: transparent !important; 
-                        border-bottom: none !important; 
-                        box-shadow: none !important; 
-                        backdrop-filter: none !important; 
-                    }
+                    /* =========================================================
+                    2. TOPBAR
+                    ========================================================= */
+                    .fi-topbar { background: transparent !important; border-bottom: none !important; box-shadow: none !important; }
                     .fi-main-ctn:has(.dashboard-banner) { padding-top: 0 !important; }
 
-                    /* 3. SIDEBAR (Glassmorphism) */
-                    .fi-sidebar {
-                        background: rgba(255, 255, 255, 0.4) !important;
-                        backdrop-filter: blur(12px) !important;
-                        border-right: none !important;
-                        box-shadow: 4px 0 24px -5px rgba(83, 116, 172, 0.05) !important;
+                    /* =========================================================
+                    3. SIDEBAR & NAVIGASI 
+                    ========================================================= */
+                    .fi-sidebar { 
+                        background-color: #ffffff !important; 
+                        border-right: 1px solid #f1f5f9 !important; 
+                        box-shadow: none !important; 
                     }
-                    .dark .fi-sidebar { background: rgba(30, 41, 59, 0.4) !important; }
+                    .dark .fi-sidebar { background-color: #1e293b !important; border-right: 1px solid #334155 !important; }
 
-                    /* Transisi dasar dengan efek 'Pegas' (Bouncy) */
-                    .fi-sidebar-item-button, .custom-card-stats { 
+                    /* Bentuk Dasar Menu (Non-Aktif) */
+                    .fi-sidebar-item-button { 
                         border-radius: 9999px !important; 
-                        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-                        transform-origin: center center !important;
+                        transition: all 0.3s ease !important; 
+                        margin-bottom: 4px !important; 
+                        border: none !important; 
+                        box-shadow: none !important; 
+                        padding: 0.6rem 1rem !important; 
+                    }
+                    
+                    /* Paksa warna teks & ikon saat NON-AKTIF */
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-label {
+                        color: #475569 !important; 
+                        font-weight: 600 !important;
+                    }
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-icon {
+                        color: #64748b !important; 
                     }
 
-                    /* EFEK TEKAN FISIK (Tactile Feedback): Mengecil saat diklik */
-                    .fi-sidebar-item-button:active, .custom-card-stats:active {
-                        transform: scale(0.95) !important;
-                        transition: transform 0.1s ease-out !important; /* Cepat saat ditekan */
-                    }
-
-                    /* Icon ikut membesar halus saat menu di-hover */
-                    .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
-                        transform: scale(1.15) !important;
-                        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-                    }
-
-                    /* Hover Sidebar Light Mode */
+                    /* SAAT DI-HOVER (Menu belum diklik) */
                     html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: rgba(83, 116, 172, 0.08) !important;
-                        transform: translateY(-2px) scale(1.01) !important; 
-                        box-shadow: 0 8px 20px -4px rgba(83, 116, 172, 0.15) !important;
+                        background-color: #f1f5f9 !important; 
+                    }
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
+                        color: #0f172a !important; 
                     }
 
-                    /* Hover Sidebar Dark Mode */
-                    .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: rgba(255, 255, 255, 0.05) !important;
-                        transform: translateY(-2px) scale(1.01) !important;
-                        box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.4) !important;
+                    .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover { 
+                        background-color: #334155 !important; 
                     }
 
-                    /* Hover untuk Kartu Statistik di Dashboard */
-                    .custom-card-stats:hover {
-                        transform: translateY(-5px) scale(1.02) !important;
-                        box-shadow: 0 15px 30px -5px rgba(83, 116, 172, 0.15) !important;
-                    }
-                    .dark .custom-card-stats:hover {
-                        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5) !important;
-                    }
-
-                    .fi-topbar .fi-input-wrp { border-radius: 9999px !important; }
-
-                    /* 4. MODAL & TABEL (Rounded corners) */
-                    .fi-ta-ctn, .fi-modal-window, .fi-section {
-                        border-radius: 24px !important;
-                        border: 1px solid rgba(83, 116, 172, 0.1) !important;
-                        box-shadow: 0 10px 30px -5px rgba(83, 116, 172, 0.05) !important;
-                    }
-
-                    /* 5. HIGHLIGHT MENU AKTIF (Light Mode) */
+                    /*  TEKS SAAT AKTIF / DIKLIK
                     html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: #eff5fa !important;
-                        border: 1px solid #d1e1f1 !important;
-                        box-shadow: 0 4px 15px -3px rgba(83, 116, 172, 0.15) !important;
-                        font-weight: 700 !important;
+                        background-color: #86a0cd !important; /* Menggunakan biru utama dari palet */
+                        border: none !important; 
+                        box-shadow: 0 4px 15px -3px rgba(83, 116, 172, 0.4) !important; /* Efek shadow disesuaikan dengan warna biru */
                     }
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-icon { color: #5374ac !important; }
+                    
+                    /* PAKSA TEKS DAN IKON MENJADI PUTIH BERSIH AGAR TERBACA JELAS */
+                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
+                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
+                        color: #ffffff !important; 
+                        font-weight: 700 !important; 
+                    }
+                    
+                    /* Mode Gelap Aktif */
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button { 
+                        background-color: #425d8a !important; /* Biru yang sedikit lebih redup untuk dark mode agar tidak terlalu silau */
+                    }
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon { 
+                        color: #ffffff !important; /* Diubah jadi putih agar jelas di atas biru */
+                    }
 
-                    /* 6. HIGHLIGHT MENU AKTIF (Dark Mode) */
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: rgba(83, 116, 172, 0.15) !important;
-                        border: 1px solid rgba(83, 116, 172, 0.3) !important;
-                        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.4) !important;
-                        font-weight: 700 !important;
-                    }
+                    /* =========================================================
+                    4. MODAL, TABEL, & CUSTOM CARD
+                    ========================================================= */
+                    .fi-ta-ctn, .fi-modal-window, .fi-section { border-radius: 24px !important; border: 1px solid rgba(83, 116, 172, 0.1) !important; box-shadow: 0 4px 20px -5px rgba(83, 116, 172, 0.05) !important; background-color: white !important; }
+                    .dark .fi-ta-ctn, .dark .fi-modal-window, .dark .fi-section { background-color: #1e293b !important; }
 
-                    /* 7. WIDGET CUSTOM CARD (Statistik Base State) */
-                    .custom-card-stats {
-                        background: white !important;
-                        border: 1px solid rgba(83, 116, 172, 0.1) !important;
-                        border-radius: 20px !important;
-                        padding: 1.5rem !important;
-                        display: flex !important;
-                        align-items: center !important;
-                        gap: 1rem !important;
-                        box-shadow: 0 4px 20px -2px rgba(83, 116, 172, 0.08) !important;
-                    }
+                    .custom-card-stats { background: whitetransform !important; border: 1px solid rgba(83, 116, 172, 0.1) !important; border-radius: 20px !important; padding: 1.5rem !important; display: flex !important; align-items: center !important; gap: 1rem !important; box-shadow: 0 4px 20px -2px rgba(83, 116, 172, 0.08) !important; transition:  0.3s ease, box-shadow 0.3s ease !important; }
+                    .custom-card-stats:hover { transform: translateY(-3px) !important; box-shadow: 0 10px 25px -5px rgba(83, 116, 172, 0.12) !important; }
                     .dark .custom-card-stats { background: #1e293b !important; }
                     .stat-label { color: #6b7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin: 0; }
                     .stat-value { color: #141c33; font-size: 1.25rem; font-weight: 800; margin: 0; }
                     .dark .stat-value { color: #f8fafc !important; }
                     .icon-bg { background: #eff5fa; padding: 0.75rem; border-radius: 12px; color: #5374ac; }
                     .dark .icon-bg { background: rgba(83, 116, 172, 0.2) !important; color: #8bafd0 !important; }
+
+                    /* Merapikan tampilan User Menu di Topbar */
+                    .fi-user-menu {
+                        background-color: white !important;
+                        border-radius: 9999px !important;
+                        padding: 4px 8px !important;
+                        border: 1px solid #f1f5f9 !important;
+                        transition: all 0.3s ease !important;
+                    }
+
+                    .fi-user-menu:hover {
+                        background-color: #f8fafc !important;
+                        border-color: #cbd5e1 !important;
+                    }
+
+                    /* Mengubah warna item di dalam dropdown profil saat diklik */
+                    .fi-dropdown-list-item:hover {
+                        background-color: #f0f7ff !important;
+                    }
+
+                    .fi-dropdown-list-item-label {
+                        font-weight: 600 !important;
+                    }
                 </style>
                 "
             )      
@@ -169,7 +172,6 @@ class TesterPanelProvider extends PanelProvider
                 \Filament\View\PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
                 function () {
                     if (request()->routeIs('filament.tester.pages.dashboard')) {
-                        /** @var \App\Models\User|null $user */
                         $user = Auth::user();
                         $userName = $user?->name ?? 'Tester';
                         $userPoints = $user?->points ?? 0;
@@ -182,46 +184,41 @@ class TesterPanelProvider extends PanelProvider
                             default => 'Selamat Malam',
                         };
 
-                        $urlPenukaran = \App\Filament\Tester\Resources\PenukaranPoinResource::getUrl('index');
-                        $urlMisi = \App\Filament\Tester\Resources\MisiSayaResource::getUrl('index');
+                        $urlPenukaran = \App\Filament\Tester\Resources\PenukaranPoinResource::getUrl('index') ?? '#';
+                        $urlMisi = \App\Filament\Tester\Resources\MisiSayaResource::getUrl('index') ?? '#';
 
                         $misiAktif = \App\Models\ApplicationTester::where('tester_id', $user?->id)->where('status', 'active')->count();
                         $misiSelesai = \App\Models\ApplicationTester::where('tester_id', $user?->id)->where('status', 'completed')->count();
 
                         return new HtmlString("
                             <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
-                                <div style='background: linear-gradient(135deg, #141c33 0%, #2f456f 50%, #5374ac 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(20,28,51,0.4);'>
-                                    <div style='position: relative; z-index: 10;'>
-                                        <h2 style='font-size: 2.25rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;'>{$greeting}, {$userName}!</h2>
-                                        <p style='margin-top: 0.75rem; color: #cbdcf0; max-width: 500px; font-size: 1.125rem; line-height: 1.6;'>Kualitas aplikasi ada di tanganmu. Mari bantu developer membangun aplikasi terbaik hari ini.</p>
-                                        <div style='margin-top: 2rem;'>
-                                            <a href='/tester/cari-misis' style='display: inline-block; padding: 0.75rem 2rem; background: white; color: #141c33; font-weight: 700; border-radius: 9999px; text-decoration: none; font-size: 0.95rem;'>Cari Misi Baru</a>
+                                <div style='background: linear-gradient(135deg, #141c33 0%, #2f456f 50%, #5374ac 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(20,28,51,0.4);'>    
+                                    <div style='position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center;'>           
+                                        <div>
+                                            <h2 style='font-size: 2.25rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;'>{$greeting}, {$userName}!</h2>
+                                            <p style='margin-top: 0.75rem; color: #cbdcf0; max-width: 500px; font-size: 1.125rem; line-height: 1.6;'>Kualitas aplikasi ada di tanganmu. Mari bantu developer membangun aplikasi terbaik hari ini.</p>
                                         </div>
-                                    </div>
-                                    <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px);'></div>
-                                </div>
+                                        <div class='hidden md:block' style='padding-right: 2rem;'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.2' stroke='currentColor' style='width: 160px; height: 160px; color: rgba(255,255,255,0.7); transform: rotate(15deg) translateY(-10px);'>
+                                                <path stroke-linecap='round' stroke-linejoin='round' d='M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.45 15.04 15.04 0 0 1 .06-.312m-2.24 2.39a4.499 4.499 0 0 0-1.757 4.306 4.433 4.433 0 0 0 2.723-2.023c-2.03-2.03-2.023-2.722-2.023-2.722Z' />
+                                            </svg>
+                                        </div>
 
+                                        <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px);'></div>
+                                        <div style='position: absolute; right: 120px; bottom: -50px; width: 150px; height: 150px; background: rgba(83,116,172,0.2); border-radius: 50%; filter: blur(40px);'></div>
+                                    </div>
+
+                                    <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px);'></div>
+                                    <div style='position: absolute; right: 120px; bottom: -50px; width: 150px; height: 150px; background: rgba(83,116,172,0.2); border-radius: 50%; filter: blur(40px);'></div>
+                                </div>
                                 <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;'>
-                                    
                                     <a href='{$urlPenukaran}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-                                        </div>
+                                        <div class='icon-bg'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg></div>
                                         <div><p class='stat-label'>Saldo Poin</p><p class='stat-value'>{$userPoints} pts</p></div>
                                     </a>
-
                                     <a href='{$urlMisi}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75' /></svg>
-                                        </div>
+                                        <div class='icon-bg'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75' /></svg></div>
                                         <div><p class='stat-label'>Misi Aktif</p><p class='stat-value'>{$misiAktif} Tugas</p></div>
-                                    </a>
-
-                                    <a href='{$urlMisi}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z' /></svg>
-                                        </div>
-                                        <div><p class='stat-label'>Total Selesai</p><p class='stat-value'>{$misiSelesai} Aplikasi</p></div>
                                     </a>
                                 </div>
                             </div>
@@ -229,6 +226,38 @@ class TesterPanelProvider extends PanelProvider
                     }
                 }
             )
+
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
+                fn () => new HtmlString(
+                    '<div class="hidden md:flex items-center text-sm font-semibold mr-3" style="color: #64748b;">
+                        <span style="color: #141c33; margin-left: 4px;">' . (auth()->user()?->name ?? 'Tester') . '</span>
+                    </div>'
+                )
+            )
+
+            // ─── DAFTAR GRUP MENU DI SIDEBAR ───
+            ->navigationGroups([
+                NavigationGroup::make('Menu')
+                    ->collapsible(false), // <--- TAMBAHKAN INI
+                    
+                NavigationGroup::make('Keuangan')
+                    ->collapsible(false), // <--- TAMBAHKAN INI (jika ada)
+
+                NavigationGroup::make('Akun & Bantuan')
+                    ->collapsible(false), // <--- TAMBAHKAN INI
+            ])
+
+            // ─── TAMBAHAN CUSTOM MENU (PROFIL, PENGATURAN, BANTUAN) ───
+            ->navigationItems([
+                NavigationItem::make('Profil')
+                    ->url(fn (): string => filament()->getProfileUrl() ?? '#')
+                    ->icon('heroicon-o-user-circle')
+                    ->group('Akun & Bantuan')
+                    ->isActiveWhen(fn () => request()->url() === filament()->getProfileUrl())
+                    ->sort(1),
+                    
+            ])
 
             ->discoverResources(in: app_path('Filament/Tester/Resources'), for: 'App\\Filament\\Tester\\Resources')
             ->discoverPages(in: app_path('Filament/Tester/Pages'), for: 'App\\Filament\\Tester\\Pages')

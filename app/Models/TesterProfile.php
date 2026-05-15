@@ -9,8 +9,6 @@ class TesterProfile extends Model
     //
     protected $fillable = [
         'user_id',
-        'e_wallet_provider',
-        'e_wallet_number',
         'points'
     ];
 

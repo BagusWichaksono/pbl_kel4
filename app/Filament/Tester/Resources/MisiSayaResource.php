@@ -11,17 +11,25 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use App\Models\DailyReport;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Carbon\Carbon;
 
 class MisiSayaResource extends Resource
 {
     protected static ?string $model = ApplicationTester::class;
 
-    protected static ?string $modelLabel = 'Misi Saya';
-    protected static ?string $pluralModelLabel = 'Misi Saya';
+    protected static ?string $modelLabel = 'Misi';
+    protected static ?string $pluralModelLabel = 'Misi';
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-    protected static ?string $navigationLabel = 'Misi Saya';
+    protected static ?string $navigationLabel = 'Misi';
+
+    protected static ?string $navigationGroup = 'Menu';
+
+    
 
     public static function getEloquentQuery(): Builder
     {
@@ -135,6 +143,60 @@ class MisiSayaResource extends Resource
                             ->body('Terima kasih telah menyelesaikan misi. Laporanmu akan ditinjau.')
                             ->success()
                             ->send();
+                    }),
+
+                Tables\Actions\Action::make('lapor_harian')
+                    ->label('Lapor Harian')
+                    ->icon('heroicon-o-camera')
+                    ->color('success')
+                    ->button() // Biar bentuknya tombol solid, bukan cuma icon
+                    ->modalHeading('Laporan Pengecekan Harian')
+                    ->modalDescription('Unggah screenshot bukti kamu sudah mengecek dan mencoba aplikasi hari ini. (Misi harian hanya bisa dilakukan 1x sehari).')
+                    ->form([
+                        FileUpload::make('screenshot')
+                            ->label('Bukti Screenshot Hari Ini')
+                            ->image()
+                            ->directory('daily-reports')
+                            ->required(),
+                        Textarea::make('notes')
+                            ->label('Catatan Singkat (Opsional)')
+                            ->placeholder('Contoh: Hari ini saya ngecek menu login, aman tidak ada bug.'),
+                    ])
+                    ->action(function ($record, array $data) {
+                        // Simpan data ke tabel daily_reports
+                        DailyReport::create([
+                            'tester_id' => Auth::id(),
+                            // PERHATIAN: Pastikan $record->app_id sesuai dengan nama kolom ID aplikasi di tabelmu
+                            'app_id' => $record->app_id ?? $record->id, 
+                            'report_date' => Carbon::today()->toDateString(),
+                            'screenshot' => $data['screenshot'],
+                            'notes' => $data['notes'],
+                        ]);
+
+                        Notification::make()
+                            ->title('Misi Harian Selesai!')
+                            ->description('Terima kasih! Jangan lupa kembali lagi besok untuk laporan selanjutnya.')
+                            ->success()
+                            ->send();
+                    })
+                    // KUNCI UTAMA: Disable tombol jika hari ini Tester sudah lapor
+                    ->disabled(function ($record) {
+                        $appId = $record->app_id ?? $record->id; // Sesuaikan dengan struktur datamu
+                        
+                        return DailyReport::where('tester_id', Auth::id())
+                            ->where('app_id', $appId)
+                            ->whereDate('report_date', Carbon::today()->toDateString())
+                            ->exists(); // Kalau data hari ini sudah ada, tombol otomatis mati (disabled)
+                    })
+                    // Opsional: Ubah teks tombol kalau sudah lapor
+                    ->label(function ($record) {
+                        $appId = $record->app_id ?? $record->id;
+                        $sudahLapor = DailyReport::where('tester_id', Auth::id())
+                            ->where('app_id', $appId)
+                            ->whereDate('report_date', Carbon::today()->toDateString())
+                            ->exists();
+                            
+                        return $sudahLapor ? 'Sudah Lapor Hari Ini' : 'Lapor Harian';
                     }),
             ])
             ->bulkActions([

@@ -8,8 +8,10 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -24,6 +26,7 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'role',
+        'avatar_url',
     ];
 
     /**
@@ -85,5 +88,11 @@ class User extends Authenticatable implements FilamentUser
     public function isAdminOrSuperAdmin(): bool
     {
         return in_array($this->role, ['admin', 'super_admin']);
+    }
+
+    // ─── Fungsi ini supaya foto tampil di header saat klik nama user
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
     }
 }

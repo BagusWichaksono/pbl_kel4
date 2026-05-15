@@ -19,6 +19,8 @@ class TestingReportResource extends Resource
     protected static ?string $modelLabel = 'Laporan Bug';
     protected static ?string $pluralModelLabel = 'Laporan Bug';
     protected static ?string $navigationIcon = 'heroicon-o-bug-ant';
+    protected static ?string $navigationGroup = 'Menu';
+
 
     public static function form(Form $form): Form
     {
@@ -46,33 +48,6 @@ class TestingReportResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('applicationTester.application.app_name')->label('Aplikasi'),
-                Tables\Columns\TextColumn::make('catatan')->label('Temuan')->limit(50),
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'gray',
-                        'approved' => 'success',
-                        'rejected' => 'danger',
-                        default => 'gray',
-                    }),
-            ])
-            ->emptyStateIcon('heroicon-o-bug-ant') // Ikon bug
-            ->emptyStateHeading('Belum Ada Laporan Bug')
-            ->emptyStateDescription('Semua sistem tampaknya berjalan lancar. Jika kamu menemukan masalah, laporkan di sini.')
-            ->emptyStateActions([
-                // Kasih tombol buat bikin laporan langsung dari situ
-                \Filament\Tables\Actions\CreateAction::make()
-                    ->label('Buat Laporan Sekarang')
-                    ->icon('heroicon-m-plus')
-                    ->button(),
-        ]);;
-    }
-
     public static function getEloquentQuery(): Builder
     {
         // Supaya tester cuma bisa lihat laporannya sendiri
@@ -88,5 +63,51 @@ class TestingReportResource extends Resource
             'create' => Pages\CreateTestingReport::route('/create'),
             'edit' => Pages\EditTestingReport::route('/{record}/edit'),
         ];
+    }
+
+    // 1. MATIKAN FITUR TAMBAH MANUAL
+    public static function canCreate(): bool
+    {
+        return false; 
+    }
+
+    // 2. SESUAIKAN TABEL & TOMBOL
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('app.title') // Ganti dengan relasi aplikasi kamu
+                    ->label('Aplikasi yang Diuji')
+                    ->weight('bold'),
+                
+                // Asumsi kamu punya kolom 'title' atau 'periode' untuk menyimpan teks "Minggu 1" / "Minggu 2"
+                Tables\Columns\TextColumn::make('title') 
+                    ->label('Periode Laporan')
+                    ->badge()
+                    ->color('info'),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'gray',      // Belum diisi
+                        'submitted' => 'warning', // Sudah diisi, nunggu admin
+                        'approved' => 'success',  // Diterima
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => strtoupper($state)),
+            ])
+            ->actions([
+                // KUNCI UTAMA: Kita pakai EditAction tapi diubah namanya jadi "Isi Laporan"
+                Tables\Actions\EditAction::make()
+                    ->label(fn ($record) => $record->status === 'pending' ? 'Isi Laporan' : 'Edit Laporan')
+                    ->icon('heroicon-m-pencil-square')
+                    ->button()
+                    ->color(fn ($record) => $record->status === 'pending' ? 'primary' : 'gray'),
+            ])
+            ->emptyStateHeading('Belum Ada Misi Aktif')
+            ->emptyStateDescription('Slot laporan Minggu 1 dan Minggu 2 akan otomatis muncul di sini setelah kamu disetujui menjalankan sebuah misi aplikasi.')
+            ->emptyStateIcon('heroicon-o-clipboard-document-list')
+            ->defaultSort('created_at', 'asc');
     }
 }

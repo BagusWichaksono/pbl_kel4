@@ -12,15 +12,12 @@ class App extends Model
 
     protected $table = 'applications';
 
-    // BLOK INI UNTUK MENGIZINKAN SIMPAN DATA
     protected $fillable = [
         'developer_id',
         'title',
         'platform',
         'url',
         'description',
-        'payment_proof',
-        'payment_status',
         'testing_status',
         'max_testers',
         'start_date',
@@ -33,6 +30,8 @@ class App extends Model
         'end_date' => 'date',
     ];
 
+    // ─── RELASI KE AKTOR ───
+
     public function developer()
     {
         return $this->belongsTo(User::class, 'developer_id');
@@ -43,10 +42,30 @@ class App extends Model
         return $this->hasMany(ApplicationTester::class, 'application_id');
     }
 
+    // Pivot table untuk langsung mengambil data User tester (opsional tapi bagus dipertahankan)
     public function testerUsers()
     {
         return $this->belongsToMany(User::class, 'application_testers', 'application_id', 'tester_id');
     }
+
+    // ─── TAMBAHAN RELASI BARU (AGAR NYAMBUNG KE MODEL LAIN) ───
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'application_id');
+    }
+
+    public function dailyReports()
+    {
+        return $this->hasMany(DailyReport::class, 'app_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'app_id');
+    }
+
+    // ─── HELPER METHODS ───
 
     /**
      * Cek apakah jumlah tester sudah mencapai batas maksimal.

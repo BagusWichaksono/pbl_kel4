@@ -13,12 +13,12 @@ return new class extends Migration
 {
     Schema::create('withdrawals', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('tester_id')->constrained('users')->cascadeOnDelete();
-        $table->integer('points_withdrawn'); // Berapa poin yang ditukar
-        $table->integer('amount_rp'); // Konversi ke Rupiah
-        $table->string('e_wallet_provider'); // Dana, GoPay, OVO, ShopeePay
-        $table->string('e_wallet_number'); // Nomor HP E-Wallet
-        $table->string('status')->default('pending'); // pending, approved, rejected
+        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        $table->decimal('amount', 15, 2); 
+        $table->string('account_name'); // Nama yang tertera di QRIS (biar admin yakin pas scan)
+        $table->string('qris_image'); // Kolom untuk menyimpan foto QRIS
+        $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+        $table->text('notes')->nullable();
         $table->timestamps();
     });
 }

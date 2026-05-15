@@ -170,4 +170,11 @@ class TransactionResource extends Resource
             'index' => Pages\ListTransactions::route('/'),
         ];
     }
+
+    // Tambahkan ini di dalam class TransactionResource (di bawah $navigationSort)
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Menyembunyikan menu ini dari Sidebar Admin
+        return false; 
+    }
 }
