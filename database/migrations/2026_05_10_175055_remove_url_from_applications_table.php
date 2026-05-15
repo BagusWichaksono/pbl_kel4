@@ -11,15 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('applications', function (Blueprint $table) {
-            $table->dropColumn('url');
-        });
+        if (Schema::hasColumn('applications', 'url')) {
+            Schema::table('applications', function (Blueprint $table) {
+                $table->dropColumn('url');
+            });
+        }
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::table('applications', function (Blueprint $table) {
-            $table->string('url')->nullable();
-        });
+        if (! Schema::hasColumn('applications', 'url')) {
+            Schema::table('applications', function (Blueprint $table) {
+                $table->string('url')->nullable()->after('platform');
+            });
+        }
     }
 };

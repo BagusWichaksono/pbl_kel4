@@ -13,12 +13,26 @@ return new class extends Migration
     {
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('developer_id')->constrained('users')->cascadeOnDelete();
+
+            $table->foreignId('developer_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
             $table->string('title');
-            $table->text('description');
+            $table->string('platform')->nullable();
+            $table->text('description')->nullable();
+
             $table->string('payment_proof')->nullable();
-            $table->enum('payment_status', ['pending', 'valid', 'invalid'])->default('pending');
-            $table->enum('testing_status', ['open', 'in_progress', 'completed'])->default('open');
+            $table->string('payment_status')->default('pending');
+
+            $table->string('testing_status')->default('open');
+
+            $table->integer('max_testers')->default(20);
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+
+            $table->string('review_screenshot')->nullable();
+
             $table->timestamps();
         });
     }

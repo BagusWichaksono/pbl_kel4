@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class App extends Model
 {
@@ -16,8 +16,9 @@ class App extends Model
         'developer_id',
         'title',
         'platform',
-        'url',
         'description',
+        'payment_proof',
+        'payment_status',
         'testing_status',
         'max_testers',
         'start_date',
@@ -42,13 +43,12 @@ class App extends Model
         return $this->hasMany(ApplicationTester::class, 'application_id');
     }
 
-    // Pivot table untuk langsung mengambil data User tester (opsional tapi bagus dipertahankan)
     public function testerUsers()
     {
         return $this->belongsToMany(User::class, 'application_testers', 'application_id', 'tester_id');
     }
 
-    // ─── TAMBAHAN RELASI BARU (AGAR NYAMBUNG KE MODEL LAIN) ───
+    // ─── RELASI KE MODEL LAIN ───
 
     public function transactions()
     {
@@ -67,17 +67,11 @@ class App extends Model
 
     // ─── HELPER METHODS ───
 
-    /**
-     * Cek apakah jumlah tester sudah mencapai batas maksimal.
-     */
     public function isFull(): bool
     {
         return $this->testers()->count() >= $this->max_testers;
     }
 
-    /**
-     * Cek apakah sesi testing masih berlangsung.
-     */
     public function isTestingActive(): bool
     {
         if (!$this->start_date || !$this->end_date) {
@@ -87,9 +81,6 @@ class App extends Model
         return Carbon::now()->between($this->start_date, $this->end_date);
     }
 
-    /**
-     * Hitung sisa hari sesi testing.
-     */
     public function remainingDays(): int
     {
         if (!$this->end_date) {
@@ -97,6 +88,7 @@ class App extends Model
         }
 
         $remaining = Carbon::now()->diffInDays($this->end_date, false);
+
         return max(0, (int) $remaining);
     }
 }

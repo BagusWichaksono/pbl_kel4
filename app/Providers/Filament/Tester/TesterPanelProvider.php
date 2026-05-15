@@ -231,7 +231,7 @@ class TesterPanelProvider extends PanelProvider
                 \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
                 fn () => new HtmlString(
                     '<div class="hidden md:flex items-center text-sm font-semibold mr-3" style="color: #64748b;">
-                        <span style="color: #141c33; margin-left: 4px;">' . (auth()->user()?->name ?? 'Tester') . '</span>
+                        <span style="color: #141c33; margin-left: 4px;">' . (\Illuminate\Support\Facades\Auth::user()?->name ?? 'Tester') . '</span>
                     </div>'
                 )
             )

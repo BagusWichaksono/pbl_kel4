@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('tester_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('e_wallet_provider')->nullable();
-            $table->string('e_wallet_number')->nullable();
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
             $table->integer('points')->default(0);
+
             $table->timestamps();
         });
     }
