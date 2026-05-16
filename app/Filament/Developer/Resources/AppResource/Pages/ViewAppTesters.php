@@ -16,7 +16,7 @@ class ViewAppTesters extends Page
 {
     protected static string $resource = AppResource::class;
 
-    protected static string $view = 'developer.view-app-testers';
+    protected static string $view = 'filament.developer.pages.view-app-testers';
 
     // Simpan hanya ID agar Livewire bisa serialize dengan aman
     public int $recordId;

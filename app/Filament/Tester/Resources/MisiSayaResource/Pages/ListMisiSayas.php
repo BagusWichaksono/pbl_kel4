@@ -19,7 +19,7 @@ class ListMisiSayas extends Page
 {
     protected static string $resource = MisiSayaResource::class;
 
-    protected static string $view = 'tester.list-misi-sayas';
+    protected static string $view = 'filament.tester.pages.list-misi-sayas';
 
     public function getTitle(): string
     {
