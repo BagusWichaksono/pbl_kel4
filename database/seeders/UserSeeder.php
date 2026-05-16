@@ -41,5 +41,21 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password123'),
             'role' => 'tester',
         ]);
+
+        // Generate 20 tester
+        for ($i = 1; $i <= 20; $i++) {
+
+            $user = User::create([
+                'name' => 'Tester ' . $i,
+                'email' => 'tester' . $i . '@gmail.com',
+                'password' => Hash::make('password123'),
+                'role' => 'tester',
+            ]);
+
+            // Otomatis buat tester_profile
+            $user->testerProfile()->create([
+                'points' => rand(5, 50), // 5 - 50 poin
+            ]);
+        }
     }
 }
