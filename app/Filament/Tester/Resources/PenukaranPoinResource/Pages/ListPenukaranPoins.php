@@ -3,7 +3,7 @@
 namespace App\Filament\Tester\Resources\PenukaranPoinResource\Pages;
 
 use App\Filament\Tester\Resources\PenukaranPoinResource;
-use Filament\Actions\CreateAction;
+use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListPenukaranPoins extends ListRecords
@@ -13,7 +13,14 @@ class ListPenukaranPoins extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            
+            Actions\CreateAction::make()
+                ->label('Tukar Poin')
+                ->icon('heroicon-m-plus'),
         ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return PenukaranPoinResource::getWidgets();
     }
 }

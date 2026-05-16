@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Withdrawal extends Model
 {
@@ -10,13 +10,18 @@ class Withdrawal extends Model
         'tester_id',
         'points_withdrawn',
         'amount_rp',
-        'account_name',
-        'qris_image',
+        'e_wallet_provider',
+        'e_wallet_number',
         'status',
-        'notes'
+        'notes',
     ];
 
-    public function tester(): BelongsTo
+    protected $casts = [
+        'points_withdrawn' => 'integer',
+        'amount_rp' => 'integer',
+    ];
+
+    public function tester()
     {
         return $this->belongsTo(User::class, 'tester_id');
     }

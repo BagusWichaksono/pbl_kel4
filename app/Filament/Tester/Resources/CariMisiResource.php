@@ -21,6 +21,8 @@ class CariMisiResource extends Resource
     protected static ?string $modelLabel = 'Misi';
     protected static ?string $pluralModelLabel = 'Cari Misi';
 
+    protected static ?string $navigationGroup = 'Menu';
+
     protected static ?string $navigationIcon = 'heroicon-o-magnifying-glass';
     protected static ?string $navigationLabel = 'Cari Misi';
 

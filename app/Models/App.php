@@ -16,6 +16,7 @@ class App extends Model
         'developer_id',
         'title',
         'platform',
+        'app_link',
         'description',
         'payment_proof',
         'payment_status',
@@ -30,8 +31,6 @@ class App extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
-
-    // ─── RELASI KE AKTOR ───
 
     public function developer()
     {
@@ -48,8 +47,6 @@ class App extends Model
         return $this->belongsToMany(User::class, 'application_testers', 'application_id', 'tester_id');
     }
 
-    // ─── RELASI KE MODEL LAIN ───
-
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'application_id');
@@ -65,8 +62,6 @@ class App extends Model
         return $this->hasMany(Review::class, 'app_id');
     }
 
-    // ─── HELPER METHODS ───
-
     public function isFull(): bool
     {
         return $this->testers()->count() >= $this->max_testers;
@@ -74,7 +69,7 @@ class App extends Model
 
     public function isTestingActive(): bool
     {
-        if (!$this->start_date || !$this->end_date) {
+        if (! $this->start_date || ! $this->end_date) {
             return false;
         }
 
@@ -83,7 +78,7 @@ class App extends Model
 
     public function remainingDays(): int
     {
-        if (!$this->end_date) {
+        if (! $this->end_date) {
             return 0;
         }
 

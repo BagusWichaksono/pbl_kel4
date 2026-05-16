@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('applications', function (Blueprint $table) {
-            $table->string('review_screenshot')->nullable()->after('testing_status');
-        });
+        if (! Schema::hasColumn('applications', 'review_screenshot')) {
+            Schema::table('applications', function (Blueprint $table) {
+                $table->string('review_screenshot')
+                    ->nullable()
+                    ->after('testing_status');
+            });
+        }
     }
 
     /**
@@ -21,8 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('applications', function (Blueprint $table) {
-            $table->dropColumn('review_screenshot');
-        });
+        if (Schema::hasColumn('applications', 'review_screenshot')) {
+            Schema::table('applications', function (Blueprint $table) {
+                $table->dropColumn('review_screenshot');
+            });
+        }
     }
 };

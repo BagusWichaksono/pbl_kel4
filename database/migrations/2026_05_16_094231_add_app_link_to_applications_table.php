@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasColumn('applications', 'platform')) {
+        if (! Schema::hasColumn('applications', 'app_link')) {
             Schema::table('applications', function (Blueprint $table) {
-                $table->string('platform')
+                $table->string('app_link')
                     ->nullable()
-                    ->after('title');
+                    ->after('platform');
             });
         }
-
-        // Kolom url tidak ditambahkan lagi karena sudah tidak dipakai.
-        // Kalau masih ada dari migration lama, nanti dihapus oleh migration remove_url.
     }
 
     /**
@@ -28,7 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Sengaja dikosongkan agar tidak menghapus kolom platform
-        // yang sekarang memang sudah menjadi bagian dari tabel applications.
+        if (Schema::hasColumn('applications', 'app_link')) {
+            Schema::table('applications', function (Blueprint $table) {
+                $table->dropColumn('app_link');
+            });
+        }
     }
 };
