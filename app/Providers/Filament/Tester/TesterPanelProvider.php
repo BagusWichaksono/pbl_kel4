@@ -212,17 +212,38 @@ class TesterPanelProvider extends PanelProvider
                         color: #8bafd0 !important;
                     }
 
-                    .fi-user-menu {
-                        background-color: white !important;
-                        border-radius: 9999px !important;
-                        padding: 4px 8px !important;
-                        border: 1px solid #f1f5f9 !important;
-                        transition: all 0.3s ease !important;
+                    /* User menu kanan atas */
+                    .fi-topbar .fi-user-menu {
+                        background: transparent !important;
+                        border: none !important;
+                        padding: 0 !important;
                     }
 
-                    .fi-user-menu:hover {
-                        background-color: #f8fafc !important;
-                        border-color: #cbd5e1 !important;
+                    /* Hanya tombol avatar di topbar, bukan tombol di dropdown */
+                    .fi-topbar .fi-user-menu > button {
+                        background-color: #ffffff !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 9999px !important;
+                        padding: 4px !important;
+                    }
+
+                    /* Dark mode: lingkaran luar avatar tetap putih */
+                    .dark .fi-topbar .fi-user-menu > button {
+                        background-color: #ffffff !important;
+                        border-color: #e2e8f0 !important;
+                    }
+
+                    /* Avatar bagian dalam tetap gelap */
+                    .fi-topbar .fi-user-menu .fi-avatar {
+                        background-color: #020617 !important;
+                        color: #ffffff !important;
+                        border-radius: 9999px !important;
+                    }
+
+                    /* Jangan ubah tombol di dropdown */
+                    .fi-dropdown-panel button,
+                    .fi-dropdown-panel a {
+                        background-color: unset;
                     }
 
                     .fi-dropdown-list-item:hover {
@@ -317,8 +338,8 @@ class TesterPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
                 fn () => new HtmlString(
-                    '<div class="hidden md:flex items-center text-sm font-semibold mr-3" style="color: #64748b;">
-                        <span style="color: #141c33; margin-left: 4px;">' . e(Auth::user()?->name ?? 'tester') . '</span>
+                    '<div class="hidden md:flex items-center text-sm font-semibold mr-3">
+                        <span class="text-gray-900 dark:text-white" style="margin-left: 4px;">' . e(Auth::user()?->name ?? 'tester') . '</span>
                     </div>'
                 )
             )
