@@ -276,7 +276,7 @@
                         <i class="ph-fill ph-user-plus"></i>
                     </div>
                     <h3 class="font-bold text-xl text-winter-900 mb-3">Registrasi Profil</h3>
-                    <p class="text-winter-700 text-sm leading-relaxed">Bergabung ke dalam sistem sebagai Pengembang yang menyediakan sistem, atau Penguji yang mengevaluasinya.</p>
+                    <p class="text-winter-700 text-sm leading-relaxed">Bergabung ke dalam sistem sebagai Developer yang menyediakan sistem, atau Tester yang mengevaluasinya.</p>
                 </div>
 
                 <div class="relative z-10 text-center px-4 mt-8 md:mt-0" data-aos="fade-up" data-aos-delay="200">
@@ -292,7 +292,7 @@
                         <i class="ph-fill ph-medal"></i>
                     </div>
                     <h3 class="font-bold text-xl text-winter-900 mb-3">Validasi & Imbalan</h3>
-                    <p class="text-winter-700 text-sm leading-relaxed">Pengembang memperoleh ulasan berharga, sementara Penguji menerima poin yang dapat dikonversi menjadi saldo finansial.</p>
+                    <p class="text-winter-700 text-sm leading-relaxed">Developer memperoleh ulasan berharga, sementara Tester menerima poin yang dapat dikonversi menjadi saldo finansial.</p>
                 </div>
             </div>
         </div>
@@ -316,7 +316,7 @@
                             <i class="ph-fill ph-code-block"></i>
                         </div>
 
-                        <h3 class="text-3xl font-black text-white mb-8">Untuk Pengembang</h3>
+                        <h3 class="text-3xl font-black text-white mb-8">Untuk Developer</h3>
 
                         <ul class="space-y-4 mb-12 flex-1">
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
@@ -349,7 +349,7 @@
                             <i class="ph-fill ph-device-mobile"></i>
                         </div>
 
-                        <h3 class="text-3xl font-black text-winter-900 mb-8">Untuk Penguji</h3>
+                        <h3 class="text-3xl font-black text-winter-900 mb-8">Untuk Tester</h3>
 
                         <ul class="space-y-4 mb-12 flex-1">
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-white shadow-sm hover:shadow-md transition-all border border-transparent hover:border-winter-300/30">
