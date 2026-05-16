@@ -53,13 +53,6 @@ class AppResource extends Resource
                             ->native(false)
                             ->placeholder('Pilih platform aplikasi'),
 
-                        Forms\Components\TextInput::make('app_link')
-                            ->label('Link Aplikasi')
-                            ->required()
-                            ->url()
-                            ->maxLength(255)
-                            ->placeholder('Contoh: https://play.google.com/store/apps/details?id=...'),
-
                         Forms\Components\Textarea::make('description')
                             ->label('Deskripsi Aplikasi')
                             ->required()
@@ -107,7 +100,7 @@ class AppResource extends Resource
                                 ->icon('heroicon-m-qr-code')
                                 ->color('primary')
                                 ->modalHeading('Scan Barcode QRIS')
-                                ->modalContent(fn () => new HtmlString('
+                                ->modalContent(fn() => new HtmlString('
                                     <div style="text-align: center;">
                                         <img src="' . asset('assets/qris.png') . '" alt="QRIS Barcode" style="max-width: 280px; width: 100%; margin: 0 auto; border-radius: 16px;">
                                         <p style="margin-top: 16px; color: #475569;">
@@ -136,32 +129,21 @@ class AppResource extends Resource
                             ->default('pending_approval'),
 
                         Forms\Components\Hidden::make('developer_id')
-                            ->default(fn () => Auth::id()),
+                            ->default(fn() => Auth::id()),
                     ]),
 
                 Forms\Components\Section::make('Ketentuan Testing')
-                    ->description('Jumlah tester dan jadwal testing akan dipakai setelah aplikasi disetujui admin.')
+                    ->description('Tanggal testing baru dapat dimulai setelah minimal 12 tester terkumpul.')
                     ->schema([
                         Forms\Components\TextInput::make('max_testers')
                             ->label('Target Jumlah Tester')
                             ->numeric()
                             ->required()
                             ->default(20)
-                            ->minValue(1)
+                            ->minValue(12)
                             ->maxValue(100)
-                            ->helperText('Contoh: 20 tester.'),
-
-                        Forms\Components\DatePicker::make('start_date')
-                            ->label('Tanggal Mulai Testing')
-                            ->nullable()
-                            ->helperText('Boleh dikosongkan dulu. Developer bisa mulai setelah tester terkumpul.'),
-
-                        Forms\Components\DatePicker::make('end_date')
-                            ->label('Tanggal Selesai Testing')
-                            ->nullable()
-                            ->helperText('Umumnya 14 hari setelah testing dimulai.'),
+                            ->helperText('Minimal 12 tester karena kebutuhan closed testing Google Play Console.'),
                     ])
-                    ->columns(3),
             ]);
     }
 
@@ -182,20 +164,20 @@ class AppResource extends Resource
                 Tables\Columns\TextColumn::make('testers_count')
                     ->label('Tester')
                     ->counts('testers')
-                    ->formatStateUsing(fn ($state, App $record): string => $state . ' / ' . $record->max_testers)
+                    ->formatStateUsing(fn($state, App $record): string => $state . ' / ' . $record->max_testers)
                     ->badge()
                     ->color('info'),
 
                 Tables\Columns\TextColumn::make('payment_status')
                     ->label('Pembayaran')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
+                    ->color(fn(?string $state): string => match ($state) {
                         'pending' => 'warning',
                         'valid' => 'success',
                         'invalid' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                    ->formatStateUsing(fn(?string $state): string => match ($state) {
                         'pending' => 'Menunggu',
                         'valid' => 'Valid',
                         'invalid' => 'Tidak Valid',
@@ -205,7 +187,7 @@ class AppResource extends Resource
                 Tables\Columns\TextColumn::make('testing_status')
                     ->label('Status Testing')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
+                    ->color(fn(?string $state): string => match ($state) {
                         'pending_approval' => 'warning',
                         'open' => 'gray',
                         'in_progress' => 'info',
@@ -213,7 +195,7 @@ class AppResource extends Resource
                         'rejected' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                    ->formatStateUsing(fn(?string $state): string => match ($state) {
                         'pending_approval' => 'Menunggu Admin',
                         'open' => 'Mencari Tester',
                         'in_progress' => 'Sedang Testing',
@@ -232,13 +214,13 @@ class AppResource extends Resource
                     ->label('Lihat Tester')
                     ->icon('heroicon-o-users')
                     ->color('info')
-                    ->url(fn (App $record): string => AppResource::getUrl('view-testers', ['record' => $record])),
+                    ->url(fn(App $record): string => AppResource::getUrl('view-testers', ['record' => $record])),
 
                 Tables\Actions\EditAction::make()
-                    ->visible(fn (App $record): bool => in_array($record->testing_status, ['pending_approval', 'rejected'])),
+                    ->visible(fn(App $record): bool => in_array($record->testing_status, ['pending_approval', 'rejected'])),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn (App $record): bool => in_array($record->testing_status, ['pending_approval', 'rejected'])),
+                    ->visible(fn(App $record): bool => in_array($record->testing_status, ['pending_approval', 'rejected'])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
