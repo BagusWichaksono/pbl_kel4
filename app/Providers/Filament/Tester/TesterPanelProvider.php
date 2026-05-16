@@ -6,10 +6,12 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -18,8 +20,6 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\View\PanelsRenderHook;
-use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 
 class TesterPanelProvider extends PanelProvider
@@ -51,8 +51,8 @@ class TesterPanelProvider extends PanelProvider
             ->font('Poppins')
             ->profile(\App\Filament\Tester\Pages\CustomEditProfile::class)
 
-            // Sidebar collapse dimatikan supaya tidak ada tombol/dropdown collapse.
-            // Jangan aktifkan: ->sidebarCollapsibleOnDesktop()
+            // Jangan aktifkan sidebar collapsible agar sidebar tidak punya tombol collapse.
+            // ->sidebarCollapsibleOnDesktop()
 
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
@@ -258,6 +258,43 @@ class TesterPanelProvider extends PanelProvider
             )
 
             ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                function (): string {
+                    $theme = Auth::user()?->theme_preference ?? 'system';
+
+                    return '
+                        <script>
+                            (function () {
+                                const savedTheme = ' . json_encode($theme) . ';
+
+                                function applyTesYukTheme(theme) {
+                                    const prefersDark = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;
+                                    const shouldUseDark = theme === \"dark\" || (theme === \"system\" && prefersDark);
+
+                                    document.documentElement.classList.toggle(\"dark\", shouldUseDark);
+                                    localStorage.setItem(\"tesyuk_theme\", theme);
+                                }
+
+                                applyTesYukTheme(savedTheme);
+
+                                window.addEventListener(\"tesyuk-theme-updated\", function (event) {
+                                    applyTesYukTheme(event.detail.theme);
+                                });
+
+                                window.matchMedia(\"(prefers-color-scheme: dark)\").addEventListener(\"change\", function () {
+                                    const currentTheme = localStorage.getItem(\"tesyuk_theme\") || savedTheme;
+
+                                    if (currentTheme === \"system\") {
+                                        applyTesYukTheme(\"system\");
+                                    }
+                                });
+                            })();
+                        </script>
+                    ';
+                }
+            )
+
+            ->renderHook(
                 PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
                 function () {
                     if (! request()->routeIs('filament.tester.pages.dashboard')) {
@@ -265,7 +302,7 @@ class TesterPanelProvider extends PanelProvider
                     }
 
                     $user = Auth::user();
-                    $userName = $user?->name ?? 'tester';
+                    $userName = e($user?->name ?? 'tester');
                     $userPoints = $user?->testerProfile?->points ?? 0;
 
                     $hour = now()->format('H');
@@ -352,11 +389,11 @@ class TesterPanelProvider extends PanelProvider
             ])
 
             ->navigationItems([
-                NavigationItem::make('Profil')
+                NavigationItem::make('Pengaturan Akun')
                     ->url(fn (): string => filament()->getProfileUrl() ?? '#')
-                    ->icon('heroicon-o-user-circle')
+                    ->icon('heroicon-o-cog-6-tooth')
                     ->group('Akun & Bantuan')
-                    ->isActiveWhen(fn () => request()->url() === filament()->getProfileUrl())
+                    ->isActiveWhen(fn (): bool => request()->url() === filament()->getProfileUrl())
                     ->sort(2),
             ])
 
@@ -367,7 +404,6 @@ class TesterPanelProvider extends PanelProvider
             ])
 
             // Sengaja tidak pakai discoverWidgets supaya dashboard tidak dobel.
-            // Widget PenukaranPoinStats tetap bisa dipanggil manual dari halaman Penukaran Poin.
 
             ->middleware([
                 EncryptCookies::class,
