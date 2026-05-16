@@ -2,53 +2,144 @@
 
 namespace App\Filament\Tester\Pages;
 
+use App\Models\SupportMessage;
+use App\Models\SupportTicket;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Livewire\WithFileUploads;
 
 class HubungiAdmin extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-ellipsis';
-    protected static ?string $navigationGroup = 'Akun & Bantuan';
+    use WithFileUploads;
+
+    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+
     protected static ?string $navigationLabel = 'Hubungi Admin';
-    protected static ?string $title = 'Pusat Bantuan & Chat';
-    protected static string $view = 'tester.hubungi-admin';
 
-    // 1. Tempat menyimpan ketikan user
-    public string $pesanBaru = '';
+    protected static ?string $title = 'Hubungi Admin';
 
-    // 2. Tempat menyimpan riwayat chat di layar
-    public array $riwayatChat = [];
+    protected static ?string $navigationGroup = 'Akun & Bantuan';
 
-    // 3. Fungsi yang dijalankan pertama kali halaman dibuka
-    public function mount()
+    protected static ?int $navigationSort = 1;
+
+    protected static string $view = 'filament.tester.pages.hubungi-admin';
+
+    public ?SupportTicket $ticket = null;
+
+    public string $message = '';
+
+    public $attachment_upload = null;
+
+    public function mount(): void
     {
-        // Memberikan pesan sambutan otomatis dari admin
-        $this->riwayatChat[] = [
-            'pengirim' => 'admin',
-            'teks' => 'Halo Bagus, selamat datang di layanan bantuan TesYuk! Ada yang bisa kami bantu terkait pengujian aplikasimu hari ini?'
-        ];
+        $this->ticket = $this->getOrCreateTicket();
+        $this->markAdminMessagesAsRead();
     }
 
-    // 4. Fungsi ketika tombol "Kirim" ditekan
-    public function kirimPesan()
+    private function getOrCreateTicket(): SupportTicket
     {
-        // Kalau input kosong, jangan lakukan apa-apa
-        if (trim($this->pesanBaru) === '') {
+        return SupportTicket::query()->firstOrCreate(
+            [
+                'tester_id' => Auth::id(),
+                'status' => 'open',
+            ],
+            [
+                'subject' => 'Bantuan Tester',
+                'last_message_at' => now(),
+            ]
+        );
+    }
+
+    public function getMessagesProperty()
+    {
+        $ticket = $this->ticket ?? $this->getOrCreateTicket();
+
+        return $ticket->messages()
+            ->with('sender')
+            ->oldest()
+            ->get();
+    }
+
+    public function sendMessage(): void
+    {
+        $this->validate([
+            'message' => ['nullable', 'string', 'max:1000'],
+            'attachment_upload' => ['nullable', 'image', 'max:5120'],
+        ], [
+            'message.max' => 'Pesan maksimal 1000 karakter.',
+            'attachment_upload.image' => 'File harus berupa gambar.',
+            'attachment_upload.max' => 'Ukuran gambar maksimal 5 MB.',
+        ]);
+
+        $messageText = trim($this->message);
+
+        if ($messageText === '' && ! $this->attachment_upload) {
+            Notification::make()
+                ->title('Pesan atau foto wajib diisi.')
+                ->danger()
+                ->send();
+
             return;
         }
 
-        // Masukkan pesan user (warna biru rata kanan) ke layar
-        $this->riwayatChat[] = [
-            'pengirim' => 'user',
-            'teks' => $this->pesanBaru
-        ];
+        $attachmentPath = null;
+        $attachmentName = null;
+        $attachmentMime = null;
 
-        // Kosongkan kolom input setelah dikirim
-        $this->pesanBaru = '';
+        if ($this->attachment_upload) {
+            $attachmentName = $this->attachment_upload->getClientOriginalName();
+            $attachmentMime = $this->attachment_upload->getMimeType();
+            $attachmentPath = $this->attachment_upload->store('support-attachments', 'public');
+        }
 
-        // Simulasi balasan otomatis dari admin (Biar kelihatan hidup)
-        $this->riwayatChat[] = [
-            'pengirim' => 'admin',
-            'teks' => 'Terima kasih! Pesan kamu sudah kami terima. Mohon tunggu sebentar ya.'
-        ];
+        DB::transaction(function () use ($messageText, $attachmentPath, $attachmentName, $attachmentMime) {
+            $ticket = $this->ticket ?? $this->getOrCreateTicket();
+
+            SupportMessage::create([
+                'support_ticket_id' => $ticket->id,
+                'sender_id' => Auth::id(),
+                'sender_role' => 'tester',
+                'message' => $messageText,
+                'attachment_path' => $attachmentPath,
+                'attachment_original_name' => $attachmentName,
+                'attachment_mime_type' => $attachmentMime,
+                'is_read' => false,
+            ]);
+
+            $ticket->update([
+                'status' => 'open',
+                'last_message_at' => now(),
+            ]);
+        });
+
+        $this->message = '';
+        $this->attachment_upload = null;
+
+        Notification::make()
+            ->title('Pesan berhasil dikirim.')
+            ->success()
+            ->send();
+    }
+
+    public function refreshMessages(): void
+    {
+        $this->markAdminMessagesAsRead();
+    }
+
+    private function markAdminMessagesAsRead(): void
+    {
+        if (! $this->ticket) {
+            return;
+        }
+
+        SupportMessage::query()
+            ->where('support_ticket_id', $this->ticket->id)
+            ->where('sender_role', 'admin')
+            ->where('is_read', false)
+            ->update([
+                'is_read' => true,
+            ]);
     }
 }

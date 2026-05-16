@@ -12,11 +12,7 @@ class ListPenukaranPoins extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make()
-                ->label('Tukar Poin')
-                ->icon('heroicon-m-plus'),
-        ];
+        return [];
     }
 
     protected function getHeaderWidgets(): array
