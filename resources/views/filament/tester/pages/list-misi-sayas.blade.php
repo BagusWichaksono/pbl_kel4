@@ -3,10 +3,10 @@
 
         {{-- EMPTY STATE --}}
         @if($missions->isEmpty())
-            <div class="rounded-2xl border" style="background:#EFF4FB; border-color:#D0DAEA;">
-                <div class="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <div class="rounded-lg border" style="background:#EFF4FB; border-color:#D0DAEA;">
+                <div class="flex flex-col items-center justify-center text-center py-2">
                     <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl" style="background:#D0DAEA;">
-                        <x-heroicon-o-clipboard-document-list class="h-7 w-7" style="color:#4A6FA5;" />
+                        <x-heroicon-o-clipboard-document-list class="h-7 w-7"/>
                     </div>
                     <h2 class="text-lg font-semibold" style="color:#1B2A4A;">
                         Belum Ada Misi Testing
@@ -67,7 +67,6 @@
                                     <span class="flex items-center gap-1.5">
                                         <x-heroicon-o-calendar-days class="h-3.5 w-3.5" />
                                         {{ \Carbon\Carbon::parse($application->start_date)->translatedFormat('d M Y') }}
-                                        –
                                         {{ $application?->end_date
                                             ? \Carbon\Carbon::parse($application->end_date)->translatedFormat('d M Y')
                                             : \Carbon\Carbon::parse($application->start_date)->addDays(14)->translatedFormat('d M Y')
