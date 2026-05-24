@@ -17,9 +17,12 @@ class PenukaranPoinResource extends Resource
     protected static ?string $model = Withdrawal::class;
 
     protected static ?string $modelLabel = 'Pencairan Poin';
+
     protected static ?string $pluralModelLabel = 'Pencairan Poin Tester';
+    
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = 'Validasi & Keuangan';
+    
+    protected static ?string $navigationGroup = 'Keuangan';
 
     public static function canCreate(): bool
     {

@@ -19,10 +19,15 @@ class TransactionResource extends Resource
     protected static ?string $model = Transaction::class;
 
     protected static ?string $modelLabel = 'Validasi Pembayaran';
+
     protected static ?string $pluralModelLabel = 'Validasi Pembayaran';
+    
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    
     protected static ?string $navigationLabel = 'Pembayaran Developer';
-    protected static ?string $navigationGroup = 'Validasi & Keuangan';
+    
+    protected static ?string $navigationGroup = 'Keuangan';
+    
     protected static ?int $navigationSort = 1;
 
     // ─── AKSES: Admin & Superadmin Boleh Masuk ────────────────────────
@@ -169,12 +174,5 @@ class TransactionResource extends Resource
             // Kita cuma butuh halaman List (Tabel) saja
             'index' => Pages\ListTransactions::route('/'),
         ];
-    }
-
-    // Tambahkan ini di dalam class TransactionResource (di bawah $navigationSort)
-    public static function shouldRegisterNavigation(): bool
-    {
-        // Menyembunyikan menu ini dari Sidebar Admin
-        return false; 
     }
 }

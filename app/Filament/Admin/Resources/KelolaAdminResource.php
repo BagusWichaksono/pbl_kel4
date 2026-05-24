@@ -17,13 +17,16 @@ class KelolaAdminResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $modelLabel = 'Admin';
+    
     protected static ?string $pluralModelLabel = 'Kelola Admin';
+    
     protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+    
     protected static ?string $navigationLabel = 'Kelola Admin';
+    
     protected static ?int $navigationSort = 10;
     
-    // Taruh di grup khusus biar sidebarnya lebih rapi
-    protected static ?string $navigationGroup = 'Manajemen Sistem'; 
+    protected static ?string $navigationGroup = 'Akun'; 
 
     // ─── KEAMANAN BULLETPROOF: Hanya Superadmin ────────────────────────
     

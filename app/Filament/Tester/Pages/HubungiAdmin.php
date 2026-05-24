@@ -20,7 +20,7 @@ class HubungiAdmin extends Page
 
     protected static ?string $title = 'Hubungi Admin';
 
-    protected static ?string $navigationGroup = 'Akun & Bantuan';
+    protected static ?string $navigationGroup = 'Bantuan';
 
     protected static ?int $navigationSort = 1;
 

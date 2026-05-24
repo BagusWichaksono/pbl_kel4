@@ -20,7 +20,7 @@ class PesanTester extends Page
 
     protected static ?string $title = 'Pesan Tester';
 
-    protected static ?string $navigationGroup = 'Bantuan & Support';
+    protected static ?string $navigationGroup = 'Bantuan';
 
     protected static ?int $navigationSort = 1;
 

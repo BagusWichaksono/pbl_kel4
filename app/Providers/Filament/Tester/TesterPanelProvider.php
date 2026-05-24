@@ -50,11 +50,23 @@ class TesterPanelProvider extends PanelProvider
             ])
             ->font('Poppins')
             ->profile(\App\Filament\Tester\Pages\CustomEditProfile::class)
-
-            // Jangan aktifkan sidebar collapsible agar sidebar tidak punya tombol collapse.
-            // ->sidebarCollapsibleOnDesktop()
-
-            ->renderHook(
+            ->sidebarCollapsibleOnDesktop()
+            ->navigationGroups([
+                NavigationGroup::make('Misi Testing')->collapsible(false),
+                NavigationGroup::make('Aktivitas Harian')->collapsible(false),
+                NavigationGroup::make('Reward')->collapsible(false),
+                NavigationGroup::make('Bantuan')->collapsible(false),
+                NavigationGroup::make('Akun')->collapsible(false),
+            ])
+            ->navigationItems([
+                NavigationItem::make('Pengaturan Akun')
+                    ->url(fn (): string => url('/developer/profile'))
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->group('Akun')
+                    ->isActiveWhen(fn (): bool => request()->is('developer/profile'))
+                    ->sort(1),
+            ])
+                ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => "
                 <style>
@@ -98,37 +110,30 @@ class TesterPanelProvider extends PanelProvider
                         padding: 0.6rem 1rem !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-label {
-                        color: #475569 !important;
-                        font-weight: 600 !important;
-                    }
-
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-icon {
-                        color: #64748b !important;
-                    }
-
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: #f1f5f9 !important;
-                    }
-
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
-                        color: #0f172a !important;
-                    }
-
-                    .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: #334155 !important;
-                    }
-
                     html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: #86a0cd !important;
-                        border: none !important;
-                        box-shadow: 0 4px 15px -3px rgba(83, 116, 172, 0.4) !important;
+                        background-color: #eff5fa !important;
+                        border: 1px solid #d1e1f1 !important;
+                        box-shadow: none !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
+                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label {
+                        color: #2f456f !important;
+                        font-weight: 700 !important;
+                    }
+
                     html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
-                        color: #ffffff !important;
+                        color: #5374ac !important;
+                    }
+
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button {
+                        background-color: rgba(83, 116, 172, 0.18) !important;
+                        border: 1px solid rgba(139, 175, 208, 0.28) !important;
+                        box-shadow: none !important;
+                    }
+
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
+                        color: #dbeafe !important;
                         font-weight: 700 !important;
                     }
 
@@ -381,21 +386,6 @@ class TesterPanelProvider extends PanelProvider
                 )
             )
 
-            ->navigationGroups([
-                NavigationGroup::make('Menu')->collapsible(false),
-                NavigationGroup::make('Aktivitas Testing')->collapsible(false),
-                NavigationGroup::make('Reward Tester')->collapsible(false),
-                NavigationGroup::make('Akun & Bantuan')->collapsible(false),
-            ])
-
-            ->navigationItems([
-                NavigationItem::make('Pengaturan Akun')
-                    ->url(fn (): string => filament()->getProfileUrl() ?? '#')
-                    ->icon('heroicon-o-cog-6-tooth')
-                    ->group('Akun & Bantuan')
-                    ->isActiveWhen(fn (): bool => request()->url() === filament()->getProfileUrl())
-                    ->sort(2),
-            ])
 
             ->discoverResources(in: app_path('Filament/Tester/Resources'), for: 'App\\Filament\\Tester\\Resources')
             ->discoverPages(in: app_path('Filament/Tester/Pages'), for: 'App\\Filament\\Tester\\Pages')

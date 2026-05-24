@@ -11,6 +11,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
+use Filament\Navigation\NavigationGroup;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -41,7 +42,14 @@ class AdminPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->font('Poppins')
-            ->sidebarCollapsibleOnDesktop() 
+            ->sidebarCollapsibleOnDesktop()
+            ->navigationGroups([
+                NavigationGroup::make('Verifikasi')->collapsible(false),
+                NavigationGroup::make('Manajemen Testing')->collapsible(false),
+                NavigationGroup::make('Keuangan')->collapsible(false),
+                NavigationGroup::make('Bantuan')->collapsible(false),
+                NavigationGroup::make('Akun')->collapsible(false),
+            ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -69,110 +77,134 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => "
-                <style> 
-                    /* 1. BACKGROUND & LAYOUT (Vibe Landing Page) */
-                    body, .fi-layout {
-                        background: linear-gradient(180deg, #e4eff8 0%, #ffffff 100%) !important;
-                        background-attachment: fixed !important;
-                    }
-                    .dark body, .dark .fi-layout {
-                        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
-                    }
-                    .fi-main { background: transparent !important; }
-
-                    /* 2. TOPBAR (Bening & Clean) */
-                    .fi-topbar { 
-                        background: transparent !important; 
-                        border-bottom: none !important; 
-                        box-shadow: none !important; 
-                        backdrop-filter: none !important; 
+                <style>
+                    body,
+                    .fi-layout {
+                        background-color: #f8fafc !important;
                     }
 
-                    /* 3. SIDEBAR (Glassmorphism) */
+                    .dark body,
+                    .dark .fi-layout {
+                        background-color: #0f172a !important;
+                    }
+
+                    .fi-main {
+                        background: transparent !important;
+                    }
+
+                    .fi-topbar {
+                        background: transparent !important;
+                        border-bottom: none !important;
+                        box-shadow: none !important;
+                        backdrop-filter: none !important;
+                    }
+
                     .fi-sidebar {
-                        background: rgba(255, 255, 255, 0.4) !important;
-                        backdrop-filter: blur(12px) !important;
-                        border-right: none !important;
-                        box-shadow: 4px 0 24px -5px rgba(83, 116, 172, 0.05) !important;
-                    }
-                    .dark .fi-sidebar { background: rgba(30, 41, 59, 0.4) !important; }
-
-                    /* Transisi dasar dengan efek 'Pegas' (Bouncy) */
-                    .fi-sidebar-item-button, .custom-card-stats { 
-                        border-radius: 9999px !important; 
-                        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-                        transform-origin: center center !important;
+                        background-color: #ffffff !important;
+                        backdrop-filter: none !important;
+                        border-right: 1px solid #f1f5f9 !important;
+                        box-shadow: none !important;
                     }
 
-                    /* EFEK TEKAN FISIK (Tactile Feedback) */
-                    .fi-sidebar-item-button:active, .custom-card-stats:active {
-                        transform: scale(0.95) !important;
-                        transition: transform 0.1s ease-out !important;
+                    .dark .fi-sidebar {
+                        background-color: #1e293b !important;
+                        border-right: 1px solid #334155 !important;
                     }
 
-                    /* Icon membesar halus saat hover */
+                    .fi-sidebar-item-button {
+                        border-radius: 9999px !important;
+                        margin-bottom: 4px !important;
+                        padding: 0.6rem 1rem !important;
+                        border: 1px solid transparent !important;
+                        box-shadow: none !important;
+                        transition: all 0.22s ease !important;
+                        transform: none !important;
+                    }
+
+                    .fi-sidebar-item-button:active {
+                        transform: scale(0.98) !important;
+                    }
+
                     .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
-                        transform: scale(1.15) !important;
-                        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+                        transform: none !important;
                     }
 
-                    /* Hover Sidebar Light Mode */
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-label {
+                        color: #475569 !important;
+                        font-weight: 600 !important;
+                    }
+
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-icon {
+                        color: #64748b !important;
+                    }
+
                     html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: rgba(83, 116, 172, 0.08) !important;
-                        transform: translateY(-2px) scale(1.01) !important; 
-                        box-shadow: 0 8px 20px -4px rgba(83, 116, 172, 0.15) !important;
+                        background-color: #f1f5f9 !important;
+                        border-color: #e2e8f0 !important;
+                        transform: none !important;
+                        box-shadow: none !important;
                     }
 
-                    /* Hover Sidebar Dark Mode */
-                    .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: rgba(255, 255, 255, 0.05) !important;
-                        transform: translateY(-2px) scale(1.01) !important;
-                        box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.4) !important;
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
+                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
+                        color: #2f456f !important;
                     }
 
-                    /* Hover Kartu Statistik */
-                    .custom-card-stats:hover {
-                        transform: translateY(-5px) scale(1.02) !important;
-                        box-shadow: 0 15px 30px -5px rgba(83, 116, 172, 0.15) !important;
-                    }
-                    .dark .custom-card-stats:hover {
-                        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5) !important;
-                    }
-
-                    /* ========================================= */
-
-                    .fi-topbar .fi-input-wrp { border-radius: 9999px !important; }
-
-                    /* 4. MODAL & TABEL (Rounded corners) */
-                    .fi-ta-ctn, .fi-modal-window, .fi-section {
-                        border-radius: 24px !important;
-                        border: 1px solid rgba(83, 116, 172, 0.1) !important;
-                        box-shadow: 0 10px 30px -5px rgba(83, 116, 172, 0.05) !important;
-                        background: rgba(255, 255, 255, 0.8) !important;
-                        backdrop-filter: blur(10px) !important;
-                    }
-                    .dark .fi-ta-ctn, .dark .fi-modal-window, .dark .fi-section {
-                        background: rgba(30, 41, 59, 0.8) !important;
-                        border-color: rgba(255,255,255,0.05) !important;
-                    }
-
-                    /* 5. HIGHLIGHT MENU AKTIF */
                     html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button {
                         background-color: #eff5fa !important;
                         border: 1px solid #d1e1f1 !important;
-                        box-shadow: 0 4px 15px -3px rgba(83, 116, 172, 0.15) !important;
+                        box-shadow: none !important;
+                        transform: none !important;
+                    }
+
+                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label {
+                        color: #2f456f !important;
                         font-weight: 700 !important;
                     }
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-icon { color: #5374ac !important; }
+
+                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
+                        color: #5374ac !important;
+                    }
+
+                    .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
+                        background-color: #334155 !important;
+                        border-color: #475569 !important;
+                        transform: none !important;
+                        box-shadow: none !important;
+                    }
 
                     .dark .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: rgba(83, 116, 172, 0.15) !important;
-                        border: 1px solid rgba(83, 116, 172, 0.3) !important;
-                        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.4) !important;
+                        background-color: rgba(83, 116, 172, 0.18) !important;
+                        border: 1px solid rgba(139, 175, 208, 0.28) !important;
+                        box-shadow: none !important;
+                    }
+
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
+                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
+                        color: #dbeafe !important;
                         font-weight: 700 !important;
                     }
 
-                    /* 7. WIDGET CUSTOM CARD STATS */
+                    .fi-sidebar-group-collapse-button {
+                        display: none !important;
+                    }
+
+                    .fi-ta-ctn,
+                    .fi-modal-window,
+                    .fi-section {
+                        border-radius: 24px !important;
+                        border: 1px solid rgba(83, 116, 172, 0.1) !important;
+                        box-shadow: 0 4px 20px -5px rgba(83, 116, 172, 0.05) !important;
+                        background-color: white !important;
+                    }
+
+                    .dark .fi-ta-ctn,
+                    .dark .fi-modal-window,
+                    .dark .fi-section {
+                        background-color: #1e293b !important;
+                        border-color: #334155 !important;
+                    }
+
                     .custom-card-stats {
                         background: white !important;
                         border: 1px solid rgba(83, 116, 172, 0.1) !important;
@@ -182,13 +214,86 @@ class AdminPanelProvider extends PanelProvider
                         align-items: center !important;
                         gap: 1rem !important;
                         box-shadow: 0 4px 20px -2px rgba(83, 116, 172, 0.08) !important;
+                        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
                     }
-                    .dark .custom-card-stats { background: rgba(30, 41, 59, 0.8) !important; backdrop-filter: blur(10px) !important; border-color: rgba(255,255,255,0.05) !important; }
-                    .stat-label { color: #6b7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin: 0; }
-                    .stat-value { color: #141c33; font-size: 1.25rem; font-weight: 800; margin: 0; }
-                    .dark .stat-value { color: #f8fafc !important; }
-                    .icon-bg { background: #eff5fa; padding: 0.75rem; border-radius: 12px; color: #5374ac; }
-                    .dark .icon-bg { background: rgba(83, 116, 172, 0.2) !important; color: #8bafd0 !important; }
+
+                    .custom-card-stats:hover {
+                        transform: translateY(-3px) !important;
+                        box-shadow: 0 10px 25px -5px rgba(83, 116, 172, 0.12) !important;
+                    }
+
+                    .dark .custom-card-stats {
+                        background: #1e293b !important;
+                        border-color: #334155 !important;
+                    }
+
+                    .stat-label {
+                        color: #6b7280;
+                        font-size: 0.75rem;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        margin: 0;
+                    }
+
+                    .stat-value {
+                        color: #141c33;
+                        font-size: 1.25rem;
+                        font-weight: 800;
+                        margin: 0;
+                    }
+
+                    .dark .stat-value {
+                        color: #f8fafc !important;
+                    }
+
+                    .icon-bg {
+                        background: #eff5fa;
+                        padding: 0.75rem;
+                        border-radius: 12px;
+                        color: #5374ac;
+                    }
+
+                    .dark .icon-bg {
+                        background: rgba(83, 116, 172, 0.2) !important;
+                        color: #8bafd0 !important;
+                    }
+
+                    .fi-topbar .fi-user-menu {
+                        background: transparent !important;
+                        border: none !important;
+                        padding: 0 !important;
+                    }
+
+                    .fi-topbar .fi-user-menu > button {
+                        background-color: #ffffff !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 9999px !important;
+                        padding: 4px !important;
+                    }
+
+                    .dark .fi-topbar .fi-user-menu > button {
+                        background-color: #ffffff !important;
+                        border-color: #e2e8f0 !important;
+                    }
+
+                    .fi-topbar .fi-user-menu .fi-avatar {
+                        background-color: #020617 !important;
+                        color: #ffffff !important;
+                        border-radius: 9999px !important;
+                    }
+
+                    .fi-dropdown-panel button,
+                    .fi-dropdown-panel a {
+                        background-color: unset;
+                    }
+
+                    .fi-dropdown-list-item:hover {
+                        background-color: #f0f7ff !important;
+                    }
+
+                    .fi-dropdown-list-item-label {
+                        font-weight: 600 !important;
+                    }
                 </style>
                 "
             )

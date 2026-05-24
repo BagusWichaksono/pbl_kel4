@@ -25,7 +25,7 @@ class AppResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Aplikasi Saya';
 
-    protected static ?string $navigationGroup = 'Developer';
+    protected static ?string $navigationGroup = 'Aplikasi';
 
     protected static ?int $navigationSort = 1;
 

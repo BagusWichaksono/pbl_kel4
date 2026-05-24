@@ -25,7 +25,7 @@ class AppResource extends Resource
 
     protected static ?string $navigationLabel = 'Verifikasi Aplikasi';
 
-    protected static ?string $navigationGroup = 'Validasi & Keuangan';
+    protected static ?string $navigationGroup = 'Verifikasi';
 
     protected static ?int $navigationSort = 2;
 

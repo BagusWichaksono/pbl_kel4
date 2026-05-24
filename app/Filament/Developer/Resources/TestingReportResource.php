@@ -20,8 +20,12 @@ class TestingReportResource extends Resource
     protected static ?string $model = TestingReport::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+
     protected static ?string $navigationLabel = 'Hasil Pengujian';
+    
     protected static ?string $pluralModelLabel = 'Daftar Hasil Pengujian';
+
+    protected static ?string $navigationGroup = 'Laporan';
     
 
     // ─── DEVELOPER CUMA BISA LIHAT APLIKASINYA SENDIRI ───

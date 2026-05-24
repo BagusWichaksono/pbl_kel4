@@ -16,9 +16,14 @@ class TransactionResource extends Resource
     
     // Ganti icon dan label biar sesuai
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+
     protected static ?string $navigationLabel = 'Riwayat Transaksi';
+    
     protected static ?string $pluralModelLabel = 'Riwayat Transaksi';
+    
     protected static ?int $navigationSort = 2; // Biar posisinya pas di bawah menu Aplikasi Saya
+
+    protected static ?string $navigationGroup = 'Riwayat';
 
     // KUNCI KEAMANAN: Developer cuma bisa lihat transaksi miliknya sendiri
     public static function getEloquentQuery(): Builder
