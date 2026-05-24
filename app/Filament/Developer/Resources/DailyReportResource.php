@@ -17,7 +17,7 @@ class DailyReportResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Developer';
+    protected static ?string $navigationGroup = 'Aplikasi';
 
     protected static ?string $navigationLabel = 'Laporan Harian Tester';
 
