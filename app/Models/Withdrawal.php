@@ -8,11 +8,14 @@ class Withdrawal extends Model
 {
     protected $fillable = [
         'tester_id',
+        'invoice_code',
         'points_withdrawn',
         'amount_rp',
+        'account_name',
         'e_wallet_provider',
         'e_wallet_number',
         'status',
+        'payment_proof',
         'notes',
     ];
 

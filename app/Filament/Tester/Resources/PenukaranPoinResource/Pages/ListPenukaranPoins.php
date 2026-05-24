@@ -12,7 +12,12 @@ class ListPenukaranPoins extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Actions\CreateAction::make()
+                ->label('Tukar Poin Sekarang')
+                ->icon('heroicon-m-plus')
+                ->visible(fn () => (\Illuminate\Support\Facades\Auth::user()?->testerProfile?->points ?? 0) > 0),
+        ];
     }
 
     protected function getHeaderWidgets(): array

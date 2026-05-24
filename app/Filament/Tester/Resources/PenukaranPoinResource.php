@@ -52,6 +52,11 @@ class PenukaranPoinResource extends Resource
                             ])
                             ->required(),
 
+                        Forms\Components\TextInput::make('account_name')
+                            ->label('Atas Nama')
+                            ->required()
+                            ->placeholder('Nama lengkap sesuai akun E-Wallet'),
+
                         Forms\Components\TextInput::make('e_wallet_number')
                             ->label('Nomor Handphone E-Wallet')
                             ->tel()
@@ -95,8 +100,14 @@ class PenukaranPoinResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('invoice_code')
+                    ->label('Kode Invoice')
+                    ->searchable()
+                    ->copyable()
+                    ->weight('bold'),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Tanggal Request')
+                    ->label('Waktu Pengajuan')
                     ->dateTime('d M Y, H:i')
                     ->sortable(),
 
@@ -139,7 +150,8 @@ class PenukaranPoinResource extends Resource
                 Tables\Actions\CreateAction::make()
                     ->label('Tukar Poin Sekarang')
                     ->icon('heroicon-m-plus')
-                    ->button(),
+                    ->button()
+                    ->visible(fn () => (Auth::user()?->testerProfile?->points ?? 0) > 0),
             ])
             ->defaultSort('created_at', 'desc');
     }
