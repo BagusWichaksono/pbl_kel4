@@ -12,9 +12,7 @@
                             <x-heroicon-o-clipboard-document-list class="h-5 w-5" style="color:#FFFFFF;" />
                         </div>
                         <div>
-                            <p class="text-base font-bold tracking-tight" style="color:#FFFFFF;">
-                                {{ $appName }}
-                            </p>
+                            <p class="text-base font-bold tracking-tight" style="color:#FFFFFF;">{{ $appName }}</p>
                             <p class="text-xs" style="color:#B8CAE0;">
                                 {{ $reportsByDate->flatten()->count() }} total laporan masuk
                             </p>
@@ -58,9 +56,11 @@
                                                 {{ strtoupper(substr($report->tester?->name ?? 'T', 0, 1)) }}
                                             </div>
                                             <div>
-                                                <p class="text-sm font-semibold" style="color:#1B2A4A;">
-                                                    {{ $report->tester?->name ?? 'Tester Tidak Diketahui' }}
-                                                </p>
+                                                <div class="flex items-center gap-2">
+                                                    <p class="text-sm font-semibold" style="color:#1B2A4A;">
+                                                        {{ $report->tester?->name ?? 'Tester Tidak Diketahui' }}
+                                                    </p>
+                                                </div>
                                                 <div class="flex items-center gap-1 mt-0.5">
                                                     <x-heroicon-o-clock class="h-3 w-3" style="color:#7B8FAB;" />
                                                     <span class="text-xs" style="color:#7B8FAB;">
@@ -147,6 +147,33 @@
                                                         </div>
                                                     </div>
 
+                                                    {{-- LAPORAN BUG --}}
+                                                    @if(!empty($report->bug_report))
+                                                        <div>
+                                                            <div class="mb-3 flex items-center gap-2">
+                                                                <x-heroicon-o-bug-ant class="h-4 w-4" style="color:#B91C1C;" />
+                                                                <span class="text-sm font-bold" style="color:#B91C1C;">Laporan Bug</span>
+                                                            </div>
+                                                            <div class="rounded-xl px-4 py-4"
+                                                                style="background:#FEF2F2; border:1px solid #FECACA;">
+                                                                <p class="whitespace-pre-line text-sm leading-7" style="color:#7F1D1D;">
+                                                                    {{ $report->bug_report }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div>
+                                                            <div class="mb-3 flex items-center gap-2">
+                                                                <x-heroicon-o-bug-ant class="h-4 w-4" style="color:#4A6FA5;" />
+                                                                <span class="text-sm font-bold" style="color:#2B4C7E;">Laporan Bug</span>
+                                                            </div>
+                                                            <div class="rounded-xl px-4 py-4"
+                                                                style="background:#EFF4FB; border:1px solid #D0DAEA;">
+                                                                <p class="text-sm" style="color:#7B8FAB;">Tidak ada laporan bug pada hari ini.</p>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+
                                                     {{-- SCREENSHOT --}}
                                                     <div>
                                                         <div class="mb-3 flex items-center gap-2">
@@ -178,6 +205,7 @@
                                                     </div>
 
                                                 </div>
+                                                {{-- akhir modal body --}}
                                             </div>
                                         </div>
                                         {{-- akhir modal --}}
@@ -186,16 +214,10 @@
                                     {{-- akhir tester row --}}
                                 @endforeach
                             </div>
-                            {{-- akhir list tester --}}
-
                         </div>
-                        {{-- akhir date card --}}
                     @endforeach
                 </div>
-                {{-- akhir date wrapper --}}
-
             </div>
-            {{-- akhir app card --}}
         @empty
             <div class="flex flex-col items-center justify-center rounded-2xl border py-16 text-center shadow-sm"
                 style="background:#EFF4FB; border-color:#D0DAEA;">

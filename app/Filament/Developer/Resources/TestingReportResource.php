@@ -3,8 +3,8 @@
 namespace App\Filament\Developer\Resources;
 
 use App\Filament\Developer\Resources\TestingReportResource\Pages;
+use App\Models\DailyReport;
 use App\Models\TestingReport;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,13 +22,11 @@ class TestingReportResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     protected static ?string $navigationLabel = 'Hasil Pengujian';
-    
+
     protected static ?string $pluralModelLabel = 'Daftar Hasil Pengujian';
 
     protected static ?string $navigationGroup = 'Laporan';
-    
 
-    // ─── DEVELOPER CUMA BISA LIHAT APLIKASINYA SENDIRI ───
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->whereHas('applicationTester.application', function (Builder $query) {
@@ -40,23 +38,32 @@ class TestingReportResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('applicationTester.application.name')
+                Tables\Columns\TextColumn::make('applicationTester.application.title')
                     ->label('Nama Aplikasi')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('applicationTester.user.name')
+                Tables\Columns\TextColumn::make('applicationTester.tester.name')
                     ->label('Nama Tester')
                     ->searchable(),
+
+                Tables\Columns\IconColumn::make('bug_report')
+                    ->label('Ada Bug?')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-bug-ant')
+                    ->falseIcon('heroicon-o-check-circle')
+                    ->trueColor('danger')
+                    ->falseColor('success')
+                    ->getStateUsing(fn ($record) => !empty($record->bug_report)),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'disetujui' => 'success',
-                        'pending' => 'warning',
-                        'ditolak' => 'danger',
-                        default => 'gray',
+                        'pending'   => 'warning',
+                        'ditolak'   => 'danger',
+                        default     => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -65,16 +72,28 @@ class TestingReportResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                // Bisa ditambah filter status nanti kalau butuh
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'pending'   => 'Pending',
+                        'disetujui' => 'Disetujui',
+                        'ditolak'   => 'Ditolak',
+                    ]),
+
+                Tables\Filters\Filter::make('has_bug')
+                    ->label('Ada Laporan Bug Harian')
+                    ->query(fn (Builder $query) => $query->whereHas('applicationTester', function ($q) {
+                        $q->whereHas('dailyReports', function ($r) {
+                            $r->whereNotNull('bug_report')->where('bug_report', '!=', '');
+                        });
+                    })),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Lihat Detail'),
             ])
             ->bulkActions([
-                // Sebaiknya Developer jangan bisa hapus (Delete) laporan tester. 
-                // Biar jadi arsip yang transparan. Kalau setuju, hapus bagian ini.
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(), 
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -85,17 +104,22 @@ class TestingReportResource extends Resource
             ->schema([
                 Section::make('Informasi Laporan')
                     ->schema([
-                        TextEntry::make('applicationTester.app.name')->label('Aplikasi yang Diuji'),
-                        TextEntry::make('applicationTester.user.name')->label('Penguji (Tester)'),
+                        TextEntry::make('applicationTester.application.title')
+                            ->label('Aplikasi yang Diuji'),
+
+                        TextEntry::make('applicationTester.tester.name')
+                            ->label('Penguji (Tester)'),
+
                         TextEntry::make('status')
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
                                 'disetujui' => 'success',
-                                'pending' => 'warning',
-                                'ditolak' => 'danger',
-                                default => 'gray',
+                                'pending'   => 'warning',
+                                'ditolak'   => 'danger',
+                                default     => 'gray',
                             }),
-                    ])->columns(3),
+                    ])
+                    ->columns(3),
 
                 Section::make('Bukti Pengujian')
                     ->schema([
@@ -105,12 +129,47 @@ class TestingReportResource extends Resource
                             ->height(300),
 
                         TextEntry::make('catatan')
-                            ->label('Catatan/Ulasan Laporan')
-                            ->columnSpanFull(),
+                            ->label('Catatan / Ulasan Laporan')
+                            ->columnSpanFull()
+                            ->placeholder('Tidak ada catatan.'),
 
                         TextEntry::make('alasan_penolakan')
                             ->label('Alasan Penolakan (Jika ada)')
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->placeholder('—'),
+                    ]),
+
+                Section::make('Laporan Bug Harian')
+                    ->description('Bug yang dilaporkan tester setiap hari selama masa testing.')
+                    ->schema([
+                        TextEntry::make('bug_harian')
+                            ->label('')
+                            ->columnSpanFull()
+                            ->getStateUsing(function ($record) {
+                                // Ambil tester_id dan application_id dari applicationTester
+                                $testerId     = $record->applicationTester?->tester_id;
+                                $applicationId = $record->applicationTester?->application_id;
+
+                                if (!$testerId || !$applicationId) {
+                                    return 'Data tester tidak ditemukan.';
+                                }
+
+                                $bugs = DailyReport::where('tester_id', $testerId)
+                                    ->where('app_id', $applicationId)
+                                    ->whereNotNull('bug_report')
+                                    ->where('bug_report', '!=', '')
+                                    ->orderBy('report_date')
+                                    ->get();
+
+                                if ($bugs->isEmpty()) {
+                                    return 'Tidak ada laporan bug harian dari tester ini.';
+                                }
+
+                                return $bugs->map(function ($bug) {
+                                    return '📅 ' . \Carbon\Carbon::parse($bug->report_date)->translatedFormat('d F Y') . "\n" . $bug->bug_report;
+                                })->implode("\n\n");
+                            })
+                            ->extraAttributes(['style' => 'white-space: pre-line;']),
                     ]),
             ]);
     }
@@ -119,11 +178,10 @@ class TestingReportResource extends Resource
     {
         return [
             'index' => Pages\ListTestingReports::route('/'),
-            'view' => Pages\ViewTestingReport::route('/{record}'),
+            'view'  => Pages\ViewTestingReport::route('/{record}'),
         ];
     }
 
-    // Menonaktifkan fitur Buat dan Edit (Murni Read-Only)
     public static function canCreate(): bool
     {
         return false;
