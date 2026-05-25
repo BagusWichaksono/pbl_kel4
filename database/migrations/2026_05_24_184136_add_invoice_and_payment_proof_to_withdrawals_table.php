@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('withdrawals', function (Blueprint $table) {
             $table->string('invoice_code')->unique()->nullable()->after('id');
-            $table->string('account_name')->nullable()->after('amount_rp');
+            $table->string('account_name')->nullable()->change();
             $table->string('payment_proof')->nullable()->after('notes');
         });
     }
@@ -24,7 +24,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('withdrawals', function (Blueprint $table) {
-            $table->dropColumn(['invoice_code', 'account_name', 'payment_proof']);
+            $table->dropColumn(['invoice_code', 'payment_proof']);
+            $table->string('account_name')->nullable(false)->change();
         });
     }
 };

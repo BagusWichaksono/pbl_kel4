@@ -25,9 +25,6 @@ return new class extends Migration
             if (Schema::hasColumn('withdrawals', 'amount')) {
                 $table->dropColumn('amount');
             }
-            if (Schema::hasColumn('withdrawals', 'account_name')) {
-                $table->dropColumn('account_name');
-            }
             if (Schema::hasColumn('withdrawals', 'qris_image')) {
                 $table->dropColumn('qris_image');
             }
@@ -42,7 +39,6 @@ return new class extends Migration
         Schema::table('withdrawals', function (Blueprint $table) {
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->decimal('amount', 15, 2)->nullable();
-            $table->string('account_name')->nullable();
             $table->string('qris_image')->nullable();
         });
     }
