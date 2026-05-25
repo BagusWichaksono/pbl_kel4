@@ -138,7 +138,7 @@ class PenukaranPoinResource extends Resource
                     })
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'pending' => 'Menunggu',
-                        'approved' => 'Disetujui',
+                        'approved' => 'Selesai',
                         'rejected' => 'Ditolak',
                         default => '-',
                     }),

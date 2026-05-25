@@ -76,7 +76,7 @@ class PenukaranPoinResource extends Resource
                         'rejected' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => strtoupper($state)),
+                    ->formatStateUsing(fn (string $state): string => strtoupper($state === 'approved' ? 'completed' : $state)),
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([
