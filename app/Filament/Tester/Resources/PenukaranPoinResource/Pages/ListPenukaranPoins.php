@@ -16,7 +16,7 @@ class ListPenukaranPoins extends ListRecords
             Actions\CreateAction::make()
                 ->label('Tukar Poin Sekarang')
                 ->icon('heroicon-m-plus')
-                ->visible(fn () => (\Illuminate\Support\Facades\Auth::user()?->testerProfile?->points ?? 0) > 0),
+                ->visible(fn () => (\Illuminate\Support\Facades\Auth::user()?->testerProfile?->points ?? 0) > 0 && \App\Models\Withdrawal::query()->where('tester_id', \Illuminate\Support\Facades\Auth::id())->exists()),
         ];
     }
 
