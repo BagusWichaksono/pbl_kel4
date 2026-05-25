@@ -1,244 +1,401 @@
 <x-filament-panels::page>
-    <div class="space-y-6">
+<style>
+    .misi-header {
+        background: linear-gradient(135deg, #1B2A4A, #2B4C7E, #4A6FA5);
+        border-radius: 16px;
+        padding: 14px 20px;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .misi-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .misi-header-badge {
+        background: rgba(255,255,255,0.2);
+        border-radius: 999px;
+        padding: 3px 14px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #fff;
+    }
+    .misi-card {
+        border-radius: 20px;
+        border: 1px solid #D0DAEA;
+        background: #fff;
+        overflow: hidden;
+        transition: transform .18s, box-shadow .18s;
+        display: block;
+        text-decoration: none;
+    }
+    .misi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(27,42,74,0.12);
+    }
+    .misi-card-top {
+        background: linear-gradient(135deg, #1B2A4A, #2B4C7E, #4A6FA5);
+        padding: 16px 18px;
+    }
+    .misi-card-top-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .misi-card-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+    .misi-card-subtitle {
+        font-size: 12px;
+        color: #A8C4E0;
+    }
+    .misi-badge {
+        border-radius: 999px;
+        padding: 3px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 2px;
+        white-space: nowrap;
+    }
+    .misi-badge-running {
+        background: #DBEAFE;
+        color: #1D4ED8;
+    }
+    .misi-badge-done {
+        background: #DCFCE7;
+        color: #15803D;
+    }
+    .misi-card-body {
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .misi-progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+    .misi-progress-label .lbl {
+        font-size: 12px;
+        color: #7B8FAB;
+    }
+    .misi-progress-label .pct {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1B2A4A;
+    }
+    .misi-track {
+        height: 8px;
+        background: #E2E8F0;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .misi-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #2B4C7E, #4A6FA5);
+    }
+    .misi-date-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #7B8FAB;
+    }
+    .misi-footer {
+        border-top: 1px solid #EFF4FB;
+        padding-top: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .misi-day-chips {
+        display: flex;
+        gap: 3px;
+        flex-wrap: wrap;
+    }
+    .misi-day-chip {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: #E2E8F0;
+        position: relative;
+    }
+    /* Hari sudah dilewati & ada laporan = hijau */
+    .misi-day-chip.submitted {
+        background: #22C55E;
+    }
+    /* Hari sudah dilewati tapi tidak ada laporan = merah */
+    .misi-day-chip.missed {
+        background: #FCA5A5;
+    }
+    /* Hari belum tiba = abu (default) */
+    .misi-footer-link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #4A6FA5;
+        transition: gap .18s;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .misi-card:hover .misi-footer-link {
+        gap: 8px;
+    }
+    .misi-legend {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .misi-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10px;
+        color: #7B8FAB;
+    }
+    .misi-legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+    }
+    .misi-empty {
+        border-radius: 20px;
+        border: 1px solid #D0DAEA;
+        background: #fff;
+        padding: 64px 24px;
+        text-align: center;
+    }
+    .misi-empty-icon {
+        margin: 0 auto 16px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: #EFF4FB;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .misi-report-count {
+        font-size: 11px;
+        color: #7B8FAB;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+</style>
 
-        {{-- EMPTY STATE --}}
-        @if($missions->isEmpty())
-            <div class="rounded-lg border" style="background:#EFF4FB; border-color:#D0DAEA;">
-                <div class="flex flex-col items-center justify-center text-center py-2">
-                    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl" style="background:#D0DAEA;">
-                        <x-heroicon-o-clipboard-document-list class="h-7 w-7"/>
-                    </div>
-                    <h2 class="text-lg font-semibold" style="color:#1B2A4A;">
-                        Belum Ada Misi Testing
-                    </h2>
-                    <p class="mt-2 max-w-sm text-sm" style="color:#7B8FAB;">
-                        Misi akan muncul setelah kamu mendaftar sebagai tester pada aplikasi yang tersedia.
-                    </p>
-                </div>
+<div class="space-y-5">
+
+    {{-- HEADER --}}
+    @if($missions->isNotEmpty())
+        <div class="misi-header">
+            <div class="misi-header-left">
+                <x-heroicon-o-device-phone-mobile class="h-5 w-5 text-white" />
+                <h2 class="text-sm font-semibold text-white">Aplikasi Terdaftar</h2>
+                <span class="misi-header-badge">{{ $missions->count() }}</span>
             </div>
-        @endif
+        </div>
+    @endif
 
-        {{-- MISSION CARDS --}}
-        @foreach($missions as $mission)
-            @php
-                $application = $mission->application;
+    {{-- EMPTY STATE --}}
+    @if($missions->isEmpty())
+        <div class="misi-empty">
+            <div class="misi-empty-icon mx-auto">
+                <x-heroicon-o-clipboard-document-list class="h-7 w-7" style="color:#4A6FA5;" />
+            </div>
+            <h2 class="text-lg font-bold" style="color:#1B2A4A;">Belum Ada Misi Testing</h2>
+            <p class="mt-2 text-sm" style="color:#7B8FAB;">
+                Misi akan muncul setelah kamu mendaftar sebagai tester.
+            </p>
+        </div>
+
+    @else
+
+        {{-- CARD GRID --}}
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+
+            @foreach($missions as $mission)
+
+                @php
+                $application       = $mission->application;
                 $dailyReportsCount = $mission->daily_reports_count_custom ?? 0;
-                $progressPercentage = $mission->progress_percentage ?? 0;
-                $dailyMissions = $mission->daily_missions_custom ?? [];
 
-                $statusStyle = match ($mission->status) {
-                    'active' => 'background:#D0DAEA;color:#2B4C7E;',
-                    'completed' => 'background:#DCFCE7;color:#15803D;',
-                    'failed', 'dropped' => 'background:#FEE2E2;color:#B91C1C;',
-                    default => 'background:#E2E8F0;color:#7B8FAB;',
-                };
+                $detailUrl = \App\Filament\Tester\Resources\MisiSayaResource::getUrl(
+                    'view',
+                    ['record' => $mission->id]
+                );
 
-                $statusLabel = match ($mission->status) {
-                    'active' => 'Aktif',
-                    'completed' => 'Selesai',
-                    'failed' => 'Gagal',
-                    'dropped' => 'Berhenti',
-                    default => $mission->status,
-                };
+                $today = \Carbon\Carbon::today();
+
+                $startDate = $application?->start_date
+                    ? \Carbon\Carbon::parse($application->start_date)
+                    : null;
+
+                $endDate = $application?->end_date
+                    ? \Carbon\Carbon::parse($application->end_date)
+                    : ($startDate ? $startDate->copy()->addDays(13) : null);
+
+                // Ambil semua laporan tester
+                $reports = $mission->dailyReports ?? collect();
+
+                // Simpan hari-hari yang ada laporan
+                $submittedDays = [];
+
+                if ($startDate) {
+
+                    foreach ($reports as $report) {
+
+                        if (!$report->report_date) {
+                            continue;
+                        }
+
+                        $reportDate = \Carbon\Carbon::parse($report->report_date);
+
+                        // Hitung hari keberapa sejak start mission
+                        $dayIndex = $startDate->diffInDays($reportDate, false);
+
+                        if ($dayIndex >= 0 && $dayIndex < 14) {
+                            $submittedDays[] = $dayIndex;
+                        }
+                    }
+                }
+
+                // Berapa hari kalender yang sudah dilewati
+                $daysPassed = 0;
+
+                if ($startDate) {
+                    $diff = $startDate->diffInDays($today, false);
+                    $daysPassed = (int) min(max($diff + 1, 0), 14);
+                }
+
+                // Status misi
+                $isFinished = $daysPassed >= 14 || $mission->status === 'completed';
+
+                $statusText = $isFinished
+                    ? 'Misi selesai'
+                    : 'Masih berjalan';
+
+                $badgeClass = $isFinished
+                    ? 'misi-badge-done'
+                    : 'misi-badge-running';
+
+                // Progress laporan
+                $progressPct = min(
+                    round(($dailyReportsCount / 14) * 100),
+                    100
+                );
             @endphp
 
-            <div class="overflow-hidden rounded-2xl border shadow-sm" style="border-color:#D0DAEA; background:#FFFFFF;">
+                <a href="{{ $detailUrl }}" class="misi-card group">
 
-                {{-- HEADER --}}
-                <div class="px-6 py-5" style="background: linear-gradient(135deg, #1B2A4A 0%, #2B4C7E 50%, #4A6FA5 100%);">
-                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                        <div class="min-w-0">
-                            <div class="flex flex-wrap items-center gap-4">
-                                <h2 class="text-xl font-bold tracking-tight" style="color:#FFFFFF;">
-                                    {{ $application?->title ?? 'Aplikasi tidak ditemukan' }}
-                                </h2>
-                                <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold" style="{{ $statusStyle }}">
-                                    {{ $statusLabel }}
-                                </span>
+                    {{-- TOP --}}
+                    <div class="misi-card-top">
+                        <div class="misi-card-top-row">
+                            <div class="min-w-0">
+                                <p class="misi-card-title truncate">
+                                    {{ $application?->title ?? 'Aplikasi Tidak Ditemukan' }}
+                                </p>
+                                <p class="misi-card-subtitle">{{ $statusText }}</p>
                             </div>
+                            {{-- Badge menunjukkan hari kalender yang sudah lewat --}}
+                            <span class="misi-badge {{ $badgeClass }}">
+                                {{ $daysPassed }}/14 Hari
+                            </span>
+                        </div>
+                    </div>
 
-                            <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm" style="color:#B8CAE0;">
-                                <span class="flex items-center gap-1.5">
-                                    <x-heroicon-o-user class="h-3.5 w-3.5" />
-                                    {{ $application?->developer?->name ?? '-' }}
-                                </span>
+                    {{-- BODY --}}
+                    <div class="misi-card-body">
 
-                                @if($application?->start_date)
-                                    <span class="flex items-center gap-1.5">
-                                        <x-heroicon-o-calendar-days class="h-3.5 w-3.5" />
-                                        {{ \Carbon\Carbon::parse($application->start_date)->translatedFormat('d M Y') }}
-                                        {{ $application?->end_date
-                                            ? \Carbon\Carbon::parse($application->end_date)->translatedFormat('d M Y')
-                                            : \Carbon\Carbon::parse($application->start_date)->addDays(14)->translatedFormat('d M Y')
-                                        }}
-                                    </span>
-                                @else
-                                    <span class="flex items-center gap-1.5">
-                                        <x-heroicon-o-clock class="h-3.5 w-3.5" />
-                                        Periode belum dimulai
-                                    </span>
-                                @endif
+                        {{-- Progress bar berdasarkan laporan terkumpul --}}
+                        <div>
+                            <div class="misi-progress-label">
+                                <span class="lbl">Bukti testing terkumpul</span>
+                                <span class="pct">{{ $progressPct }}%</span>
+                            </div>
+                            <div class="misi-track">
+                                <div class="misi-fill" style="width:{{ $progressPct }}%;"></div>
                             </div>
                         </div>
 
-                        <div class="shrink-0 ml-auto flex justify-end">
-                            @if($application?->app_link)
-                                <a href="{{ $application->app_link }}" target="_blank"
-                                    class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:opacity-90"
-                                    style="background:#FFFFFF; color:#2B4C7E;">
-                                    <x-heroicon-o-arrow-top-right-on-square class="h-4 w-4" />
-                                    Buka Aplikasi
-                                </a>
-                            @else
-                                <span class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium"
-                                    style="border:1px solid rgba(255,255,255,0.25); color:#B8CAE0;">
-                                    <x-heroicon-o-lock-closed class="h-4 w-4" />
-                                    Link Belum Tersedia
+                        {{-- Keterangan laporan vs hari --}}
+                        <div class="misi-report-count">
+                            <x-heroicon-o-document-check class="h-4 w-4 shrink-0" />
+                            {{ $dailyReportsCount }} laporan dikumpulkan
+                            @if($daysPassed > $dailyReportsCount)
+                                &nbsp;·&nbsp;
+                                <span style="color:#EF4444;">
+                                    {{ $daysPassed - $dailyReportsCount }} hari terlewat tanpa laporan
                                 </span>
                             @endif
                         </div>
-                    </div>
-                </div>
 
-                {{-- PROGRESS BAR STRIP --}}
-                <div class="flex items-center gap-4 border-b px-6 py-3" style="background:#EFF4FB; border-color:#D0DAEA;">
-                    <span class="text-xs font-semibold uppercase tracking-wide" style="color:#2B4C7E;">Progress</span>
-                    <div class="h-2 flex-1 overflow-hidden rounded-full" style="background:#D0DAEA;">
-                        <div class="h-2 rounded-full transition-all" style="width:{{ $progressPercentage }}%; background:#4A6FA5;"></div>
-                    </div>
-                    <span class="text-sm font-bold" style="color:#1B2A4A;">{{ $dailyReportsCount }}/14</span>
-                </div>
-
-                {{-- CONTENT --}}
-                <div class="grid grid-cols-1 xl:grid-cols-3">
-
-                    {{-- LEFT SIDEBAR --}}
-                    <div class="border-b xl:col-span-1 xl:border-b-0 xl:border-r" style="border-color:#D0DAEA; padding:24px;">
-
-                        {{-- INSTRUKSI --}}
-                        <div class="rounded-xl" style="background:#EFF4FB; padding:20px;">
-                            <div class="mb-2.5 flex items-center gap-2">
-                                <x-heroicon-o-document-text class="h-4 w-4" style="color:#4A6FA5;" />
-                                <h3 class="text-sm font-semibold" style="color:#1B2A4A;">Instruksi Testing</h3>
-                            </div>
-                            <p class="whitespace-pre-line text-sm leading-relaxed" style="color:#7B8FAB;">{{ $application?->description ?? 'Belum ada instruksi dari developer.' }}</p>
-                        </div>
-
-                        {{-- LAPORAN AKHIR --}}
-                        <div class="rounded-xl" style="background:#EFF4FB; padding:20px; margin-top:20px;">
-                            <div class="mb-2.5 flex items-center gap-2">
-                                <x-heroicon-o-paper-airplane class="h-4 w-4" style="color:#4A6FA5;" />
-                                <h3 class="text-sm font-semibold" style="color:#1B2A4A;">Laporan Akhir</h3>
-                            </div>
-                            <p class="mb-2 text-xs leading-relaxed" style="color:#7B8FAB; ">
-                                Kirim setelah 14 hari testing & 14 laporan harian selesai.
-                            </p>
-                            @if($this->canSubmitFinalReport($mission))
-                                {{ ($this->kirimLaporanAkhirAction)(['record' => $mission->id]) }}
+                        {{-- Tanggal --}}
+                        <div class="misi-date-row">
+                            <x-heroicon-o-calendar-days class="h-4 w-4 shrink-0" />
+                            @if($startDate)
+                                {{ $startDate->translatedFormat('d M Y') }}
+                                –
+                                {{ $endDate->translatedFormat('d M Y') }}
                             @else
-                                <button type="button" disabled
-                                    title="{{ $this->finalReportTooltip($mission) }}"
-                                    class="w-full cursor-not-allowed rounded-lg px-4 py-2.5 text-xs font-semibold"
-                                    style="background:#D0DAEA; color:#7B8FAB;">
-                                    <x-heroicon-o-lock-closed class="mr-1 inline h-3.5 w-3.5" />
-                                    Kirim Laporan Akhir
-                                </button>
-                                <p class="mt-2 text-xs leading-relaxed" style="color:#7B8FAB;">
-                                    {{ $this->finalReportTooltip($mission) }}
-                                </p>
+                                Periode belum dimulai
                             @endif
                         </div>
-                    </div>
 
-                    {{-- RIGHT: TIMELINE --}}
-                    <div class="xl:col-span-2">
-                        <div class="flex items-center justify-between border-b" style="border-color:#D0DAEA; padding:16px 24px;">
-                            <div class="flex items-center gap-2">
-                                <x-heroicon-o-list-bullet class="h-4 w-4" style="color:#4A6FA5;" />
-                                <h3 class="text-sm font-semibold" style="color:#1B2A4A;">Timeline Misi Harian</h3>
-                            </div>
-                            <span class="text-xs" style="color:#7B8FAB;">14 hari</span>
-                        </div>
-
-                        @if(!$application?->start_date)
-                            <div class="flex flex-col items-center justify-center text-center" style="padding:80px 32px;">
-                                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-xl" style="background:#D0DAEA;">
-                                    <x-heroicon-o-clock class="h-6 w-6" style="color:#4A6FA5;" />
-                                </div>
-                                <p class="text-sm font-semibold" style="color:#1B2A4A;">Sesi Testing Belum Dimulai</p>
-                                <p class="mt-1 max-w-xs text-xs" style="color:#7B8FAB;">
-                                    Timeline muncul setelah developer memulai sesi testing.
-                                </p>
-                            </div>
-                        @else
+                        {{-- Footer --}}
+                        <div class="misi-footer">
                             <div>
-                                @foreach($dailyMissions as $dailyMission)
-                                    @php
-                                        $missionStatus = $dailyMission['status'];
-
-                                        $iconStyle = match ($missionStatus) {
-                                            'done' => 'background:#DCFCE7; color:#15803D;',
-                                            'today' => 'background:#2B4C7E; color:#FFFFFF;',
-                                            'missed' => 'background:#FEE2E2; color:#B91C1C;',
-                                            default => 'background:#E2E8F0; color:#7B8FAB;',
-                                        };
-
-                                        $badgeStyle = match ($missionStatus) {
-                                            'done' => 'background:#DCFCE7; color:#15803D;',
-                                            'today' => 'background:#2B4C7E; color:#FFFFFF;',
-                                            'missed' => 'background:#FEE2E2; color:#B91C1C;',
-                                            default => 'background:#E2E8F0; color:#7B8FAB;',
-                                        };
-
-                                        $rowBg = $missionStatus === 'today' ? 'background:#EFF4FB;' : '';
-
-                                        $statusText = match ($missionStatus) {
-                                            'done' => 'Selesai',
-                                            'today' => 'Hari Ini',
-                                            'missed' => 'Terlewat',
-                                            default => 'Terkunci',
-                                        };
-                                    @endphp
-
-                                    <div class="flex items-center justify-between border-b"
-                                        style="border-color:#EDF2F7; padding:14px 24px; {{ $rowBg }}">
-                                        <div class="flex items-center gap-3">
-                                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-                                                style="{{ $iconStyle }}">
-                                                @if($missionStatus === 'done')
-                                                    <x-heroicon-o-check-circle class="h-4 w-4" />
-                                                @elseif($missionStatus === 'today')
-                                                    <x-heroicon-o-play-circle class="h-4 w-4" />
-                                                @elseif($missionStatus === 'missed')
-                                                    <x-heroicon-o-x-circle class="h-4 w-4" />
-                                                @else
-                                                    <x-heroicon-o-lock-closed class="h-4 w-4" />
-                                                @endif
-                                            </div>
-                                            <div>
-                                                <p class="text-sm font-medium" style="color:#1B2A4A;">Hari {{ $dailyMission['day'] }}</p>
-                                                <p class="text-xs" style="color:#7B8FAB;">{{ $dailyMission['date'] }}</p>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            @if($missionStatus === 'today' && $mission->status === 'active')
-                                                {{ ($this->laporHarianAction)(['record' => $mission->id]) }}
-                                            @else
-                                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
-                                                    style="{{ $badgeStyle }}">
-                                                    {{ $statusText }}
-                                                </span>
-                                            @endif
-                                        </div>
+                                {{-- Day chips --}}
+                                <div class="misi-day-chips" style="margin-bottom:6px;">
+                                    @for($d = 0; $d < 14; $d++)
+                                        @php
+                                        if (in_array($d, $submittedDays)) {
+                                            $chipClass = 'submitted';
+                                        } elseif ($d < $daysPassed) {
+                                            $chipClass = 'missed';
+                                        } else {
+                                            $chipClass = '';
+                                        }
+                                        @endphp
+                                        <div class="misi-day-chip {{ $chipClass }}" title="Hari {{ $d + 1 }}"></div>
+                                    @endfor
+                                </div>
+                                {{-- Legend --}}
+                                <div class="misi-legend">
+                                    <div class="misi-legend-item">
+                                        <div class="misi-legend-dot" style="background:#22C55E;"></div>
+                                        Laporan dikumpulkan
                                     </div>
-                                @endforeach
+                                    <div class="misi-legend-item">
+                                        <div class="misi-legend-dot" style="background:#FCA5A5;"></div>
+                                        Terlewat
+                                    </div>
+                                </div>
                             </div>
-                        @endif
-                    </div>
 
-                </div>
-            </div>
-        @endforeach
-    </div>
+                            <span class="misi-footer-link">
+                                Lihat detail
+                                <x-heroicon-o-arrow-right class="h-4 w-4" />
+                            </span>
+                        </div>
+
+                    </div>
+                </a>
+
+            @endforeach
+        </div>
+
+    @endif
+</div>
 </x-filament-panels::page>
