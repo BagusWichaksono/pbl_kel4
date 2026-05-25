@@ -2,7 +2,7 @@
     <div style="display:flex; flex-direction:column; gap:1.5rem;">
 
         @forelse ($this->groupedReports as $appName => $reportsByDate)
-            <div class="overflow-hidden rounded-2xl border shadow-sm" style="border-color:#D0DAEA; background:#FFFFFF;">
+            <div class="overflow-hidden border shadow-sm"; style="border-radius:29px; style="border-color:#D0DAEA; background:#FFFFFF;">
 
                 {{-- HEADER APLIKASI --}}
                 <div class="px-6 py-5" style="background: linear-gradient(135deg, #1B2A4A 0%, #2B4C7E 50%, #4A6FA5 100%);">
