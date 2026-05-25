@@ -11,7 +11,8 @@ class DailyReport extends Model
         'app_id',
         'report_date',
         'screenshot',
-        'notes'
+        'notes',
+        'bug_report',
     ];
 
     public function tester(): BelongsTo

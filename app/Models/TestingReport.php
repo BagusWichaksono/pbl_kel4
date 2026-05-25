@@ -10,6 +10,7 @@ class TestingReport extends Model
         'application_tester_id',
         'file_bukti',
         'catatan',
+        'bug_report',
         'status',
         'alasan_penolakan',
     ];
