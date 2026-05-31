@@ -98,6 +98,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     // ─── Fungsi ini supaya foto tampil di header saat klik nama user
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
+        $foto = $this->avatar ?? $this->avatar_url;
+    
+        return $foto ? Storage::url($foto) : null;
     }
 }

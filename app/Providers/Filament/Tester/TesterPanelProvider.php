@@ -7,6 +7,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -17,19 +18,20 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\Navigation\NavigationItem;
 
 class TesterPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->spa()
             ->id('tester')
             ->path('tester')
             ->brandName(new HtmlString('<span style="background: linear-gradient(135deg, #5374ac, #2f456f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.02em;">TesYuk!</span>'))
+            ->profile(\App\Filament\Tester\Pages\CustomEditProfile::class)
             ->authGuard('web')
             ->colors([
                 'primary' => [
@@ -49,7 +51,6 @@ class TesterPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->font('Poppins')
-            ->profile(\App\Filament\Tester\Pages\CustomEditProfile::class)
             ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([
                 NavigationGroup::make('Misi Testing')->collapsible(false),
@@ -60,13 +61,13 @@ class TesterPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Pengaturan Akun')
-                    ->url(fn (): string => url('/developer/profile'))
+                    ->url(fn (): string => url('/tester/profile'))
                     ->icon('heroicon-o-cog-6-tooth')
                     ->group('Akun')
-                    ->isActiveWhen(fn (): bool => request()->is('developer/profile'))
+                    ->isActiveWhen(fn (): bool => request()->is('tester/profile'))
                     ->sort(1),
             ])
-                ->renderHook(
+            ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => "
                 <style>
@@ -386,14 +387,11 @@ class TesterPanelProvider extends PanelProvider
                 )
             )
 
-
             ->discoverResources(in: app_path('Filament/Tester/Resources'), for: 'App\\Filament\\Tester\\Resources')
             ->discoverPages(in: app_path('Filament/Tester/Pages'), for: 'App\\Filament\\Tester\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-
-            // Sengaja tidak pakai discoverWidgets supaya dashboard tidak dobel.
 
             ->middleware([
                 EncryptCookies::class,

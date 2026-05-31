@@ -18,9 +18,9 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $modelLabel = 'Validasi Pembayaran';
+    protected static ?string $modelLabel = 'Pembayaran Developer';
 
-    protected static ?string $pluralModelLabel = 'Validasi Pembayaran';
+    protected static ?string $pluralModelLabel = 'Pembayaran Developer';
     
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     

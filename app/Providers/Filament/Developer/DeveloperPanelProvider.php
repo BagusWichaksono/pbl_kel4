@@ -6,21 +6,21 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use Filament\Navigation\NavigationItem;
-use Filament\Navigation\NavigationGroup;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class DeveloperPanelProvider extends PanelProvider
 {
@@ -31,12 +31,20 @@ class DeveloperPanelProvider extends PanelProvider
             ->id('developer')
             ->path('developer')
             ->brandName(new HtmlString('<span style="background: linear-gradient(135deg, #5374ac, #2f456f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.02em;">TesYuk!</span>'))
+            ->profile(\App\Filament\Developer\Pages\CustomEditProfile::class)            
             ->authGuard('web')
             ->colors([
                 'primary' => [
-                    50 => '#eff5fa', 100 => '#d1e1f1', 200 => '#b3cce2', 300 => '#8bafd0',
-                    400 => '#6b92be', 500 => '#5374ac', 600 => '#425d8a', 700 => '#2f456f',
-                    800 => '#1e2d49', 900 => '#141c33',
+                    50 => '#eff5fa',
+                    100 => '#d1e1f1',
+                    200 => '#b3cce2',
+                    300 => '#8bafd0',
+                    400 => '#6b92be',
+                    500 => '#5374ac',
+                    600 => '#425d8a',
+                    700 => '#2f456f',
+                    800 => '#1e2d49',
+                    900 => '#141c33',
                 ],
                 'danger' => Color::Rose,
                 'success' => Color::Emerald,
@@ -44,7 +52,6 @@ class DeveloperPanelProvider extends PanelProvider
             ])
             ->font('Poppins')
             ->sidebarCollapsibleOnDesktop()
-            // ->profile(\App\Filament\Developer\Pages\CustomEditProfile::class)            
             ->navigationGroups([
                 NavigationGroup::make('Aplikasi')->collapsible(false),
                 NavigationGroup::make('Riwayat')->collapsible(false),
@@ -82,7 +89,7 @@ class DeveloperPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->renderHook(
-                \Filament\View\PanelsRenderHook::HEAD_END,
+                PanelsRenderHook::HEAD_END,
                 fn (): string => "
                 <style>
                     body,
@@ -306,7 +313,7 @@ class DeveloperPanelProvider extends PanelProvider
             )
 
             ->renderHook(
-                \Filament\View\PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
+                PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
                 function () {
                     if (request()->routeIs('filament.developer.pages.dashboard')) {
                         /** @var \App\Models\User|null $user */
