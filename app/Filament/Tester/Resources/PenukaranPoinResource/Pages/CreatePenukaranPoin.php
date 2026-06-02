@@ -8,6 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CreatePenukaranPoin extends CreateRecord
 {
@@ -51,19 +52,19 @@ class CreatePenukaranPoin extends CreateRecord
         $data['tester_id'] = $user->id;
         $data['amount_rp'] = $pointsWithdrawn * 1000;
         $data['status'] = 'pending';
+        $data['invoice_code'] = 'INV-' . date('Ymd') . '-' . strtoupper(Str::random(4));
 
         return $data;
     }
 
     protected function afterCreate(): void
     {
-        DB::transaction(function () {
-            $profile = Auth::user()?->testerProfile;
+        $profile = Auth::user()?->testerProfile;
 
-            if ($profile) {
-                $profile->decrement('points', $this->record->points_withdrawn);
-            }
-        });
+        if ($profile) {
+            $profile->points -= (int) $this->record->points_withdrawn;
+            $profile->save();
+        }
 
         Notification::make()
             ->title('Request penukaran poin berhasil dibuat.')
