@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     @php
-        $activeTesterCount = $record->testers->where('status', 'active')->count();
+        $activeTesterCount = $record->testers->whereIn('status', ['active', 'completed'])->count();
         $testerCount = $record->testers->count();
     @endphp
 

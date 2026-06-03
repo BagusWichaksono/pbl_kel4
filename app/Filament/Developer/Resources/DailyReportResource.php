@@ -31,6 +31,8 @@ class DailyReportResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Laporan Harian Tester';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

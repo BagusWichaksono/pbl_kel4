@@ -69,6 +69,7 @@ class ViewAppTesters extends Page
                 ->label('Input Link Closed Testing')
                 ->icon('heroicon-o-link')
                 ->color('primary')
+                ->visible(fn (): bool => blank($this->getRecord()->app_link))
                 ->disabled(fn (): bool =>
                     $this->activeTesterCount() < 12
                     || filled($this->getRecord()->start_date)
@@ -111,6 +112,7 @@ class ViewAppTesters extends Page
                 ->label('Mulai Sesi Testing')
                 ->icon('heroicon-o-play-circle')
                 ->color('success')
+                ->visible(fn (): bool => blank($this->getRecord()->start_date))
                 ->disabled(fn (): bool =>
                     $this->activeTesterCount() < 12
                     || blank($this->getRecord()->app_link)
@@ -175,7 +177,7 @@ class ViewAppTesters extends Page
     {
         return App::findOrFail($this->recordId)
             ->testers()
-            ->where('status', 'active')
+            ->whereIn('status', ['active', 'completed'])
             ->count();
     }
 
@@ -183,7 +185,7 @@ class ViewAppTesters extends Page
     {
         return App::findOrFail($this->recordId)
             ->testers()
-            ->where('status', 'active')
+            ->whereIn('status', ['active', 'completed'])
             ->with('tester')
             ->get()
             ->pluck('tester.email')

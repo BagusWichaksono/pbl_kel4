@@ -31,7 +31,7 @@ class DummyAppWith12TestersSeeder extends Seeder
             'app_link' => 'https://play.google.com/store/apps/details?id=com.dummy',
             'description' => 'Aplikasi dummy untuk mencoba fitur validasi, sudah berisi 12 tester terdaftar.',
             'payment_status' => 'approved',
-            'testing_status' => 'active',
+            'testing_status' => 'in_progress',
             'max_testers' => 12,
             'start_date' => Carbon::now()->subDays(14),
             'end_date' => Carbon::now(),
