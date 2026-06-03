@@ -125,22 +125,49 @@
                             <x-heroicon-o-paper-airplane class="h-4 w-4" style="color:#4A6FA5;" />
                             <h3 class="text-sm font-semibold" style="color:#1B2A4A;">Laporan Akhir</h3>
                         </div>
-                        <p class="mb-2 text-xs leading-relaxed" style="color:#7B8FAB;">
-                            Kirim setelah 14 hari testing & 14 laporan harian selesai.
-                        </p>
-                        @if($this->canSubmitFinalReport($mission))
-                           {{ ($this->kirimLaporanAkhirAction)([]) }}
+                        
+                        @if(isset($testingReport) && $testingReport->status === 'pending')
+                            <div class="rounded-lg p-4" style="background:#FEF3C7; border: 1px solid #FDE68A;">
+                                <p class="text-sm font-medium" style="color:#92400E;">
+                                    <x-heroicon-o-clock class="inline h-4 w-4 mr-1"/> Menunggu Validasi Developer
+                                </p>
+                                <p class="mt-1 text-xs" style="color:#B45309;">
+                                    Laporan akhirmu sedang ditinjau. Poin akan diberikan setelah disetujui.
+                                </p>
+                            </div>
                         @else
-                            <button type="button" disabled
-                                title="{{ $this->finalReportTooltip($mission) }}"
-                                class="w-full cursor-not-allowed rounded-lg px-4 py-2.5 text-xs font-semibold"
-                                style="background:#D0DAEA; color:#7B8FAB;">
-                                <x-heroicon-o-lock-closed class="mr-1 inline h-3.5 w-3.5" />
-                                Kirim Laporan Akhir
-                            </button>
-                            <p class="mt-2 text-xs leading-relaxed" style="color:#7B8FAB;">
-                                {{ $this->finalReportTooltip($mission) }}
-                            </p>
+                            @if(isset($testingReport) && $testingReport->status === 'ditolak')
+                                <div class="rounded-lg p-4 mb-4" style="background:#FEE2E2; border: 1px solid #FECACA;">
+                                    <p class="text-sm font-medium" style="color:#991B1B;">
+                                        <x-heroicon-o-x-circle class="inline h-4 w-4 mr-1"/> Laporan Ditolak
+                                    </p>
+                                    <p class="mt-1 text-xs" style="color:#B91C1C;">
+                                        <strong>Alasan:</strong> {{ $testingReport->alasan_penolakan }}
+                                    </p>
+                                    <p class="mt-2 text-xs" style="color:#B91C1C;">
+                                        Silakan perbaiki dan kirim ulang laporan akhir di bawah ini.
+                                    </p>
+                                </div>
+                            @else
+                                <p class="mb-2 text-xs leading-relaxed" style="color:#7B8FAB;">
+                                    Kirim setelah 14 hari testing & 14 laporan harian selesai.
+                                </p>
+                            @endif
+
+                            @if($this->canSubmitFinalReport($mission))
+                               {{ ($this->kirimLaporanAkhirAction)([]) }}
+                            @else
+                                <button type="button" disabled
+                                    title="{{ $this->finalReportTooltip($mission) }}"
+                                    class="w-full cursor-not-allowed rounded-lg px-4 py-2.5 text-xs font-semibold"
+                                    style="background:#D0DAEA; color:#7B8FAB;">
+                                    <x-heroicon-o-lock-closed class="mr-1 inline h-3.5 w-3.5" />
+                                    Kirim Laporan Akhir
+                                </button>
+                                <p class="mt-2 text-xs leading-relaxed" style="color:#7B8FAB;">
+                                    {{ $this->finalReportTooltip($mission) }}
+                                </p>
+                            @endif
                         @endif
                     </div>
                 </div>

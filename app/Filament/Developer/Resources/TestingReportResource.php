@@ -90,6 +90,76 @@ class TestingReportResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Lihat Detail'),
+
+                Tables\Actions\Action::make('lihat_progres')
+                    ->label('Lihat Progres Harian')
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->url(fn ($record) => \App\Filament\Developer\Resources\DailyReportResource::getUrl('index', [
+                        'tableFilters' => [
+                            'app_id' => ['value' => $record->applicationTester->application_id],
+                        ],
+                        'tableSearch' => $record->applicationTester->tester->name,
+                    ])),
+
+                Tables\Actions\Action::make('setujui')
+                    ->label('Setujui')
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Setujui Bukti Testing')
+                    ->modalDescription('Apakah Anda yakin bukti ini valid? Tester akan mendapatkan 10 poin.')
+                    ->visible(fn ($record) => $record->status === 'pending')
+                    ->action(function ($record) {
+                        \Illuminate\Support\Facades\DB::transaction(function () use ($record) {
+                            $record->update(['status' => 'disetujui']);
+                            
+                            $appTester = $record->applicationTester;
+                            $appTester->update([
+                                'status' => 'completed',
+                                'completed_at' => now(),
+                            ]);
+
+                            if (! $appTester->points_awarded) {
+                                \App\Models\TesterProfile::firstOrCreate(
+                                    ['user_id' => $appTester->tester_id],
+                                    ['points' => 0]
+                                )->increment('points', 10);
+
+                                $appTester->update(['points_awarded' => true]);
+                            }
+                        });
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Laporan disetujui')
+                            ->success()
+                            ->send();
+                    }),
+
+                Tables\Actions\Action::make('tolak')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Tolak Bukti Testing')
+                    ->modalDescription('Berikan alasan agar tester bisa memperbaiki dan mengirim ulang laporannya.')
+                    ->form([
+                        \Filament\Forms\Components\Textarea::make('alasan_penolakan')
+                            ->label('Alasan Penolakan')
+                            ->required()
+                    ])
+                    ->visible(fn ($record) => $record->status === 'pending')
+                    ->action(function ($record, array $data) {
+                        $record->update([
+                            'status' => 'ditolak',
+                            'alasan_penolakan' => $data['alasan_penolakan'],
+                        ]);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Laporan ditolak')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -125,6 +195,7 @@ class TestingReportResource extends Resource
                     ->schema([
                         ImageEntry::make('file_bukti')
                             ->label('Bukti Screenshot')
+                            ->disk('public')
                             ->columnSpanFull()
                             ->height(300),
 

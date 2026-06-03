@@ -107,8 +107,13 @@ class ViewMisiSaya extends Page
         $mission->setAttribute('daily_missions_custom', $dailyMissions);
         $mission->setAttribute('progress_percentage', min(100, ($dailyReportsCount / 14) * 100));
 
+        $testingReport = \App\Models\TestingReport::where('application_tester_id', $mission->id)
+            ->latest()
+            ->first();
+
         return [
             'mission' => $mission,
+            'testingReport' => $testingReport,
         ];
     }
 
@@ -258,28 +263,27 @@ class ViewMisiSaya extends Page
                 }
 
                 DB::transaction(function () use ($record, $data) {
+                    // Update ApplicationTester tapi jangan di-'completed' dulu
                     $record->update([
                         'proof_image' => $data['proof_image'],
                         'feedback' => $data['feedback'],
-                        'status' => 'completed',
-                        'completed_at' => now(),
                     ]);
 
-                    if (! $record->points_awarded) {
-                        TesterProfile::firstOrCreate(
-                            ['user_id' => Auth::id()],
-                            ['points' => 0]
-                        )->increment('points', 10);
-
-                        $record->update([
-                            'points_awarded' => true,
-                        ]);
-                    }
+                    // Buat atau update TestingReport ke status pending
+                    \App\Models\TestingReport::updateOrCreate(
+                        ['application_tester_id' => $record->id],
+                        [
+                            'file_bukti' => $data['proof_image'],
+                            'catatan' => $data['feedback'],
+                            'status' => 'pending',
+                            'alasan_penolakan' => null,
+                        ]
+                    );
                 });
 
                 Notification::make()
                     ->title('Laporan akhir berhasil dikirim!')
-                    ->body('Misi selesai. Reward 10 poin sudah ditambahkan ke saldo kamu.')
+                    ->body('Mohon tunggu developer untuk memvalidasi laporanmu.')
                     ->success()
                     ->send();
             });
