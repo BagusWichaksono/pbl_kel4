@@ -225,7 +225,7 @@ class TestingReportResource extends Resource
                                     return 'Data tester tidak ditemukan.';
                                 }
 
-                                $bugs = DailyReport::where('tester_id', $testerId)
+                                $bugs = DailyReport::query()->where('tester_id', $testerId)
                                     ->where('app_id', $applicationId)
                                     ->whereNotNull('bug_report')
                                     ->where('bug_report', '!=', '')

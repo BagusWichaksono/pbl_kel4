@@ -28,7 +28,7 @@ class ViewMisiSaya extends Page
         $this->recordId = $record;
 
         // Ensure this mission belongs to the authenticated tester
-        $mission = ApplicationTester::where('id', $record)
+        $mission = ApplicationTester::query()->where('id', $record)
             ->where('tester_id', Auth::id())
             ->firstOrFail();
     }
@@ -65,7 +65,7 @@ class ViewMisiSaya extends Page
             ? Carbon::parse($application->end_date)->startOfDay()
             : ($startDate ? $startDate->copy()->addDays(14) : null);
 
-        $reportDates = DailyReport::where('tester_id', Auth::id())
+        $reportDates = DailyReport::query()->where('tester_id', Auth::id())
             ->where('app_id', $mission->application_id)
             ->pluck('report_date')
             ->map(fn ($date) => Carbon::parse($date)->toDateString())
@@ -107,7 +107,7 @@ class ViewMisiSaya extends Page
         $mission->setAttribute('daily_missions_custom', $dailyMissions);
         $mission->setAttribute('progress_percentage', min(100, ($dailyReportsCount / 14) * 100));
 
-        $testingReport = \App\Models\TestingReport::where('application_tester_id', $mission->id)
+        $testingReport = \App\Models\TestingReport::query()->where('application_tester_id', $mission->id)
             ->latest()
             ->first();
 
@@ -185,7 +185,7 @@ class ViewMisiSaya extends Page
                     return;
                 }
 
-                $alreadyReported = DailyReport::where('tester_id', Auth::id())
+                $alreadyReported = DailyReport::query()->where('tester_id', Auth::id())
                     ->where('app_id', $record->application_id)
                     ->whereDate('report_date', Carbon::today()->toDateString())
                     ->exists();
@@ -291,7 +291,7 @@ class ViewMisiSaya extends Page
 
     public function dailyReportCount(ApplicationTester $record): int
     {
-        return DailyReport::where('tester_id', Auth::id())
+        return DailyReport::query()->where('tester_id', Auth::id())
             ->where('app_id', $record->application_id)
             ->pluck('report_date')
             ->unique()
