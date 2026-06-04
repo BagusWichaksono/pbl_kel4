@@ -144,7 +144,10 @@ class KelolaAdminResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Bergabung Sejak')
                     ->dateTime('d F Y') // Format tanggal lebih manusiawi
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->filters([
                 //

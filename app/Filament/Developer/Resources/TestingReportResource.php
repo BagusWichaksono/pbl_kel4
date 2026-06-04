@@ -64,12 +64,27 @@ class TestingReportResource extends Resource
                         'pending'   => 'warning',
                         'ditolak'   => 'danger',
                         default     => 'gray',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) $matched[] = 'pending';
+                        if (str_contains('disetujui', $search)) $matched[] = 'disetujui';
+                        if (str_contains('ditolak', $search)) $matched[] = 'ditolak';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('status', $matched);
+                        }
+                        return $query->where('status', 'like', "%{$search}%");
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Dikirim')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')

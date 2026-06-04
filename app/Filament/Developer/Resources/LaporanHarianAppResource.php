@@ -65,6 +65,7 @@ class LaporanHarianAppResource extends Resource
                         Tables\Columns\TextColumn::make('platform')
                             ->icon('heroicon-o-device-phone-mobile')
                             ->badge()
+                            ->searchable()
                             ->color('info'),
 
                         Tables\Columns\TextColumn::make('testers_count')

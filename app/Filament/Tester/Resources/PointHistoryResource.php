@@ -47,7 +47,10 @@ class PointHistoryResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal & Waktu')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
 
                 Tables\Columns\TextColumn::make('description')
                     ->label('Keterangan')
@@ -62,14 +65,33 @@ class PointHistoryResource extends Resource
                         'debit' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => $state === 'credit' ? 'Pemasukan (+)' : 'Pengeluaran (-)'),
+                    ->formatStateUsing(fn (string $state): string => $state === 'credit' ? 'Pemasukan (+)' : 'Pengeluaran (-)')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('pemasukan', $search) || str_contains('+', $search)) $matched[] = 'credit';
+                        if (str_contains('pengeluaran', $search) || str_contains('-', $search)) $matched[] = 'debit';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('type', $matched);
+                        }
+                        
+                        return $query->where('type', 'like', "%{$search}%");
+                    }),
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Jumlah Poin')
                     ->numeric()
                     ->color(fn ($record) => $record->type === 'credit' ? 'success' : 'danger')
                     ->weight('bold')
-                    ->formatStateUsing(fn ($state, $record) => ($record->type === 'credit' ? '+' : '-') . ' ' . $state . ' Pts'),
+                    ->formatStateUsing(fn ($state, $record) => ($record->type === 'credit' ? '+' : '-') . ' ' . $state . ' Pts')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $num = preg_replace('/[^0-9]/', '', $search);
+                        if ($num !== '') {
+                            return $query->where('amount', 'like', "%{$num}%");
+                        }
+                        return $query->where('amount', 'like', "%{$search}%");
+                    }),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

@@ -65,7 +65,7 @@ class TransactionResource extends Resource
                     ->weight('bold'),
 
                 // Kolom Nama Aplikasi (Asumsi relasi ke aplikasi)
-                Tables\Columns\TextColumn::make('application.name')
+                Tables\Columns\TextColumn::make('application.title')
                     ->label('Aplikasi')
                     ->searchable(),
 
@@ -75,7 +75,14 @@ class TransactionResource extends Resource
                     ->money('IDR', locale: 'id') // Otomatis format Rp
                     ->sortable()
                     ->weight('bold')
-                    ->color('primary'),
+                    ->color('primary')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $num = preg_replace('/[^0-9]/', '', $search);
+                        if ($num !== '') {
+                            return $query->where('amount', 'like', "%{$num}%");
+                        }
+                        return $query->where('amount', 'like', "%{$search}%");
+                    }),
 
                 // Preview Bukti Transfer
                 Tables\Columns\ImageColumn::make('payment_proof')
@@ -90,31 +97,45 @@ class TransactionResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
-                        'approved' => 'success',
-                        'rejected' => 'danger',
+                        'valid' => 'success',
+                        'invalid' => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => 'Menunggu Validasi',
-                        'approved' => 'Lunas',
-                        'rejected' => 'Ditolak',
+                        'valid' => 'Lunas',
+                        'invalid' => 'Ditolak',
                         default => 'Unknown',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) $matched[] = 'pending';
+                        if (str_contains('lunas', $search) || str_contains('valid', $search)) $matched[] = 'valid';
+                        if (str_contains('ditolak', $search) || str_contains('invalid', $search)) $matched[] = 'invalid';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('status', $matched);
+                        }
+                        return $query->where('status', 'like', "%{$search}%");
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Pengajuan')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->defaultSort('created_at', 'desc') // Yang paling baru di atas
             ->filters([
-                // Filter cepat untuk mencari yang pending saja
+                // Tambahkan filter bawaan
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Filter Status')
                     ->options([
                         'pending' => 'Menunggu Validasi',
-                        'approved' => 'Lunas',
-                        'rejected' => 'Ditolak',
+                        'valid' => 'Pembayaran Valid',
+                        'invalid' => 'Tidak Sah',
                     ]),
             ])
             ->actions([

@@ -54,10 +54,13 @@ class CariMisiResource extends Resource
                             
                         Tables\Columns\TextColumn::make('developer.name')
                             ->icon('heroicon-o-user')
-                            ->color('gray'),
+                            ->color('gray')
+                            ->searchable(),
                             
                         Tables\Columns\TextColumn::make('platform')
                             ->icon('heroicon-o-device-phone-mobile')
+                            ->color('gray')
+                            ->searchable()
                             ->badge()
                             ->color('info'),
 

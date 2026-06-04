@@ -159,10 +159,16 @@ class AppResource extends Resource
                 Tables\Columns\TextColumn::make('platform')
                     ->label('Platform')
                     ->badge()
-                    ->color('info'),
+                    ->searchable()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Android' => 'success',
+                        'iOS' => 'dark',
+                        'Web' => 'info',
+                        default => 'gray',
+                    }),
 
                 Tables\Columns\TextColumn::make('testers_count')
-                    ->label('Tester')
+                    ->label('Tester Terdaftar')
                     ->counts('testers')
                     ->formatStateUsing(fn($state, App $record): string => $state . ' / ' . $record->max_testers)
                     ->badge()
@@ -182,6 +188,18 @@ class AppResource extends Resource
                         'valid' => 'Valid',
                         'invalid' => 'Tidak Valid',
                         default => '-',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) $matched[] = 'pending';
+                        if (str_contains('valid', $search)) $matched[] = 'valid';
+                        if (str_contains('tidak valid', $search) || str_contains('invalid', $search)) $matched[] = 'invalid';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('payment_status', $matched);
+                        }
+                        return $query->where('payment_status', 'like', "%{$search}%");
                     }),
 
                 Tables\Columns\TextColumn::make('testing_status')
@@ -202,12 +220,29 @@ class AppResource extends Resource
                         'completed' => 'Selesai',
                         'rejected' => 'Ditolak',
                         default => '-',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('menunggu', $search) || str_contains('admin', $search)) $matched[] = 'pending_approval';
+                        if (str_contains('mencari', $search) || str_contains('tester', $search) || str_contains('open', $search)) $matched[] = 'open';
+                        if (str_contains('sedang', $search) || str_contains('testing', $search) || str_contains('progress', $search)) $matched[] = 'in_progress';
+                        if (str_contains('selesai', $search) || str_contains('completed', $search)) $matched[] = 'completed';
+                        if (str_contains('ditolak', $search) || str_contains('rejected', $search)) $matched[] = 'rejected';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('testing_status', $matched);
+                        }
+                        return $query->where('testing_status', 'like', "%{$search}%");
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Submit')
                     ->dateTime('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->actions([
                 Tables\Actions\Action::make('view_testers')

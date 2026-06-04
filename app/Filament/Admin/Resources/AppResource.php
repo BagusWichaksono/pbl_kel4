@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
+use Illuminate\Database\Eloquent\Builder;
 
 class AppResource extends Resource
 {
@@ -103,6 +104,18 @@ class AppResource extends Resource
                         'valid' => 'Valid',
                         'invalid' => 'Tidak Valid',
                         default => '-',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('pending', $search) || str_contains('menunggu', $search)) $matched[] = 'pending';
+                        if (str_contains('valid', $search)) $matched[] = 'valid';
+                        if (str_contains('tidak valid', $search) || str_contains('invalid', $search)) $matched[] = 'invalid';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('payment_status', $matched);
+                        }
+                        return $query->where('payment_status', 'like', "%{$search}%");
                     }),
 
                 Tables\Columns\TextColumn::make('testing_status')
@@ -121,12 +134,28 @@ class AppResource extends Resource
                         'completed' => 'Selesai',
                         'rejected' => 'Ditolak',
                         default => '-',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('terbuka', $search) || str_contains('open', $search)) $matched[] = 'open';
+                        if (str_contains('sedang', $search) || str_contains('dites', $search) || str_contains('progress', $search)) $matched[] = 'in_progress';
+                        if (str_contains('selesai', $search) || str_contains('completed', $search)) $matched[] = 'completed';
+                        if (str_contains('ditolak', $search) || str_contains('rejected', $search)) $matched[] = 'rejected';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('testing_status', $matched);
+                        }
+                        return $query->where('testing_status', 'like', "%{$search}%");
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal')
                     ->dateTime('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('payment_status')

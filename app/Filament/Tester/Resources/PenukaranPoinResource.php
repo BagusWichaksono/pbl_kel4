@@ -109,22 +109,40 @@ class PenukaranPoinResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Waktu Pengajuan')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
 
                 Tables\Columns\TextColumn::make('points_withdrawn')
                     ->label('Poin Ditukar')
                     ->numeric()
                     ->badge()
-                    ->color('info'),
+                    ->color('info')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $num = preg_replace('/[^0-9]/', '', $search);
+                        if ($num !== '') {
+                            return $query->where('points_withdrawn', 'like', "%{$num}%");
+                        }
+                        return $query->where('points_withdrawn', 'like', "%{$search}%");
+                    }),
 
                 Tables\Columns\TextColumn::make('amount_rp')
                     ->label('Nominal')
                     ->money('IDR', locale: 'id')
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $num = preg_replace('/[^0-9]/', '', $search);
+                        if ($num !== '') {
+                            return $query->where('amount_rp', 'like', "%{$num}%");
+                        }
+                        return $query->where('amount_rp', 'like', "%{$search}%");
+                    }),
 
                 Tables\Columns\TextColumn::make('e_wallet_provider')
                     ->label('E-Wallet')
                     ->badge()
+                    ->searchable()
                     ->description(fn (Withdrawal $record): string => $record->e_wallet_number),
 
                 Tables\Columns\TextColumn::make('status')
@@ -141,6 +159,18 @@ class PenukaranPoinResource extends Resource
                         'approved' => 'Selesai',
                         'rejected' => 'Ditolak',
                         default => '-',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) $matched[] = 'pending';
+                        if (str_contains('selesai', $search) || str_contains('approved', $search)) $matched[] = 'approved';
+                        if (str_contains('ditolak', $search) || str_contains('rejected', $search)) $matched[] = 'rejected';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('status', $matched);
+                        }
+                        return $query->where('status', 'like', "%{$search}%");
                     }),
             ])
             ->emptyStateIcon('heroicon-o-wallet')

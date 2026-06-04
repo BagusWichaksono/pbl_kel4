@@ -76,7 +76,10 @@ class EvaluationResultResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Evaluasi')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
