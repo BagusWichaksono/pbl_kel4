@@ -424,7 +424,9 @@ class TesterPanelProvider extends PanelProvider
             ])
             // Widgets are removed in favor of the custom HTML banner above
             // ->discoverWidgets(in: app_path('Filament/Tester/Widgets'), for: 'App\\Filament\\Tester\\Widgets')
-            ->widgets([])
+            ->widgets([
+                \App\Filament\Tester\Widgets\TesterPointsChart::class,
+            ])
 
             ->middleware([
                 EncryptCookies::class,

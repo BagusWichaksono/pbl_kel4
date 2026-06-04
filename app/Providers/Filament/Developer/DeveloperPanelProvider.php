@@ -73,7 +73,9 @@ class DeveloperPanelProvider extends PanelProvider
                 // \App\Filament\Developer\Pages\CustomEditProfile::class,
             ])
             // ->discoverWidgets(in: app_path('Filament/Developer/Widgets'), for: 'App\\Filament\\Developer\\Widgets')
-            ->widgets([])
+            ->widgets([
+                \App\Filament\Developer\Widgets\DeveloperReportsChart::class,
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
