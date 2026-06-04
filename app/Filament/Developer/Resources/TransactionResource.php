@@ -4,6 +4,10 @@ namespace App\Filament\Developer\Resources;
 
 use App\Filament\Developer\Resources\TransactionResource\Pages\ListTransactions;
 use App\Models\App; // Kita pakai model App karena bukti transfer nempel di tabel apps
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -73,6 +77,40 @@ class TransactionResource extends Resource
             ])
             ->bulkActions([]);
     }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Detail Transaksi')
+                    ->description('Informasi lengkap mengenai pembayaran aplikasi.')
+                    ->schema([
+                        TextEntry::make('title')
+                            ->label('Untuk Aplikasi')
+                            ->weight('bold'),
+                            
+                        TextEntry::make('payment_status')
+                            ->label('Status Validasi Admin')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'valid' => 'success',
+                                'pending' => 'warning',
+                                'invalid' => 'danger',
+                                default => 'gray',
+                            }),
+                            
+                        TextEntry::make('created_at')
+                            ->label('Tanggal Pembayaran')
+                            ->dateTime('d M Y, H:i'),
+                            
+                        ImageEntry::make('payment_proof')
+                            ->label('Bukti Transfer')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+            ]);
+    }
+
 
     public static function getPages(): array
     {
