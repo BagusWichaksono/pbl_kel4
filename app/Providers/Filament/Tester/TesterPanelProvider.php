@@ -322,7 +322,7 @@ class TesterPanelProvider extends PanelProvider
                     $urlPenukaran = \App\Filament\Tester\Resources\PenukaranPoinResource::getUrl('index');
                     $urlMisi = \App\Filament\Tester\Resources\MisiSayaResource::getUrl('index');
 
-                    $misiAktif = \App\Models\ApplicationTester::where('tester_id', $user?->id)
+                    $misiAktif = \App\Models\ApplicationTester::query()->where('tester_id', $user?->id)
                         ->where('status', 'active')
                         ->count();
 
@@ -392,6 +392,8 @@ class TesterPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
+            ->discoverWidgets(in: app_path('Filament/Tester/Widgets'), for: 'App\\Filament\\Tester\\Widgets')
+            ->widgets([])
 
             ->middleware([
                 EncryptCookies::class,
