@@ -34,7 +34,7 @@ class CariMisiResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->where('payment_status', 'valid')->withCount('testers'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->where('payment_status', '=', 'valid', 'and')->withCount('testers'))
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
@@ -76,10 +76,10 @@ class CariMisiResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('daftarMisi')
-                    ->label(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists() ? 'Sudah Diambil' : 'Ambil Misi')
-                    ->icon(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists() ? 'heroicon-o-check-circle' : 'heroicon-o-plus-circle')
-                    ->color(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists() ? 'gray' : 'success')
-                    ->disabled(fn (App $record) => ApplicationTester::where('application_id', $record->id)->where('tester_id', Auth::id())->exists())
+                    ->label(fn (App $record) => ApplicationTester::where('application_id', '=', $record->id, 'and')->where('tester_id', '=', Auth::id(), 'and')->exists() ? 'Sudah Diambil' : 'Ambil Misi')
+                    ->icon(fn (App $record) => ApplicationTester::where('application_id', '=', $record->id, 'and')->where('tester_id', '=', Auth::id(), 'and')->exists() ? 'heroicon-o-check-circle' : 'heroicon-o-plus-circle')
+                    ->color(fn (App $record) => ApplicationTester::where('application_id', '=', $record->id, 'and')->where('tester_id', '=', Auth::id(), 'and')->exists() ? 'gray' : 'success')
+                    ->disabled(fn (App $record) => ApplicationTester::where('application_id', '=', $record->id, 'and')->where('tester_id', '=', Auth::id(), 'and')->exists())
                     ->button()
                     ->requiresConfirmation()
                     ->modalHeading('Ambil Misi Pengujian')
@@ -89,8 +89,8 @@ class CariMisiResource extends Resource
                         $userId = Auth::id();
 
                         // Keamanan ganda
-                        $isRegistered = ApplicationTester::where('application_id', $appId)
-                            ->where('tester_id', $userId)
+                        $isRegistered = ApplicationTester::where('application_id', '=', $appId, 'and')
+                            ->where('tester_id', '=', $userId, 'and')
                             ->exists();
 
                         if ($isRegistered) {
