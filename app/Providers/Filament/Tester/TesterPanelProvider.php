@@ -426,6 +426,8 @@ class TesterPanelProvider extends PanelProvider
             // ->discoverWidgets(in: app_path('Filament/Tester/Widgets'), for: 'App\\Filament\\Tester\\Widgets')
             ->widgets([
                 \App\Filament\Tester\Widgets\TesterPointsChart::class,
+                \App\Filament\Tester\Widgets\TesterPointsOutChart::class,
+                \App\Filament\Tester\Widgets\TesterMissionsChart::class,
             ])
 
             ->middleware([

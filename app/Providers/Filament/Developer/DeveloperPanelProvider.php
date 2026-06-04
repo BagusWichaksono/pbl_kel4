@@ -74,6 +74,8 @@ class DeveloperPanelProvider extends PanelProvider
             ])
             // ->discoverWidgets(in: app_path('Filament/Developer/Widgets'), for: 'App\\Filament\\Developer\\Widgets')
             ->widgets([
+                \App\Filament\Developer\Widgets\DeveloperAppsChart::class,
+                \App\Filament\Developer\Widgets\DeveloperTestersChart::class,
                 \App\Filament\Developer\Widgets\DeveloperReportsChart::class,
             ])
             ->middleware([
