@@ -17,8 +17,8 @@ class AdminRevenueChart extends ChartWidget
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $count = App::where('payment_status', '=', 'valid', 'and')
-                         ->whereYear('created_at', $date->year)
-                         ->whereMonth('created_at', $date->month)
+                         ->whereYear('created_at', '=', $date->year, 'and')
+                         ->whereMonth('created_at', '=', $date->month, 'and')
                          ->count();
             $data[] = $count * 300000;
             $labels[] = $date->translatedFormat('M Y');

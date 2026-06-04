@@ -19,8 +19,8 @@ class DeveloperReportsChart extends ChartWidget
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $count = DailyReport::whereHas('application', fn($q) => $q->where('developer_id', '=', $devId, 'and'))
-                         ->whereYear('created_at', $date->year)
-                         ->whereMonth('created_at', $date->month)
+                         ->whereYear('created_at', '=', $date->year, 'and')
+                         ->whereMonth('created_at', '=', $date->month, 'and')
                          ->count();
             $data[] = $count;
             $labels[] = $date->translatedFormat('M Y');

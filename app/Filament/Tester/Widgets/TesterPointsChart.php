@@ -21,8 +21,8 @@ class TesterPointsChart extends ChartWidget
             $date = now()->subMonths($i);
             $points = PointHistory::where('tester_id', '=', $testerId, 'and')
                          ->where('type', '=', 'credit', 'and')
-                         ->whereYear('created_at', $date->year)
-                         ->whereMonth('created_at', $date->month)
+                         ->whereYear('created_at', '=', $date->year, 'and')
+                         ->whereMonth('created_at', '=', $date->month, 'and')
                          ->sum('amount');
             $data[] = $points;
             $labels[] = $date->translatedFormat('M Y');

@@ -16,8 +16,8 @@ class AdminUsersChart extends ChartWidget
         $labels = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
-            $count = User::whereYear('created_at', $date->year)
-                         ->whereMonth('created_at', $date->month)
+            $count = User::whereYear('created_at', '=', $date->year, 'and')
+                         ->whereMonth('created_at', '=', $date->month, 'and')
                          ->count();
             $data[] = $count;
             $labels[] = $date->translatedFormat('M Y');

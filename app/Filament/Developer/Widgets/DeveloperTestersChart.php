@@ -20,8 +20,8 @@ class DeveloperTestersChart extends ChartWidget
             $date = now()->subMonths($i);
             $count = ApplicationTester::whereHas('application', fn($q) => $q->where('developer_id', '=', $devId, 'and'))
                          ->where('status', '!=', 'rejected', 'and')
-                         ->whereYear('created_at', $date->year)
-                         ->whereMonth('created_at', $date->month)
+                         ->whereYear('created_at', '=', $date->year, 'and')
+                         ->whereMonth('created_at', '=', $date->month, 'and')
                          ->count();
             $data[] = $count;
             $labels[] = $date->translatedFormat('M Y');

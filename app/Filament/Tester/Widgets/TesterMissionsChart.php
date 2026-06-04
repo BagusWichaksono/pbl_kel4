@@ -21,8 +21,8 @@ class TesterMissionsChart extends ChartWidget
             $date = now()->subMonths($i);
             $count = ApplicationTester::where('tester_id', '=', $testerId, 'and')
                          ->where('status', '=', 'completed', 'and')
-                         ->whereYear('updated_at', $date->year)
-                         ->whereMonth('updated_at', $date->month)
+                         ->whereYear('updated_at', '=', $date->year, 'and')
+                         ->whereMonth('updated_at', '=', $date->month, 'and')
                          ->count();
             $data[] = $count;
             $labels[] = $date->translatedFormat('M Y');
