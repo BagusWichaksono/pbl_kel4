@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // Halaman Landing Page Utama
 Route::get('/', function () {
@@ -51,7 +53,11 @@ Route::post('/login', function (Request $request) {
         $request->session()->regenerate();
 
         /** @var \App\Models\User $user */
-        $user = Auth::user();
+        $user = Auth::user();   
+
+        if (!$user->hasVerifiedEmail() && in_array($user->role, ['developer', 'tester'])) {
+            return redirect()->route('verification.notice');
+        }
 
         return match ($user->role) {
             'super_admin', 'admin' => redirect('/admin'),
@@ -107,8 +113,38 @@ Route::post('/register', function (Request $request) {
         ]);
     }
 
-    return redirect('/login')->with('success', 'Pendaftaran berhasil! Silakan masuk dengan akun Anda.');
+    event(new Registered($user));
+
+    Auth::login($user);
+
+    return redirect()->route('verification.notice')
+        ->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi akun.');
+
 });
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+
+    return match ($user->role) {
+        'super_admin', 'admin' => redirect('/admin'),
+        'developer' => redirect('/developer'),
+        'tester' => redirect('/tester'),
+        default => redirect('/'),
+    };
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('success', 'Link verifikasi baru telah dikirim ke email Anda.');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // Logout
 Route::post('/logout', function (Request $request) {
