@@ -131,9 +131,11 @@ class TestingReportResource extends Resource
                         });
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Laporan disetujui')
+                            ->title('Laporan Akhir Disetujui')
+                            ->body('Selamat! Laporan akhir pengujian aplikasi Anda telah disetujui. Anda mendapatkan 10 poin.')
                             ->success()
-                            ->send();
+                            ->send()
+                            ->sendToDatabase($record->applicationTester->tester);
                     }),
 
                 Tables\Actions\Action::make('tolak')
@@ -156,9 +158,11 @@ class TestingReportResource extends Resource
                         ]);
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Laporan ditolak')
-                            ->success()
-                            ->send();
+                            ->title('Laporan Akhir Ditolak')
+                            ->body('Laporan akhir Anda ditolak. Alasan: ' . $data['alasan_penolakan'])
+                            ->danger()
+                            ->send()
+                            ->sendToDatabase($record->applicationTester->tester);
                     }),
             ])
             ->bulkActions([

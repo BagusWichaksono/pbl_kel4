@@ -96,6 +96,15 @@ class PenukaranPoinResource extends Resource
                             'status' => 'approved',
                             'payment_proof' => $data['payment_proof']
                         ]);
+                        
+                        // Notify Tester
+                        if ($record->tester) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Penarikan Poin Berhasil')
+                                ->body('Dana sebesar Rp ' . number_format($record->amount_rp, 0, ',', '.') . ' telah ditransfer ke rekening Anda.')
+                                ->success()
+                                ->sendToDatabase($record->tester);
+                        }
                     })
                     ->visible(fn ($record) => $record->status === 'pending'),
 

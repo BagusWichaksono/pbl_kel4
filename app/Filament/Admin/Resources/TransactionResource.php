@@ -140,8 +140,15 @@ class TransactionResource extends Resource
                         // 1. Ubah status transaksi
                         $record->update(['status' => 'approved']);
                         
-                        // 2. TODO: Kamu bisa tambahkan logika update status aplikasi di sini
-                        // $record->application->update(['status' => 'payment_verified']);
+                        // Notify Developer
+                        $developer = $record->developer ?? $record->application->developer ?? null;
+                        if ($developer) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Pembayaran Diterima')
+                                ->body('Pembayaran untuk aplikasi Anda telah divalidasi oleh Admin. Aplikasi Anda sekarang siap untuk diproses!')
+                                ->success()
+                                ->sendToDatabase($developer);
+                        }
                     })
                     ->visible(fn ($record) => $record->status === 'pending'), // Hanya muncul jika masih pending
 
@@ -155,6 +162,16 @@ class TransactionResource extends Resource
                     ->modalDescription('Apakah Anda yakin ingin menolak pembayaran ini? Developer harus mengunggah ulang bukti transfer.')
                     ->action(function ($record) {
                         $record->update(['status' => 'rejected']);
+                        
+                        // Notify Developer
+                        $developer = $record->developer ?? $record->application->developer ?? null;
+                        if ($developer) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Pembayaran Ditolak')
+                                ->body('Pembayaran untuk aplikasi Anda ditolak. Silakan periksa kembali bukti transfer Anda.')
+                                ->danger()
+                                ->sendToDatabase($developer);
+                        }
                     })
                     ->visible(fn ($record) => $record->status === 'pending'),
             ])

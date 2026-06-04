@@ -131,6 +131,15 @@ class CariMisiResource extends Resource
                             ->body("Kamu berhasil mendaftar sebagai tester di aplikasi \"{$record->title}\".")
                             ->success()
                             ->send();
+                            
+                        // Notify Developer
+                        if ($record->developer) {
+                            Notification::make()
+                                ->title('Tester Baru Bergabung')
+                                ->body(Auth::user()->name . ' telah bergabung sebagai tester pada aplikasi ' . $record->title)
+                                ->info()
+                                ->sendToDatabase($record->developer);
+                        }
                     }),
             ])
             ->paginated([9, 18, 36]);

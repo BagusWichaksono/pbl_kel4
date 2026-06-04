@@ -92,6 +92,7 @@ class DeveloperPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->databaseNotifications()
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => "
