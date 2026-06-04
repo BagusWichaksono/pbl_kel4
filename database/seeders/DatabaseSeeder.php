@@ -53,5 +53,8 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('tester'),
             'role' => 'tester',
         ]);
+
+        // 5. Seed pertanyaan evaluasi default
+        $this->call(EvaluationQuestionSeeder::class);
     }
 }
