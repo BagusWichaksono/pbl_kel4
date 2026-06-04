@@ -322,9 +322,19 @@ class TesterPanelProvider extends PanelProvider
                     $urlPenukaran = \App\Filament\Tester\Resources\PenukaranPoinResource::getUrl('index');
                     $urlMisi = \App\Filament\Tester\Resources\MisiSayaResource::getUrl('index');
 
-                    $misiAktif = \App\Models\ApplicationTester::query()->where('tester_id', $user?->id)
-                        ->where('status', 'active')
+                    $misiAktif = \App\Models\ApplicationTester::query()->where('tester_id', '=', $user?->id, 'and')
+                        ->where('status', '=', 'active', 'and')
                         ->count();
+                        
+                    $completedMissions = \App\Models\ApplicationTester::query()->where('tester_id', '=', $user?->id, 'and')
+                        ->where('status', '=', 'completed', 'and')
+                        ->count();
+                        
+                    $pendingWithdrawals = \App\Models\Withdrawal::query()->where('tester_id', '=', $user?->id, 'and')
+                        ->where('status', '=', 'pending', 'and')
+                        ->sum('amount_rp');
+                        
+                    $pendingWithdrawalsFormatted = number_format($pendingWithdrawals, 0, ',', '.');
 
                     return new HtmlString("
                         <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
@@ -372,6 +382,26 @@ class TesterPanelProvider extends PanelProvider
                                         <p class='stat-value'>{$misiAktif} Tugas</p>
                                     </div>
                                 </a>
+                                
+                                <a href='{$urlMisi}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                    <div class='icon-bg'>
+                                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+                                    </div>
+                                    <div>
+                                        <p class='stat-label'>Misi Selesai</p>
+                                        <p class='stat-value'>{$completedMissions} Tugas</p>
+                                    </div>
+                                </a>
+
+                                <a href='{$urlPenukaran}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                    <div class='icon-bg'>
+                                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+                                    </div>
+                                    <div>
+                                        <p class='stat-label'>Penarikan Diproses</p>
+                                        <p class='stat-value'>Rp {$pendingWithdrawalsFormatted}</p>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     ");
@@ -392,7 +422,8 @@ class TesterPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Tester/Widgets'), for: 'App\\Filament\\Tester\\Widgets')
+            // Widgets are removed in favor of the custom HTML banner above
+            // ->discoverWidgets(in: app_path('Filament/Tester/Widgets'), for: 'App\\Filament\\Tester\\Widgets')
             ->widgets([])
 
             ->middleware([

@@ -55,9 +55,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 \Filament\Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
-            ->widgets([
-            ])
+            // ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -316,6 +314,13 @@ class AdminPanelProvider extends PanelProvider
 
                         $urlApp = \App\Filament\Admin\Resources\AppResource::getUrl('index');
                         $urlPayment = \App\Filament\Admin\Resources\TransactionResource::getUrl('index');
+                        
+                        $totalRevenue = \App\Models\App::query()->where('payment_status', '=', 'valid', 'and')->count() * 300000;
+                        $totalRevenueFormatted = number_format($totalRevenue, 0, ',', '.');
+                        
+                        $totalApps = \App\Models\App::query()->where('payment_status', '=', 'valid', 'and')->count();
+                        $activeTesters = \App\Models\User::query()->where('role', '=', 'tester', 'and')->count();
+                        $pendingWithdrawals = \App\Models\Withdrawal::query()->where('status', '=', 'pending', 'and')->count();
 
                         return new HtmlString("
                             <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
@@ -347,6 +352,46 @@ class AdminPanelProvider extends PanelProvider
                                         <div>
                                             <p class='stat-label'>Cek Aplikasi</p>
                                             <p class='stat-value' style='font-size: 1.1rem;'>Validasi Aplikasi</p>
+                                        </div>
+                                    </a>
+                                    
+                                    <a href='#' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                        <div class='icon-bg'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+                                        </div>
+                                        <div>
+                                            <p class='stat-label'>Total Pendapatan</p>
+                                            <p class='stat-value' style='font-size: 1.1rem;'>Rp {$totalRevenueFormatted}</p>
+                                        </div>
+                                    </a>
+                                    
+                                    <a href='#' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                        <div class='icon-bg'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+                                        </div>
+                                        <div>
+                                            <p class='stat-label'>Aplikasi Valid</p>
+                                            <p class='stat-value' style='font-size: 1.1rem;'>{$totalApps} Aplikasi</p>
+                                        </div>
+                                    </a>
+                                    
+                                    <a href='#' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                        <div class='icon-bg'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z' /></svg>
+                                        </div>
+                                        <div>
+                                            <p class='stat-label'>Tester Aktif</p>
+                                            <p class='stat-value' style='font-size: 1.1rem;'>{$activeTesters} User</p>
+                                        </div>
+                                    </a>
+                                    
+                                    <a href='#' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
+                                        <div class='icon-bg'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+                                        </div>
+                                        <div>
+                                            <p class='stat-label'>Pending Withdraw</p>
+                                            <p class='stat-value' style='font-size: 1.1rem;'>{$pendingWithdrawals} Request</p>
                                         </div>
                                     </a>
 
