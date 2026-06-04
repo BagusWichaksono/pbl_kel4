@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Filament\Tester\Resources;
+
+use App\Filament\Tester\Resources\PointHistoryResource\Pages;
+use App\Filament\Tester\Resources\PointHistoryResource\RelationManagers;
+use App\Models\PointHistory;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class PointHistoryResource extends Resource
+{
+    protected static ?string $model = PointHistory::class;
+
+    protected static ?string $modelLabel = 'Riwayat Poin';
+
+    protected static ?string $pluralModelLabel = 'Mutasi Poin';
+
+    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
+    
+    protected static ?string $navigationGroup = 'Keuangan';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('tester_id', '=', \Illuminate\Support\Facades\Auth::id(), 'and');
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form->schema([]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal & Waktu')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Keterangan')
+                    ->wrap()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Jenis Mutasi')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'credit' => 'success',
+                        'debit' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => $state === 'credit' ? 'Pemasukan (+)' : 'Pengeluaran (-)'),
+
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('Jumlah Poin')
+                    ->numeric()
+                    ->color(fn ($record) => $record->type === 'credit' ? 'success' : 'danger')
+                    ->weight('bold')
+                    ->formatStateUsing(fn ($state, $record) => ($record->type === 'credit' ? '+' : '-') . ' ' . $state . ' Pts'),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->filters([
+                //
+            ])
+            ->actions([
+                // Read-only
+            ])
+            ->bulkActions([
+                // Read-only
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListPointHistories::route('/'),
+        ];
+    }
+}

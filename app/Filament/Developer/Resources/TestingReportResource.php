@@ -127,6 +127,14 @@ class TestingReportResource extends Resource
                                 )->increment('points', 10);
 
                                 $appTester->update(['points_awarded' => true]);
+
+                                // Catat ke riwayat (Point Ledger)
+                                \App\Models\PointHistory::create([
+                                    'tester_id' => $appTester->tester_id,
+                                    'amount' => 10,
+                                    'type' => 'credit',
+                                    'description' => 'Mendapatkan poin dari pengujian aplikasi: ' . $appTester->application->title,
+                                ]);
                             }
                         });
 

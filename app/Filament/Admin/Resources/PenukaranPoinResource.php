@@ -108,6 +108,42 @@ class PenukaranPoinResource extends Resource
                     })
                     ->visible(fn ($record) => $record->status === 'pending'),
 
+                Action::make('reject_payment')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Tolak Penarikan Poin')
+                    ->modalDescription('Apakah Anda yakin menolak penarikan poin ini? Poin akan dikembalikan ke saldo tester.')
+                    ->action(function ($record) {
+                        \Illuminate\Support\Facades\DB::transaction(function () use ($record) {
+                            $record->update(['status' => 'rejected']);
+                            
+                            // Refund points
+                            if ($record->tester && $record->tester->testerProfile) {
+                                $profile = $record->tester->testerProfile;
+                                $profile->points += $record->points_withdrawn;
+                                $profile->save();
+
+                                // Catat ke riwayat
+                                \App\Models\PointHistory::create([
+                                    'tester_id' => $record->tester_id,
+                                    'amount' => $record->points_withdrawn,
+                                    'type' => 'credit',
+                                    'description' => 'Pengembalian poin karena penarikan ditolak (Invoice: ' . $record->invoice_code . ')',
+                                ]);
+                                
+                                // Notify Tester
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Penarikan Poin Ditolak')
+                                    ->body('Permintaan penarikan Anda ditolak oleh Admin. Saldo poin Anda telah dikembalikan.')
+                                    ->danger()
+                                    ->sendToDatabase($record->tester);
+                            }
+                        });
+                    })
+                    ->visible(fn ($record) => $record->status === 'pending'),
+
                 Action::make('view_proof')
                     ->label('Lihat Bukti')
                     ->icon('heroicon-o-photo')
