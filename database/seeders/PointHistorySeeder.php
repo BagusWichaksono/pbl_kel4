@@ -14,7 +14,7 @@ class PointHistorySeeder extends Seeder
      */
     public function run(): void
     {
-        $tester = User::where('role', 'tester')->first();
+        $tester = User::where('role', '=', 'tester', 'and')->first();
 
         if ($tester) {
             PointHistory::create([
