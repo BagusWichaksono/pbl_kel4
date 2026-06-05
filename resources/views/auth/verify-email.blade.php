@@ -1,3 +1,4 @@
+@php($winterColors = \App\Support\AppPalette::tailwindColors())
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,13 +15,7 @@
             theme: {
                 extend: {
                     colors: {
-                        winter: {
-                            900: '#141c33',
-                            700: '#2f456f',
-                            500: '#5374ac',
-                            300: '#8bafd0',
-                            50:  '#eff5fa'
-                        }
+                        winter: @json($winterColors)
                     },
                     fontFamily: {
                         sans: ['Poppins', 'sans-serif']
@@ -31,13 +26,17 @@
     </script>
 
     <style>
+        :root {
+            {!! \App\Support\AppPalette::cssVariables() !!}
+        }
+
         .bg-grid-pattern {
             background-size: 40px 40px;
-            background-image: radial-gradient(circle, rgba(139, 175, 208, 0.15) 1px, transparent 1px);
+            background-image: radial-gradient(circle, rgba(var(--tesyuk-accent-rgb), 0.15) 1px, transparent 1px);
         }
 
         .text-gradient-tes {
-            background: linear-gradient(to right, #141c33, #2f456f);
+            background: linear-gradient(to right, var(--tesyuk-ink), var(--tesyuk-primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -45,7 +44,7 @@
         }
 
         .text-gradient-yuk {
-            background: linear-gradient(to right, #5374ac, #8bafd0);
+            background: linear-gradient(to right, var(--tesyuk-primary), var(--tesyuk-accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -57,7 +56,7 @@
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #8bafd0;
+            background: var(--tesyuk-accent);
             border-radius: 10px;
         }
     </style>
@@ -70,7 +69,7 @@
         <div class="absolute bottom-[5%] left-[-5%] w-[400px] h-[400px] bg-winter-500 rounded-full blur-[120px]"></div>
     </div>
 
-    <div class="bg-white/90 backdrop-blur-2xl p-10 rounded-[2.5rem] border border-white max-w-md w-full shadow-[0_50px_100px_-20px_rgba(20,28,51,0.15)] relative z-10 transition-all duration-500">
+    <div class="bg-white/90 backdrop-blur-2xl p-10 rounded-[2.5rem] border border-white max-w-md w-full relative z-10 transition-all duration-500" style="box-shadow: 0 50px 100px -20px rgba(var(--tesyuk-ink-rgb), 0.15);">
 
         <div class="flex justify-center mb-6">
             <div class="w-20 h-20 rounded-3xl bg-winter-900 flex items-center justify-center shadow-xl shadow-winter-900/20">

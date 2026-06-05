@@ -22,7 +22,7 @@ class MisiSayaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Misi Saya';
 
-    protected static ?string $navigationGroup = 'Aktivitas Testing';
+    protected static ?string $navigationGroup = 'Misi';
 
     protected static ?int $navigationSort = 2;
 

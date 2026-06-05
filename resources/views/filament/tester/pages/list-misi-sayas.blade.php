@@ -1,12 +1,13 @@
 <x-filament-panels::page>
 <style>
     .misi-header {
-        background: linear-gradient(135deg, #1B2A4A, #2B4C7E, #4A6FA5);
-        border-radius: 16px;
+        background: linear-gradient(135deg, var(--tesyuk-ink), var(--tesyuk-primary), var(--tesyuk-accent));
+        border-radius: 18px;
         padding: 14px 20px;
         display: inline-flex;
         align-items: center;
         margin-bottom: 20px;
+        box-shadow: 0 18px 36px -28px rgba(var(--tesyuk-ink-rgb), 0.7);
     }
     .misi-header-left {
         display: flex;
@@ -14,7 +15,7 @@
         gap: 10px;
     }
     .misi-header-badge {
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.20);
         border-radius: 999px;
         padding: 3px 14px;
         font-size: 12px;
@@ -23,7 +24,7 @@
     }
     .misi-card {
         border-radius: 20px;
-        border: 1px solid #D0DAEA;
+        border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.14);
         background: #fff;
         overflow: hidden;
         transition: transform .18s, box-shadow .18s;
@@ -32,10 +33,12 @@
     }
     .misi-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(27,42,74,0.12);
+        box-shadow: 0 18px 36px -26px rgba(var(--tesyuk-ink-rgb), 0.65);
     }
     .misi-card-top {
-        background: linear-gradient(135deg, #1B2A4A, #2B4C7E, #4A6FA5);
+        background:
+            radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 145px),
+            linear-gradient(135deg, var(--tesyuk-ink), var(--tesyuk-primary) 58%, var(--tesyuk-accent));
         padding: 16px 18px;
     }
     .misi-card-top-row {
@@ -52,7 +55,7 @@
     }
     .misi-card-subtitle {
         font-size: 12px;
-        color: #A8C4E0;
+        color: rgba(var(--tesyuk-secondary-rgb), 0.78);
     }
     .misi-badge {
         border-radius: 999px;
@@ -64,8 +67,8 @@
         white-space: nowrap;
     }
     .misi-badge-running {
-        background: #DBEAFE;
-        color: #1D4ED8;
+        background: var(--tesyuk-secondary);
+        color: var(--tesyuk-primary);
     }
     .misi-badge-done {
         background: #DCFCE7;
@@ -84,12 +87,12 @@
     }
     .misi-progress-label .lbl {
         font-size: 12px;
-        color: #7B8FAB;
+        color: #7c6f6f;
     }
     .misi-progress-label .pct {
         font-size: 12px;
         font-weight: 600;
-        color: #1B2A4A;
+        color: var(--tesyuk-primary);
     }
     .misi-track {
         height: 8px;
@@ -100,17 +103,17 @@
     .misi-fill {
         height: 100%;
         border-radius: 999px;
-        background: linear-gradient(90deg, #2B4C7E, #4A6FA5);
+        background: linear-gradient(90deg, var(--tesyuk-accent), var(--tesyuk-primary));
     }
     .misi-date-row {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 12px;
-        color: #7B8FAB;
+        color: #7c6f6f;
     }
     .misi-footer {
-        border-top: 1px solid #EFF4FB;
+        border-top: 1px solid rgba(var(--tesyuk-primary-rgb), 0.10);
         padding-top: 12px;
         display: flex;
         align-items: center;
@@ -144,7 +147,7 @@
         gap: 4px;
         font-size: 12px;
         font-weight: 600;
-        color: #4A6FA5;
+        color: var(--tesyuk-primary);
         transition: gap .18s;
         white-space: nowrap;
         flex-shrink: 0;
@@ -162,7 +165,7 @@
         align-items: center;
         gap: 4px;
         font-size: 10px;
-        color: #7B8FAB;
+        color: #7c6f6f;
     }
     .misi-legend-dot {
         width: 10px;
@@ -171,7 +174,7 @@
     }
     .misi-empty {
         border-radius: 20px;
-        border: 1px solid #D0DAEA;
+        border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.14);
         background: #fff;
         padding: 64px 24px;
         text-align: center;
@@ -181,14 +184,14 @@
         width: 56px;
         height: 56px;
         border-radius: 16px;
-        background: #EFF4FB;
+        background: var(--tesyuk-secondary);
         display: flex;
         align-items: center;
         justify-content: center;
     }
     .misi-report-count {
         font-size: 11px;
-        color: #7B8FAB;
+        color: #7c6f6f;
         display: flex;
         align-items: center;
         gap: 4px;
@@ -212,10 +215,10 @@
     @if($missions->isEmpty())
         <div class="misi-empty">
             <div class="misi-empty-icon mx-auto">
-                <x-heroicon-o-clipboard-document-list class="h-7 w-7" style="color:#4A6FA5;" />
+                <x-heroicon-o-clipboard-document-list class="h-7 w-7" style="color:var(--tesyuk-accent);" />
             </div>
-            <h2 class="text-lg font-bold" style="color:#1B2A4A;">Belum Ada Misi Testing</h2>
-            <p class="mt-2 text-sm" style="color:#7B8FAB;">
+            <h2 class="text-lg font-bold" style="color:var(--tesyuk-ink);">Belum Ada Misi Testing</h2>
+            <p class="mt-2 text-sm" style="color:#7c6f6f;">
                 Misi akan muncul setelah kamu mendaftar sebagai tester.
             </p>
         </div>

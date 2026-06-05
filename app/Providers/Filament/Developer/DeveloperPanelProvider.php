@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament\Developer;
 
+use App\Support\AppPalette;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -11,7 +12,6 @@ use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -30,26 +30,13 @@ class DeveloperPanelProvider extends PanelProvider
             ->spa()
             ->id('developer')
             ->path('developer')
-            ->brandName(new HtmlString('<span style="background: linear-gradient(135deg, #5374ac, #2f456f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.02em;">TesYuk!</span>'))
+            ->brandName('TesYuk!')
+            ->brandLogo(new HtmlString(AppPalette::brandLogoHtml(asset(AppPalette::LOGO_ASSET))))
+            ->brandLogoHeight('3rem')
             ->profile(\App\Filament\Developer\Pages\CustomEditProfile::class)            
             ->authGuard('web')
-            ->colors([
-                'primary' => [
-                    50 => '#eff5fa',
-                    100 => '#d1e1f1',
-                    200 => '#b3cce2',
-                    300 => '#8bafd0',
-                    400 => '#6b92be',
-                    500 => '#5374ac',
-                    600 => '#425d8a',
-                    700 => '#2f456f',
-                    800 => '#1e2d49',
-                    900 => '#141c33',
-                ],
-                'danger' => Color::Rose,
-                'success' => Color::Emerald,
-                'gray' => Color::Slate,
-            ])
+            ->darkMode(false)
+            ->colors(AppPalette::filamentColors())
             ->font('Poppins')
             ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([
@@ -95,7 +82,7 @@ class DeveloperPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => "
+                fn (): string => AppPalette::cssVariablesStyle() . "
                 <style>
                     body,
                     .fi-layout {
@@ -166,23 +153,23 @@ class DeveloperPanelProvider extends PanelProvider
 
                     html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
                     html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
-                        color: #2f456f !important;
+                        color: var(--tesyuk-primary) !important;
                     }
 
                     html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: #eff5fa !important;
-                        border: 1px solid #d1e1f1 !important;
+                        background-color: var(--tesyuk-secondary) !important;
+                        border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.24) !important;
                         box-shadow: none !important;
                         transform: none !important;
                     }
 
                     html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label {
-                        color: #2f456f !important;
+                        color: var(--tesyuk-primary) !important;
                         font-weight: 700 !important;
                     }
 
                     html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
-                        color: #5374ac !important;
+                        color: var(--tesyuk-accent) !important;
                     }
 
                     .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
@@ -193,8 +180,8 @@ class DeveloperPanelProvider extends PanelProvider
                     }
 
                     .dark .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: rgba(83, 116, 172, 0.18) !important;
-                        border: 1px solid rgba(139, 175, 208, 0.28) !important;
+                        background-color: rgba(var(--tesyuk-accent-rgb), 0.18) !important;
+                        border: 1px solid rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                         box-shadow: none !important;
                     }
 
@@ -212,8 +199,8 @@ class DeveloperPanelProvider extends PanelProvider
                     .fi-modal-window,
                     .fi-section {
                         border-radius: 24px !important;
-                        border: 1px solid rgba(83, 116, 172, 0.1) !important;
-                        box-shadow: 0 4px 20px -5px rgba(83, 116, 172, 0.05) !important;
+                        border: 1px solid rgba(var(--tesyuk-accent-rgb), 0.12) !important;
+                        box-shadow: 0 4px 20px -5px rgba(var(--tesyuk-accent-rgb), 0.05) !important;
                         background-color: white !important;
                     }
 
@@ -226,19 +213,19 @@ class DeveloperPanelProvider extends PanelProvider
 
                     .custom-card-stats {
                         background: white !important;
-                        border: 1px solid rgba(83, 116, 172, 0.1) !important;
+                        border: 1px solid rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                         border-radius: 20px !important;
                         padding: 1.5rem !important;
                         display: flex !important;
                         align-items: center !important;
                         gap: 1rem !important;
-                        box-shadow: 0 4px 20px -2px rgba(83, 116, 172, 0.08) !important;
+                        box-shadow: 0 4px 20px -2px rgba(var(--tesyuk-accent-rgb), 0.08) !important;
                         transition: transform 0.3s ease, box-shadow 0.3s ease !important;
                     }
 
                     .custom-card-stats:hover {
                         transform: translateY(-3px) !important;
-                        box-shadow: 0 10px 25px -5px rgba(83, 116, 172, 0.12) !important;
+                        box-shadow: 0 10px 25px -5px rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                     }
 
                     .dark .custom-card-stats {
@@ -255,7 +242,7 @@ class DeveloperPanelProvider extends PanelProvider
                     }
 
                     .stat-value {
-                        color: #141c33;
+                        color: var(--tesyuk-ink);
                         font-size: 1.25rem;
                         font-weight: 800;
                         margin: 0;
@@ -266,15 +253,15 @@ class DeveloperPanelProvider extends PanelProvider
                     }
 
                     .icon-bg {
-                        background: #eff5fa;
+                        background: var(--tesyuk-secondary);
                         padding: 0.75rem;
                         border-radius: 12px;
-                        color: #5374ac;
+                        color: var(--tesyuk-accent);
                     }
 
                     .dark .icon-bg {
-                        background: rgba(83, 116, 172, 0.2) !important;
-                        color: #8bafd0 !important;
+                        background: rgba(var(--tesyuk-accent-rgb), 0.2) !important;
+                        color: var(--tesyuk-accent) !important;
                     }
 
                     .fi-topbar .fi-user-menu {
@@ -307,7 +294,7 @@ class DeveloperPanelProvider extends PanelProvider
                     }
 
                     .fi-dropdown-list-item:hover {
-                        background-color: #f0f7ff !important;
+                        background-color: var(--tesyuk-secondary) !important;
                     }
 
                     .fi-dropdown-list-item-label {
@@ -316,7 +303,27 @@ class DeveloperPanelProvider extends PanelProvider
                 </style>
                 "
             )
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => AppPalette::sharedSidebarCss()
+            )
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_FOOTER,
+                function (): HtmlString {
+                    $user = Auth::user();
 
+                    return new HtmlString(AppPalette::sidebarProfileHtml(
+                        name: $user?->name ?? 'Developer',
+                        email: $user?->email ?? 'developer@tesyuk.local',
+                        metaLines: ['Developer Panel'],
+                        profileUrl: filament()->getProfileUrl() ?? url('/developer'),
+                        logoutUrl: filament()->getLogoutUrl(),
+                        csrfToken: csrf_token(),
+                        avatarUrl: $user?->getFilamentAvatarUrl(),
+                        fallbackInitials: 'DV',
+                    ));
+                }
+            )
             ->renderHook(
                 PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
                 function () {
@@ -345,10 +352,10 @@ class DeveloperPanelProvider extends PanelProvider
 
                         return new HtmlString("
                             <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
-                                <div style='background: linear-gradient(135deg, #141c33 0%, #2f456f 50%, #5374ac 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(20,28,51,0.4);'>
+                                <div style='background: linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);'>
                                     <div style='position: relative; z-index: 10;'>
                                         <h2 style='font-size: 2.25rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;'>{$greeting}, {$userName}!</h2>
-                                        <p style='margin-top: 0.75rem; color: #cbdcf0; max-width: 550px; font-size: 1.125rem; line-height: 1.6;'>
+                                        <p style='margin-top: 0.75rem; color: rgba(var(--tesyuk-secondary-rgb), 0.78); max-width: 550px; font-size: 1.125rem; line-height: 1.6;'>
                                             Wujudkan aplikasi impianmu. Pantau progres verifikasi, kelola pengujian, dan siapkan aplikasimu untuk meluncur ke tangan pengguna.
                                         </p>
                                     </div>

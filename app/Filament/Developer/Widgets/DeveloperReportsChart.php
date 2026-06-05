@@ -2,8 +2,9 @@
 
 namespace App\Filament\Developer\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use App\Models\DailyReport;
+use App\Support\AppPalette;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class DeveloperReportsChart extends ChartWidget
@@ -31,8 +32,8 @@ class DeveloperReportsChart extends ChartWidget
                 [
                     'label' => 'Laporan Masuk',
                     'data' => $data,
-                    'backgroundColor' => '#5374ac',
-                    'borderColor' => '#5374ac',
+                    'backgroundColor' => AppPalette::ACCENT,
+                    'borderColor' => AppPalette::ACCENT,
                 ],
             ],
             'labels' => $labels,

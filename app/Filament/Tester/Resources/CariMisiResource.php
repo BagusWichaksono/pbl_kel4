@@ -28,7 +28,7 @@ class CariMisiResource extends Resource
 
     protected static ?string $modelLabel = 'Misi';
 
-    protected static ?string $navigationGroup = 'Menu';
+    protected static ?string $navigationGroup = 'Misi';
 
     protected static ?int $navigationSort = 1;
 
@@ -79,15 +79,15 @@ class CariMisiResource extends Resource
                                     width:32px;
                                     height:32px;
                                     border-radius:999px;
-                                    background:linear-gradient(135deg,#eff5fa,#d1e1f1);
-                                    color:#2f456f;
+                                    background:linear-gradient(135deg,var(--tesyuk-secondary),rgba(var(--tesyuk-primary-rgb), 0.24));
+                                    color:var(--tesyuk-primary);
                                     display:flex;
                                     align-items:center;
                                     justify-content:center;
                                     flex-shrink:0;
                                     font-size:.82rem;
                                     font-weight:900;
-                                    border:1px solid #d1e1f1;
+                                    border:1px solid rgba(var(--tesyuk-primary-rgb), 0.24);
                                 '>
                                     {$developerInitial}
                                 </span>
@@ -113,10 +113,10 @@ class CariMisiResource extends Resource
                             $isFull = $filled >= $maxTester;
 
                             $platformStyle = match (strtolower($platform)) {
-                                'android' => 'background:#eef5ff;color:#2f456f;border:1px solid #d9e7fb;',
+                                'android' => 'background:var(--tesyuk-secondary);color:var(--tesyuk-primary);border:1px solid rgba(var(--tesyuk-primary-rgb), 0.24);',
                                 'web' => 'background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe;',
                                 'ios' => 'background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;',
-                                default => 'background:#eff5fa;color:#2f456f;border:1px solid #d1e1f1;',
+                                default => 'background:var(--tesyuk-secondary);color:var(--tesyuk-primary);border:1px solid rgba(var(--tesyuk-primary-rgb), 0.24);',
                             };
 
                             $initials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $record->title ?? 'Aplikasi'), 0, 2));
@@ -197,7 +197,7 @@ class CariMisiResource extends Resource
                                     transition:all .2s ease;
                                 ">
                                     <div style="
-                                        background:linear-gradient(135deg,#141c33 0%,#2f456f 55%,#5374ac 100%);
+                                        background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);
                                         min-height:170px;
                                         position:relative;
                                         padding:1rem;
@@ -312,14 +312,14 @@ class CariMisiResource extends Resource
                                                 margin-bottom:.48rem;
                                             ">
                                                 <span style="font-size:.78rem;font-weight:800;color:#475569;">Kuota Tester</span>
-                                                <span style="font-size:.82rem;font-weight:800;color:#2f456f;">{$filled} / {$maxTester}</span>
+                                                <span style="font-size:.82rem;font-weight:800;color:var(--tesyuk-primary);">{$filled} / {$maxTester}</span>
                                             </div>
 
                                             <div style="height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
                                                 <div style="
                                                     height:100%;
                                                     width:{$percent}%;
-                                                    background:linear-gradient(90deg,#5374ac 0%,#2f456f 100%);
+                                                    background:linear-gradient(90deg,var(--tesyuk-accent) 0%,var(--tesyuk-primary) 100%);
                                                     border-radius:999px;
                                                 "></div>
                                             </div>

@@ -2,8 +2,9 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use App\Models\App;
+use App\Support\AppPalette;
+use Filament\Widgets\ChartWidget;
 
 class AdminAppsChart extends ChartWidget
 {
@@ -28,8 +29,8 @@ class AdminAppsChart extends ChartWidget
                 [
                     'label' => 'Aplikasi Baru',
                     'data' => $data,
-                    'backgroundColor' => '#2f456f',
-                    'borderColor' => '#2f456f',
+                    'backgroundColor' => AppPalette::PRIMARY,
+                    'borderColor' => AppPalette::PRIMARY,
                     'fill' => 'start',
                 ],
             ],

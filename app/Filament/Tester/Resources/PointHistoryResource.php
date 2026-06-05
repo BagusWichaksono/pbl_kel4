@@ -17,13 +17,17 @@ class PointHistoryResource extends Resource
 {
     protected static ?string $model = PointHistory::class;
 
-    protected static ?string $modelLabel = 'Riwayat Poin';
+    protected static ?string $modelLabel = 'Riwayat Penukaran Poin';
 
-    protected static ?string $pluralModelLabel = 'Mutasi Poin';
+    protected static ?string $pluralModelLabel = 'Riwayat Penukaran Poin';
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
-    
-    protected static ?string $navigationGroup = 'Keuangan';
+
+    protected static ?string $navigationLabel = 'Riwayat Penukaran Poin';
+
+    protected static ?string $navigationGroup = 'Poin';
+
+    protected static ?int $navigationSort = 2;
 
     public static function getEloquentQuery(): Builder
     {

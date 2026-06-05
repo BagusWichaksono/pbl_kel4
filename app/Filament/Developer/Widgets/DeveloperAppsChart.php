@@ -2,8 +2,9 @@
 
 namespace App\Filament\Developer\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use App\Models\App;
+use App\Support\AppPalette;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class DeveloperAppsChart extends ChartWidget
@@ -31,8 +32,8 @@ class DeveloperAppsChart extends ChartWidget
                 [
                     'label' => 'Aplikasi Terdaftar',
                     'data' => $data,
-                    'backgroundColor' => '#2f456f',
-                    'borderColor' => '#2f456f',
+                    'backgroundColor' => AppPalette::PRIMARY,
+                    'borderColor' => AppPalette::PRIMARY,
                     'fill' => 'start',
                 ],
             ],

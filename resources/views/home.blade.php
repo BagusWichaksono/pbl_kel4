@@ -1,3 +1,4 @@
+@php($winterColors = \App\Support\AppPalette::tailwindColors())
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
@@ -19,13 +20,7 @@
             theme: {
                 extend: {
                     colors: {
-                        winter: {
-                            900: '#141c33', // Big Stone
-                            700: '#2f456f', // San Juan
-                            500: '#5374ac', // Wedgewood
-                            300: '#8bafd0', // Polo Blue
-                            50: '#eff5fa', // Black Squeeze
-                        }
+                        winter: @json($winterColors)
                     },
                     fontFamily: {
                         sans: ['Poppins', 'sans-serif']
@@ -48,6 +43,10 @@
         }
     </script>
     <style>
+        :root {
+            {!! \App\Support\AppPalette::cssVariables() !!}
+        }
+
         [x-cloak] {
             display: none !important;
         }
@@ -68,25 +67,23 @@
         /* Glassmorphism Background Pattern */
         .bg-grid-pattern {
             background-size: 40px 40px;
-            background-image: radial-gradient(circle, rgba(139, 175, 208, 0.1) 1px, transparent 1px);
+            background-image: radial-gradient(circle, rgba(var(--tesyuk-accent-rgb), 0.1) 1px, transparent 1px);
         }
 
         /* --- Gradasi Teks Kustom --- */
 
-        /* Gradasi untuk "Tes" (Gaya Gelap ke Sedang) */
+        /* Gradasi untuk "Tes" (Ink ke primary) */
         .text-gradient-tes {
-            background: linear-gradient(to right, #141c33, #2f456f);
-            /* winter-900 ke winter-700 */
+            background: linear-gradient(to right, var(--tesyuk-ink), var(--tesyuk-primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-fill-color: transparent;
         }
 
-        /* Gradasi untuk "Yuk!" (Gaya Sedang ke Terang) */
+        /* Gradasi untuk "Yuk!" (Primary ke accent) */
         .text-gradient-yuk {
-            background: linear-gradient(to right, #5374ac, #8bafd0);
-            /* winter-500 ke winter-300 */
+            background: linear-gradient(to right, var(--tesyuk-primary), var(--tesyuk-accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -112,7 +109,7 @@
         :class="scrolled ? 'bg-white/70 backdrop-blur-lg border-b border-winter-300/20 py-3 shadow-lg' : 'bg-transparent py-6'">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3 group">
-                <img src="{{ asset('assets/logo.png') }}" class="w-10 h-10 transition-transform group-hover:rotate-6" alt="Logo">
+                <img src="{{ asset(\App\Support\AppPalette::LOGO_ASSET) }}" class="w-10 h-10 transition-transform group-hover:rotate-6" alt="Logo TesYuk">
 
                 <div class="h-6 w-px bg-winter-300"></div>
 

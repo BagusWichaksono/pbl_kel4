@@ -1,3 +1,4 @@
+@php($winterColors = \App\Support\AppPalette::tailwindColors())
 <!DOCTYPE html>
 <html lang="id">
 
@@ -16,13 +17,7 @@
                         sans: ['Poppins', 'sans-serif']
                     },
                     colors: {
-                        winter: {
-                            50: '#eff5fa',
-                            300: '#8bafd0',
-                            500: '#5374ac',
-                            700: '#2f456f',
-                            900: '#141c33',
-                        }
+                        winter: @json($winterColors)
                     },
                     keyframes: {
                         'fade-in-up': {

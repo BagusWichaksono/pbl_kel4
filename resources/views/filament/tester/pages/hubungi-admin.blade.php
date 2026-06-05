@@ -19,16 +19,11 @@
             box-shadow: 0 20px 50px -20px rgba(15, 23, 42, 0.22);
         }
 
-        .dark .chat-card {
-            background: #0f172a;
-            border-color: #334155;
-        }
-
         .chat-header {
             position: relative;
             overflow: hidden;
             padding: 24px 28px;
-            background: linear-gradient(135deg, #141c33 0%, #2f456f 55%, #5374ac 100%);
+            background: linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);
             color: #ffffff;
         }
 
@@ -81,7 +76,7 @@
 
         .chat-subtitle {
             margin: 5px 0 0;
-            color: #dbeafe;
+            color: rgba(var(--tesyuk-secondary-rgb), 0.78);
             font-size: 14px;
         }
 
@@ -90,14 +85,8 @@
             overflow-y: auto;
             padding: 28px;
             background:
-                radial-gradient(circle at top left, rgba(83, 116, 172, 0.08), transparent 300px),
+                radial-gradient(circle at top left, rgba(var(--tesyuk-accent-rgb), 0.08), transparent 300px),
                 linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-        }
-
-        .dark .chat-body {
-            background:
-                radial-gradient(circle at top left, rgba(83, 116, 172, 0.12), transparent 300px),
-                linear-gradient(180deg, #020617 0%, #0f172a 100%);
         }
 
         .message-row {
@@ -137,18 +126,13 @@
         }
 
         .message-row.mine .message-avatar {
-            background: #eff5fa;
-            color: #2f456f;
+            background: var(--tesyuk-secondary);
+            color: var(--tesyuk-primary);
         }
 
         .message-row.admin .message-avatar {
             background: #e2e8f0;
             color: #334155;
-        }
-
-        .dark .message-row.admin .message-avatar {
-            background: #334155;
-            color: #f8fafc;
         }
 
         .message-meta {
@@ -160,10 +144,6 @@
 
         .message-row.mine .message-meta {
             text-align: right;
-        }
-
-        .dark .message-meta {
-            color: #94a3b8;
         }
 
         .message-bubble {
@@ -180,7 +160,7 @@
         }
 
         .message-row.mine .message-bubble {
-            background: #5374ac;
+            background: var(--tesyuk-accent);
             color: #ffffff;
             border-bottom-right-radius: 6px;
         }
@@ -190,12 +170,6 @@
             color: #1e293b;
             border: 1px solid #e2e8f0;
             border-bottom-left-radius: 6px;
-        }
-
-        .dark .message-row.admin .message-bubble {
-            background: #1e293b;
-            color: #f8fafc;
-            border-color: #334155;
         }
 
         .message-attachment {
@@ -232,20 +206,10 @@
             padding: 36px;
         }
 
-        .dark .empty-box {
-            background: rgba(30, 41, 59, 0.72);
-            border-color: #475569;
-        }
-
         .chat-footer {
             padding: 18px 20px;
             border-top: 1px solid #e2e8f0;
             background: #ffffff;
-        }
-
-        .dark .chat-footer {
-            background: #0f172a;
-            border-color: #334155;
         }
 
         .chat-form {
@@ -270,22 +234,11 @@
         }
 
         .chat-input-box:focus-within {
-            border-color: #5374ac;
+            border-color: var(--tesyuk-accent);
             background: #ffffff;
             box-shadow:
-                0 0 0 4px rgba(83, 116, 172, 0.12),
+                0 0 0 4px rgba(var(--tesyuk-accent-rgb), 0.12),
                 inset 0 1px 3px rgba(15, 23, 42, 0.04);
-        }
-
-        .dark .chat-input-box {
-            background: #020617;
-            border-color: #334155;
-        }
-
-        .dark .chat-input-box:hover,
-        .dark .chat-input-box:focus-within {
-            background: #0f172a;
-            border-color: #5374ac;
         }
 
         .chat-textarea {
@@ -309,10 +262,6 @@
             box-shadow: none !important;
         }
 
-        .dark .chat-textarea {
-            color: #ffffff;
-        }
-
         .chat-textarea::placeholder {
             color: #94a3b8;
         }
@@ -326,11 +275,6 @@
             background: #ffffff;
             padding: 8px;
             box-shadow: 0 12px 28px -18px rgba(15, 23, 42, 0.35);
-        }
-
-        .dark .upload-preview {
-            background: #0f172a;
-            border-color: #334155;
         }
 
         .upload-preview img {
@@ -348,10 +292,6 @@
             font-weight: 700;
         }
 
-        .dark .upload-preview-text {
-            color: #cbd5e1;
-        }
-
         .attach-button {
             display: inline-flex;
             align-items: center;
@@ -360,8 +300,8 @@
             margin-top: 8px;
             padding: 8px 12px;
             border-radius: 999px;
-            background: #eff5fa;
-            color: #2f456f;
+            background: var(--tesyuk-secondary);
+            color: var(--tesyuk-primary);
             font-size: 12px;
             font-weight: 800;
             cursor: pointer;
@@ -369,7 +309,7 @@
         }
 
         .attach-button:hover {
-            background: #d1e1f1;
+            background: rgba(var(--tesyuk-primary-rgb), 0.24);
         }
 
         .attach-button input {
@@ -388,17 +328,17 @@
             border: none;
             border-radius: 20px;
             padding: 0 26px;
-            background: #5374ac;
+            background: var(--tesyuk-accent);
             color: #ffffff;
             font-size: 14px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 14px 28px -14px rgba(83, 116, 172, 0.75);
+            box-shadow: 0 14px 28px -14px rgba(var(--tesyuk-accent-rgb), 0.75);
             transition: all 0.2s ease;
         }
 
         .send-button:hover {
-            background: #425d8a;
+            background: var(--tesyuk-primary);
             transform: translateY(-1px);
         }
 

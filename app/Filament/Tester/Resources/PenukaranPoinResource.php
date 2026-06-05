@@ -26,7 +26,7 @@ class PenukaranPoinResource extends Resource
 
     protected static ?string $modelLabel = 'Penukaran Poin';
 
-    protected static ?string $navigationGroup = 'Reward Tester';
+    protected static ?string $navigationGroup = 'Poin';
 
     protected static ?int $navigationSort = 1;
 

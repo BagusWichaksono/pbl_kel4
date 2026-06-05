@@ -2,8 +2,9 @@
 
 namespace App\Filament\Tester\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use App\Models\PointHistory;
+use App\Support\AppPalette;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class TesterPointsOutChart extends ChartWidget
@@ -33,8 +34,8 @@ class TesterPointsOutChart extends ChartWidget
                 [
                     'label' => 'Poin Ditarik',
                     'data' => $data,
-                    'backgroundColor' => '#2f456f',
-                    'borderColor' => '#2f456f',
+                    'backgroundColor' => AppPalette::PRIMARY,
+                    'borderColor' => AppPalette::PRIMARY,
                     'fill' => 'start',
                 ],
             ],

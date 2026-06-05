@@ -27,7 +27,7 @@
         .admin-inbox-header {
             padding: 22px;
             color: #ffffff;
-            background: linear-gradient(135deg, #141c33 0%, #2f456f 60%, #5374ac 100%);
+            background: linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);
         }
 
         .admin-inbox-title {
@@ -71,7 +71,7 @@
         }
 
         .admin-ticket-item.active {
-            background: #eff5fa;
+            background: var(--tesyuk-secondary);
         }
 
         .dark .admin-ticket-item {
@@ -96,8 +96,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #eff5fa;
-            color: #2f456f;
+            background: var(--tesyuk-secondary);
+            color: var(--tesyuk-primary);
             font-size: 14px;
             font-weight: 800;
             flex-shrink: 0;
@@ -178,7 +178,7 @@
             position: relative;
             overflow: hidden;
             padding: 24px 28px;
-            background: linear-gradient(135deg, #141c33 0%, #2f456f 55%, #5374ac 100%);
+            background: linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);
             color: #ffffff;
         }
 
@@ -242,13 +242,13 @@
             overflow-y: auto;
             padding: 28px;
             background:
-                radial-gradient(circle at top left, rgba(83, 116, 172, 0.08), transparent 300px),
+                radial-gradient(circle at top left, rgba(var(--tesyuk-accent-rgb), 0.08), transparent 300px),
                 linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
         }
 
         .dark .admin-chat-body {
             background:
-                radial-gradient(circle at top left, rgba(83, 116, 172, 0.12), transparent 300px),
+                radial-gradient(circle at top left, rgba(var(--tesyuk-accent-rgb), 0.12), transparent 300px),
                 linear-gradient(180deg, #020617 0%, #0f172a 100%);
         }
 
@@ -289,8 +289,8 @@
         }
 
         .admin-message-row.mine .admin-message-avatar-small {
-            background: #eff5fa;
-            color: #2f456f;
+            background: var(--tesyuk-secondary);
+            color: var(--tesyuk-primary);
         }
 
         .admin-message-row.tester .admin-message-avatar-small {
@@ -332,7 +332,7 @@
         }
 
         .admin-message-row.mine .admin-message-bubble {
-            background: #5374ac;
+            background: var(--tesyuk-accent);
             color: #ffffff;
             border-bottom-right-radius: 6px;
         }
@@ -400,10 +400,10 @@
         }
 
         .admin-chat-input-box:focus-within {
-            border-color: #5374ac;
+            border-color: var(--tesyuk-accent);
             background: #ffffff;
             box-shadow:
-                0 0 0 4px rgba(83, 116, 172, 0.12),
+                0 0 0 4px rgba(var(--tesyuk-accent-rgb), 0.12),
                 inset 0 1px 3px rgba(15, 23, 42, 0.04);
         }
 
@@ -415,7 +415,7 @@
         .dark .admin-chat-input-box:hover,
         .dark .admin-chat-input-box:focus-within {
             background: #0f172a;
-            border-color: #5374ac;
+            border-color: var(--tesyuk-accent);
         }
 
         .admin-chat-textarea {
@@ -454,8 +454,8 @@
             margin-top: 8px;
             padding: 8px 12px;
             border-radius: 999px;
-            background: #eff5fa;
-            color: #2f456f;
+            background: var(--tesyuk-secondary);
+            color: var(--tesyuk-primary);
             font-size: 12px;
             font-weight: 800;
             cursor: pointer;
@@ -463,7 +463,7 @@
         }
 
         .admin-attach-button:hover {
-            background: #d1e1f1;
+            background: rgba(var(--tesyuk-primary-rgb), 0.24);
         }
 
         .admin-attach-button input {
@@ -500,17 +500,17 @@
             border: none;
             border-radius: 20px;
             padding: 0 26px;
-            background: #5374ac;
+            background: var(--tesyuk-accent);
             color: #ffffff;
             font-size: 14px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 14px 28px -14px rgba(83, 116, 172, 0.75);
+            box-shadow: 0 14px 28px -14px rgba(var(--tesyuk-accent-rgb), 0.75);
             transition: all 0.2s ease;
         }
 
         .admin-send-button:hover {
-            background: #425d8a;
+            background: var(--tesyuk-primary);
             transform: translateY(-1px);
         }
 

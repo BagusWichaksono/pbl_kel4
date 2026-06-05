@@ -2,8 +2,9 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use App\Models\User;
+use App\Support\AppPalette;
+use Filament\Widgets\ChartWidget;
 
 class AdminUsersChart extends ChartWidget
 {
@@ -28,8 +29,8 @@ class AdminUsersChart extends ChartWidget
                 [
                     'label' => 'Total Pengguna',
                     'data' => $data,
-                    'backgroundColor' => '#5374ac',
-                    'borderColor' => '#5374ac',
+                    'backgroundColor' => AppPalette::ACCENT,
+                    'borderColor' => AppPalette::ACCENT,
                     'fill' => 'start',
                 ],
             ],

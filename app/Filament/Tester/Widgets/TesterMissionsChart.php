@@ -2,8 +2,9 @@
 
 namespace App\Filament\Tester\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use App\Models\ApplicationTester;
+use App\Support\AppPalette;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class TesterMissionsChart extends ChartWidget
@@ -33,8 +34,8 @@ class TesterMissionsChart extends ChartWidget
                 [
                     'label' => 'Misi Selesai',
                     'data' => $data,
-                    'backgroundColor' => '#5374ac',
-                    'borderColor' => '#5374ac',
+                    'backgroundColor' => AppPalette::ACCENT,
+                    'borderColor' => AppPalette::ACCENT,
                     'fill' => 'start',
                 ],
             ],

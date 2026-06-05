@@ -1,3 +1,4 @@
+@php($winterColors = \App\Support\AppPalette::tailwindColors())
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -12,7 +13,7 @@
             theme: {
                 extend: {
                     colors: {
-                        winter: { 900: '#141c33', 700: '#2f456f', 500: '#5374ac', 300: '#8bafd0', 50:  '#eff5fa' }
+                        winter: @json($winterColors)
                     },
                     fontFamily: { sans: ['Poppins', 'sans-serif'] }
                 }
@@ -20,23 +21,36 @@
         }
     </script>
     <style>
+        :root {
+            {!! \App\Support\AppPalette::cssVariables() !!}
+        }
+
         .bg-grid-pattern {
             background-size: 40px 40px;
-            background-image: radial-gradient(circle, rgba(139, 175, 208, 0.15) 1px, transparent 1px);
+            background-image: radial-gradient(circle, rgba(var(--tesyuk-accent-rgb), 0.15) 1px, transparent 1px);
         }
         .text-gradient-tes {
-            background: linear-gradient(to right, #141c33, #2f456f);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; text-fill-color: transparent;
+            background: none;
+            color: var(--tesyuk-ink);
+            -webkit-text-fill-color: var(--tesyuk-ink);
         }
         .text-gradient-yuk {
-            background: linear-gradient(to right, #5374ac, #8bafd0);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; text-fill-color: transparent;
+            background: none;
+            color: var(--tesyuk-ink);
+            -webkit-text-fill-color: var(--tesyuk-ink);
+        }
+        input:not([type="radio"]) {
+            color: var(--tesyuk-ink) !important;
+            border-color: rgba(var(--tesyuk-ink-rgb), 0.12) !important;
+            -webkit-text-fill-color: var(--tesyuk-ink);
+        }
+        input:not([type="radio"])::placeholder {
+            color: rgba(var(--tesyuk-ink-rgb), 0.38) !important;
+            -webkit-text-fill-color: rgba(var(--tesyuk-ink-rgb), 0.38);
         }
         input:focus { transform: scale(1.01); }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #8bafd0; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--tesyuk-accent); border-radius: 10px; }
     </style>
 </head>
 <body id="page-content" class="bg-winter-50 min-h-screen flex items-center justify-center p-6 py-12 relative overflow-y-auto custom-scrollbar bg-grid-pattern font-sans antialiased opacity-0 transition-opacity duration-500 ease-in-out">
@@ -46,7 +60,7 @@
         <div class="absolute bottom-[5%] left-[-5%] w-[400px] h-[400px] bg-winter-500 rounded-full blur-[120px]"></div>
     </div>
 
-    <div class="bg-white/90 backdrop-blur-2xl p-10 rounded-[2.5rem] border border-white max-w-md w-full shadow-[0_50px_100px_-20px_rgba(20,28,51,0.15)] relative z-10 transition-all duration-500">
+    <div class="bg-white/90 backdrop-blur-2xl p-10 rounded-[2.5rem] border border-white max-w-md w-full relative z-10 transition-all duration-500" style="box-shadow: 0 50px 100px -20px rgba(var(--tesyuk-ink-rgb), 0.15);">
         
         <a href="/" class="absolute top-6 left-6 w-10 h-10 bg-winter-50 hover:bg-winter-100 rounded-xl flex items-center justify-center border border-winter-300/30 transition-all group group-hover:shadow-md">
             <i class="ph-bold ph-x text-winter-900 group-hover:rotate-90 transition-transform"></i>
@@ -69,33 +83,33 @@
         <form action="/login" method="POST" class="space-y-5">
             @csrf
             <div class="group">
-                <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-2 group-focus-within:text-winter-700 transition-colors">Email</label>
+                <label class="block text-[10px] font-black text-winter-900/70 uppercase tracking-widest ml-1 mb-2 group-focus-within:text-winter-900 transition-colors">Email</label>
                 <input name="email" type="email" placeholder="nama@gmail.com" value="{{ old('email') }}" required 
-                    class="w-full px-6 py-4 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium shadow-sm">
+                    class="w-full px-6 py-4 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-900/10 focus:border-winter-900 outline-none transition-all text-winter-900 font-medium shadow-sm">
                 @error('email')
                     <p class="text-red-500 text-xs mt-1.5 ml-1 font-bold">{{ $message }}</p>
                 @enderror
             </div>
             
             <div class="group relative">
-                <label class="block text-[10px] font-black text-winter-500 uppercase tracking-widest ml-1 mb-2 group-focus-within:text-winter-700 transition-colors">Kata Sandi</label>
+                <label class="block text-[10px] font-black text-winter-900/70 uppercase tracking-widest ml-1 mb-2 group-focus-within:text-winter-900 transition-colors">Kata Sandi</label>
                 <div class="relative">
                     <input id="login-password" name="password" type="password" placeholder="••••••••" required 
-                        class="w-full pl-6 pr-12 py-4 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-500/10 focus:border-winter-500 outline-none transition-all placeholder:text-winter-300 text-winter-900 font-medium shadow-sm">
+                        class="w-full pl-6 pr-12 py-4 bg-white/50 border border-winter-300/30 rounded-2xl focus:ring-4 focus:ring-winter-900/10 focus:border-winter-900 outline-none transition-all text-winter-900 font-medium shadow-sm">
                     
-                    <button type="button" onclick="togglePassword('login-password', 'eye-icon-login')" class="absolute right-4 top-1/2 -translate-y-1/2 text-winter-400 hover:text-winter-700 transition-colors focus:outline-none">
+                    <button type="button" onclick="togglePassword('login-password', 'eye-icon-login')" class="absolute right-4 top-1/2 -translate-y-1/2 text-winter-900/40 hover:text-winter-900 transition-colors focus:outline-none">
                         <i id="eye-icon-login" class="ph-bold ph-eye-closed text-xl"></i>
                     </button>
                 </div>
             </div>
             
-            <button type="submit" class="w-full bg-winter-900 text-white py-4 rounded-2xl font-bold hover:bg-winter-700 hover:-translate-y-1 active:scale-95 transition-all shadow-xl shadow-winter-900/20 mt-8">
+            <button type="submit" class="w-full bg-winter-900 text-white py-4 rounded-2xl font-bold hover:bg-winter-800 hover:-translate-y-1 active:scale-95 transition-all shadow-xl shadow-winter-900/20 mt-8">
                 MASUK
             </button>
         </form>
 
         <p class="text-center text-sm text-winter-700/80 font-medium mt-8">
-            Belum punya akun? <a href="/register" class="text-winter-500 font-bold hover:text-winter-700 transition-colors underline decoration-2 underline-offset-4">Daftar Sekarang</a>
+            Belum punya akun? <a href="/register" class="text-winter-900 font-bold hover:text-winter-700 transition-colors underline decoration-2 underline-offset-4">Daftar Sekarang</a>
         </p>
     </div>
 

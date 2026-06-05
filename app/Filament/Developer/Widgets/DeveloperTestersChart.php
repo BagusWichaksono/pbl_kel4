@@ -2,8 +2,9 @@
 
 namespace App\Filament\Developer\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use App\Models\ApplicationTester;
+use App\Support\AppPalette;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class DeveloperTestersChart extends ChartWidget
@@ -32,8 +33,8 @@ class DeveloperTestersChart extends ChartWidget
                 [
                     'label' => 'Tester Baru',
                     'data' => $data,
-                    'backgroundColor' => '#5374ac',
-                    'borderColor' => '#5374ac',
+                    'backgroundColor' => AppPalette::ACCENT,
+                    'borderColor' => AppPalette::ACCENT,
                     'fill' => 'start',
                 ],
             ],
