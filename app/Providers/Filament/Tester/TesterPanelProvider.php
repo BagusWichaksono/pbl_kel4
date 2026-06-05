@@ -18,14 +18,22 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class TesterPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $chartWidgets = array_values(array_filter([
+            \App\Filament\Tester\Widgets\TesterPointsChart::class,
+            \App\Filament\Tester\Widgets\TesterPointsOutChart::class,
+            \App\Filament\Tester\Widgets\TesterMissionsChart::class,
+        ], fn (string $widget): bool => class_exists($widget)));
+
         return $panel
             ->spa()
             ->id('tester')
@@ -138,15 +146,6 @@ class TesterPanelProvider extends PanelProvider
                         font-weight: 700 !important;
                     }
 
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: #425d8a !important;
-                    }
-
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
-                        color: #ffffff !important;
-                    }
-
                     .fi-sidebar-group-collapse-button {
                         display: none !important;
                     }
@@ -164,6 +163,7 @@ class TesterPanelProvider extends PanelProvider
                     .dark .fi-modal-window,
                     .dark .fi-section {
                         background-color: #1e293b !important;
+                        border-color: #334155 !important;
                     }
 
                     .custom-card-stats {
@@ -185,6 +185,7 @@ class TesterPanelProvider extends PanelProvider
 
                     .dark .custom-card-stats {
                         background: #1e293b !important;
+                        border-color: #334155 !important;
                     }
 
                     .stat-label {
@@ -211,6 +212,9 @@ class TesterPanelProvider extends PanelProvider
                         padding: 0.75rem;
                         border-radius: 12px;
                         color: #5374ac;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                     }
 
                     .dark .icon-bg {
@@ -218,14 +222,12 @@ class TesterPanelProvider extends PanelProvider
                         color: #8bafd0 !important;
                     }
 
-                    /* User menu kanan atas */
                     .fi-topbar .fi-user-menu {
                         background: transparent !important;
                         border: none !important;
                         padding: 0 !important;
                     }
 
-                    /* Hanya tombol avatar di topbar, bukan tombol di dropdown */
                     .fi-topbar .fi-user-menu > button {
                         background-color: #ffffff !important;
                         border: 1px solid #e2e8f0 !important;
@@ -233,20 +235,17 @@ class TesterPanelProvider extends PanelProvider
                         padding: 4px !important;
                     }
 
-                    /* Dark mode: lingkaran luar avatar tetap putih */
                     .dark .fi-topbar .fi-user-menu > button {
                         background-color: #ffffff !important;
                         border-color: #e2e8f0 !important;
                     }
 
-                    /* Avatar bagian dalam tetap gelap */
                     .fi-topbar .fi-user-menu .fi-avatar {
                         background-color: #020617 !important;
                         color: #ffffff !important;
                         border-radius: 9999px !important;
                     }
 
-                    /* Jangan ubah tombol di dropdown */
                     .fi-dropdown-panel button,
                     .fi-dropdown-panel a {
                         background-color: unset;
@@ -262,7 +261,6 @@ class TesterPanelProvider extends PanelProvider
                 </style>
                 "
             )
-
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 function (): string {
@@ -299,19 +297,20 @@ class TesterPanelProvider extends PanelProvider
                     ';
                 }
             )
-
             ->renderHook(
                 PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
                 function () {
-                    if (! request()->routeIs('filament.tester.pages.dashboard')) {
+                    if (! request()->is('tester') && ! request()->is('tester/')) {
                         return null;
                     }
 
                     $user = Auth::user();
+                    $userId = $user?->id;
                     $userName = e($user?->name ?? 'tester');
-                    $userPoints = $user?->testerProfile?->points ?? 0;
+                    $userPoints = (int) ($user?->testerProfile?->points ?? 0);
 
-                    $hour = now()->format('H');
+                    $hour = now()->timezone('Asia/Jakarta')->format('H');
+
                     $greeting = match (true) {
                         $hour >= 5 && $hour < 11 => 'Selamat Pagi',
                         $hour >= 11 && $hour < 15 => 'Selamat Siang',
@@ -319,95 +318,394 @@ class TesterPanelProvider extends PanelProvider
                         default => 'Selamat Malam',
                     };
 
+                    $svg = fn (string $path): string => "
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width:1.75rem;height:1.75rem;'>
+                            {$path}
+                        </svg>
+                    ";
+
+                    $icons = [
+                        'money' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />"),
+                        'rocket' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.63 8.41m5.96 5.96a14.926 14.926 0 0 1-5.96 5.96m0-11.92L4.5 9.75l-2.25 4.5 5.25-.75m2.13-5.09 5.96 5.96m-5.96 5.96L8.25 21.75l-4.5-2.25.75-5.25' />"),
+                        'check' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />"),
+                        'camera' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M6.827 6.175A2.31 2.31 0 0 1 9.186 4.5h5.628a2.31 2.31 0 0 1 2.359 1.675l.513 1.864a2.25 2.25 0 0 0 2.17 1.661h.394A2.25 2.25 0 0 1 22.5 11.95v5.8A2.25 2.25 0 0 1 20.25 20H3.75A2.25 2.25 0 0 1 1.5 17.75v-5.8A2.25 2.25 0 0 1 3.75 9.7h.394a2.25 2.25 0 0 0 2.17-1.661l.513-1.864Z' /><path stroke-linecap='round' stroke-linejoin='round' d='M15.75 13.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z' />"),
+                        'clock' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M12 6v6h4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />"),
+                    ];
+
                     $urlPenukaran = \App\Filament\Tester\Resources\PenukaranPoinResource::getUrl('index');
                     $urlMisi = \App\Filament\Tester\Resources\MisiSayaResource::getUrl('index');
+                    $urlCariMisi = \App\Filament\Tester\Resources\CariMisiResource::getUrl('index');
 
-                    $misiAktif = \App\Models\ApplicationTester::query()->where('tester_id', '=', $user?->id, 'and')
-                        ->where('status', '=', 'active', 'and')
-                        ->count();
-                        
-                    $completedMissions = \App\Models\ApplicationTester::query()->where('tester_id', '=', $user?->id, 'and')
-                        ->where('status', '=', 'completed', 'and')
-                        ->count();
-                        
-                    $pendingWithdrawals = \App\Models\Withdrawal::query()->where('tester_id', '=', $user?->id, 'and')
-                        ->where('status', '=', 'pending', 'and')
-                        ->sum('amount_rp');
-                        
-                    $pendingWithdrawalsFormatted = number_format($pendingWithdrawals, 0, ',', '.');
+                    $misiAktif = 0;
+                    $misiSelesai = 0;
+                    $laporanHariIni = 0;
+                    $pendingWithdrawals = 0;
 
-                    return new HtmlString("
-                        <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
-                            <div style='background: linear-gradient(135deg, #141c33 0%, #2f456f 50%, #5374ac 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(20,28,51,0.4);'>
-                                <div style='position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center;'>
+                    if (Schema::hasTable('application_testers')) {
+                        $misiAktif = DB::table('application_testers')
+                            ->where('tester_id', $userId)
+                            ->where('status', 'active')
+                            ->count();
+
+                        $misiSelesai = DB::table('application_testers')
+                            ->where('tester_id', $userId)
+                            ->where('status', 'completed')
+                            ->count();
+                    }
+
+                    if (Schema::hasTable('withdrawals')) {
+                        $pendingWithdrawals = DB::table('withdrawals')
+                            ->where('tester_id', $userId)
+                            ->where('status', 'pending')
+                            ->sum('amount_rp');
+                    }
+
+                    $pendingWithdrawalsFormatted = number_format((int) $pendingWithdrawals, 0, ',', '.');
+
+                    if (Schema::hasTable('daily_reports')) {
+                        $dailyQuery = DB::table('daily_reports');
+
+                        if (Schema::hasColumn('daily_reports', 'tester_id')) {
+                            $dailyQuery->where('tester_id', $userId);
+                        }
+
+                        if (Schema::hasColumn('daily_reports', 'report_date')) {
+                            $dailyQuery->whereDate('report_date', today());
+                        } else {
+                            $dailyQuery->whereDate('created_at', today());
+                        }
+
+                        $laporanHariIni = $dailyQuery->count();
+                    }
+
+                    $activeMissions = collect();
+
+                    if (Schema::hasTable('application_testers') && Schema::hasTable('applications')) {
+                        $activeMissions = DB::table('application_testers')
+                            ->join('applications', 'application_testers.application_id', '=', 'applications.id')
+                            ->where('application_testers.tester_id', $userId)
+                            ->where('application_testers.status', 'active')
+                            ->select(
+                                'application_testers.*',
+                                'applications.title as app_title'
+                            )
+                            ->latest('application_testers.created_at')
+                            ->limit(3)
+                            ->get();
+                    }
+
+                    $missionRows = '';
+
+                    foreach ($activeMissions as $mission) {
+                        $title = e($mission->app_title ?? 'Aplikasi');
+
+                        $startDate = isset($mission->created_at)
+                            ? \Carbon\Carbon::parse($mission->created_at)->startOfDay()
+                            : now()->startOfDay();
+
+                        $today = now()->startOfDay();
+
+                        $day = (int) min(14, max(1, floor($startDate->diffInDays($today)) + 1));
+                        $percent = (int) round(($day / 14) * 100);
+
+                        $missionRows .= "
+                            <div style='padding:1rem 0;border-bottom:1px solid #e2e8f0;'>
+                                <div style='display:flex;align-items:center;justify-content:space-between;gap:1rem;'>
                                     <div>
-                                        <h2 style='font-size: 2.25rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;'>{$greeting}, {$userName}!</h2>
-                                        <p style='margin-top: 0.75rem; color: #cbdcf0; max-width: 500px; font-size: 1.125rem; line-height: 1.6;'>
-                                            Kualitas aplikasi ada di tanganmu. Mari bantu developer membangun aplikasi terbaik hari ini.
-                                        </p>
+                                        <div style='font-weight:800;color:#0f172a;'>{$title}</div>
+                                        <div style='font-size:0.8rem;color:#64748b;margin-top:0.2rem;'>Hari ke-{$day} dari 14</div>
                                     </div>
-
-                                    <div class='hidden md:block' style='padding-right: 2rem;'>
-                                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.2' stroke='currentColor' style='width: 160px; height: 160px; color: rgba(255,255,255,0.7); transform: rotate(15deg) translateY(-10px);'>
-                                            <path stroke-linecap='round' stroke-linejoin='round' d='M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.45 15.04 15.04 0 0 1 .06-.312m-2.24 2.39a4.499 4.499 0 0 0-1.757 4.306 4.433 4.433 0 0 0 2.723-2.023c-2.03-2.03-2.023-2.722-2.023-2.722Z' />
-                                        </svg>
-                                    </div>
+                                    <span style='font-size:0.75rem;font-weight:800;padding:0.35rem 0.7rem;border-radius:999px;background:#eff5fa;color:#2f456f;'>Aktif</span>
                                 </div>
-
-                                <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px);'></div>
-                                <div style='position: absolute; right: 120px; bottom: -50px; width: 150px; height: 150px; background: rgba(83,116,172,0.2); border-radius: 50%; filter: blur(40px);'></div>
+                                <div style='height:8px;background:#e2e8f0;border-radius:999px;margin-top:0.8rem;overflow:hidden;'>
+                                    <div style='height:100%;width:{$percent}%;background:#5374ac;border-radius:999px;'></div>
+                                </div>
                             </div>
+                        ";
+                    }
 
-                            <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;'>
-                                <a href='{$urlPenukaran}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
-                                    <div class='icon-bg'>
-                                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'>
-                                            <path stroke-linecap='round' stroke-linejoin='round' d='M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class='stat-label'>Saldo Poin</p>
-                                        <p class='stat-value'>{$userPoints} pts</p>
-                                    </div>
-                                </a>
-
-                                <a href='{$urlMisi}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
-                                    <div class='icon-bg'>
-                                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'>
-                                            <path stroke-linecap='round' stroke-linejoin='round' d='M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75' />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class='stat-label'>Misi Aktif</p>
-                                        <p class='stat-value'>{$misiAktif} Tugas</p>
-                                    </div>
-                                </a>
-                                
-                                <a href='{$urlMisi}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
-                                    <div class='icon-bg'>
-                                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-                                    </div>
-                                    <div>
-                                        <p class='stat-label'>Misi Selesai</p>
-                                        <p class='stat-value'>{$completedMissions} Tugas</p>
-                                    </div>
-                                </a>
-
-                                <a href='{$urlPenukaran}' class='custom-card-stats' style='text-decoration: none; color: inherit; cursor: pointer;'>
-                                    <div class='icon-bg'>
-                                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-                                    </div>
-                                    <div>
-                                        <p class='stat-label'>Penarikan Diproses</p>
-                                        <p class='stat-value'>Rp {$pendingWithdrawalsFormatted}</p>
-                                    </div>
-                                </a>
+                    if ($missionRows === '') {
+                        $missionRows = "
+                            <div style='padding:1.5rem;text-align:center;color:#64748b;border:1px dashed #cbd5e1;border-radius:18px;'>
+                                Belum ada misi aktif. Cari misi baru untuk mulai mengumpulkan poin.
                             </div>
-                        </div>
-                    ");
+                        ";
+                    }
+
+                    $activeMission = $activeMissions->first();
+
+                    $currentDay = 0;
+                    $progressPercent = 0;
+                    $remainingDays = 14;
+                    $activeMissionTitle = 'Belum ada misi aktif';
+
+                    if ($activeMission) {
+                        $activeMissionTitle = e($activeMission->app_title ?? 'Aplikasi');
+
+                        $startDate = isset($activeMission->created_at)
+                            ? \Carbon\Carbon::parse($activeMission->created_at)->startOfDay()
+                            : now()->startOfDay();
+
+                        $today = now()->startOfDay();
+
+                        $currentDay = (int) min(14, max(1, floor($startDate->diffInDays($today)) + 1));
+                        $progressPercent = (int) round(($currentDay / 14) * 100);
+                        $remainingDays = max(0, 14 - $currentDay);
+                    }
+
+                    $dailyStatusLabel = $laporanHariIni > 0 ? 'Sudah Lapor' : 'Belum Lapor';
+                    $dailyStatusColor = $laporanHariIni > 0 ? '#047857' : '#b45309';
+                    $dailyStatusBg = $laporanHariIni > 0 ? '#ecfdf5' : '#fffbeb';
+                    $dailyStatusBorder = $laporanHariIni > 0 ? '#bbf7d0' : '#fde68a';
+
+                    return new HtmlString(<<<HTML
+<div style="margin-bottom:2rem;display:flex;flex-direction:column;gap:1.5rem;">
+    <div style="background:linear-gradient(135deg,#141c33 0%,#2f456f 50%,#5374ac 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(20,28,51,0.4);">
+        <div style="position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1.5rem;">
+            <div>
+                <h2 style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
+                <p style="margin-top:0.75rem;color:#cbdcf0;max-width:600px;font-size:1.125rem;line-height:1.6;">
+                    Jalankan misi harian, upload screenshot sebagai absensi, dan kumpulkan reward poin setelah testing selesai.
+                </p>
+            </div>
+
+            <div class="hidden md:block" style="padding-right:1.5rem;color:rgba(255,255,255,0.72);">
+                {$icons['rocket']}
+            </div>
+        </div>
+        <div style="position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;filter:blur(40px);"></div>
+        <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(83,116,172,0.2);border-radius:50%;filter:blur(40px);"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;">
+        <a href="{$urlPenukaran}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+            <div class="icon-bg">{$icons['money']}</div>
+            <div>
+                <p class="stat-label">Saldo Poin</p>
+                <p class="stat-value">{$userPoints} pts</p>
+            </div>
+        </a>
+
+        <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+            <div class="icon-bg">{$icons['rocket']}</div>
+            <div>
+                <p class="stat-label">Misi Aktif</p>
+                <p class="stat-value">{$misiAktif}</p>
+            </div>
+        </a>
+
+        <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+            <div class="icon-bg">{$icons['check']}</div>
+            <div>
+                <p class="stat-label">Misi Selesai</p>
+                <p class="stat-value">{$misiSelesai}</p>
+            </div>
+        </a>
+
+        <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+            <div class="icon-bg">{$icons['camera']}</div>
+            <div>
+                <p class="stat-label">Laporan Hari Ini</p>
+                <p class="stat-value">{$laporanHariIni}</p>
+            </div>
+        </a>
+
+        <a href="{$urlPenukaran}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+            <div class="icon-bg">{$icons['clock']}</div>
+            <div>
+                <p class="stat-label">Penarikan Diproses</p>
+                <p class="stat-value">Rp {$pendingWithdrawalsFormatted}</p>
+            </div>
+        </a>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;">
+        <div class="fi-section" style="padding:1.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                <div>
+                    <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Misi Aktif</h3>
+                    <p style="font-size:0.9rem;color:#64748b;margin:0.25rem 0 0;">Pantau progres testing aplikasi yang sedang kamu jalankan.</p>
+                </div>
+                <a href="{$urlMisi}" style="font-size:0.85rem;font-weight:800;color:#2f456f;text-decoration:none;">Lihat Misi</a>
+            </div>
+
+            {$missionRows}
+        </div>
+
+        <div class="fi-section" style="padding:1.5rem;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+                <div>
+                    <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Statistik Misi</h3>
+                    <p style="font-size:0.9rem;color:#64748b;line-height:1.6;margin-top:0.4rem;">
+                        Ringkasan progres misi testing aktif kamu.
+                    </p>
+                </div>
+
+                <span style="font-size:.74rem;font-weight:800;padding:.38rem .68rem;border-radius:999px;background:{$dailyStatusBg};color:{$dailyStatusColor};border:1px solid {$dailyStatusBorder};white-space:nowrap;">
+                    {$dailyStatusLabel}
+                </span>
+            </div>
+
+            <div style="margin-top:1rem;padding:1rem;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;">
+                <div style="font-size:.78rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">
+                    Misi Aktif
+                </div>
+
+                <div style="margin-top:.35rem;font-size:1rem;font-weight:850;color:#0f172a;line-height:1.35;">
+                    {$activeMissionTitle}
+                </div>
+
+                <div style="margin-top:1rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem;">
+                        <span style="font-size:.82rem;font-weight:800;color:#475569;">Progress 14 Hari</span>
+                        <span style="font-size:.82rem;font-weight:900;color:#2f456f;">{$progressPercent}%</span>
+                    </div>
+
+                    <div style="height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+                        <div style="height:100%;width:{$progressPercent}%;background:linear-gradient(90deg,#5374ac,#2f456f);border-radius:999px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:.9rem;">
+                <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
+                    <div style="font-size:.72rem;color:#64748b;font-weight:800;">Hari Ini</div>
+                    <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">{$currentDay}</div>
+                </div>
+
+                <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
+                    <div style="font-size:.72rem;color:#64748b;font-weight:800;">Sisa Hari</div>
+                    <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">{$remainingDays}</div>
+                </div>
+
+                <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
+                    <div style="font-size:.72rem;color:#64748b;font-weight:800;">Target</div>
+                    <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">14</div>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem;">
+                <a href="{$urlMisi}" style="display:inline-flex;padding:0.78rem 1rem;border-radius:999px;background:#5374ac;color:white;font-weight:800;text-decoration:none;">
+                    Lihat Misi
+                </a>
+
+                <a href="{$urlCariMisi}" style="display:inline-flex;padding:0.78rem 1rem;border-radius:999px;background:#eff5fa;color:#2f456f;font-weight:800;text-decoration:none;border:1px solid #d1e1f1;">
+                    Cari Misi Baru
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+HTML);
                 }
             )
+            ->renderHook(
+                PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
+                function () {
+                    if (! request()->is('tester/penukaran-poins*')) {
+                        return null;
+                    }
 
+                    $user = Auth::user();
+                    $points = (int) ($user?->testerProfile?->points ?? 0);
+                    $estimatedBalance = 'Rp' . number_format($points * 1000, 0, ',', '.');
+
+                    $walletIcon = "
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width:1.7rem;height:1.7rem;'>
+                            <path stroke-linecap='round' stroke-linejoin='round' d='M21 12.75V9.75A2.25 2.25 0 0 0 18.75 7.5H5.25A2.25 2.25 0 0 1 3 5.25m18 7.5h-4.5a2.25 2.25 0 0 0 0 4.5H21m0-4.5v6A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V5.25m0 0A2.25 2.25 0 0 1 5.25 3h12A2.25 2.25 0 0 1 19.5 5.25V7.5' />
+                        </svg>
+                    ";
+
+                    $bankIcon = "
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width:1.35rem;height:1.35rem;'>
+                            <path stroke-linecap='round' stroke-linejoin='round' d='M3.75 21h16.5M4.5 10.5h15M5.25 21V10.5M9.75 21V10.5M14.25 21V10.5M18.75 21V10.5M12 3 3.75 8.25h16.5L12 3Z' />
+                        </svg>
+                    ";
+
+                    $clockIcon = "
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width:1.35rem;height:1.35rem;'>
+                            <path stroke-linecap='round' stroke-linejoin='round' d='M12 6v6h4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />
+                        </svg>
+                    ";
+
+                    $checkIcon = "
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width:1.35rem;height:1.35rem;'>
+                            <path stroke-linecap='round' stroke-linejoin='round' d='M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />
+                        </svg>
+                    ";
+
+                    return new HtmlString(<<<HTML
+<div style="margin-bottom:1.5rem;">
+    <div style="background:linear-gradient(135deg,#141c33 0%,#2f456f 55%,#5374ac 100%);border-radius:26px;padding:2rem;color:white;position:relative;overflow:hidden;box-shadow:0 22px 45px -25px rgba(15,23,42,.45);">
+        <div style="position:absolute;right:-60px;top:-60px;width:190px;height:190px;border-radius:999px;background:rgba(255,255,255,.08);filter:blur(10px);"></div>
+        <div style="position:absolute;left:-50px;bottom:-70px;width:180px;height:180px;border-radius:999px;background:rgba(255,255,255,.06);filter:blur(12px);"></div>
+
+        <div style="position:relative;z-index:2;display:grid;grid-template-columns:1.3fr .7fr;gap:1.5rem;align-items:center;">
+            <div>
+                <div style="width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);margin-bottom:1rem;">
+                    {$walletIcon}
+                </div>
+
+                <h2 style="font-size:1.85rem;font-weight:850;margin:0;letter-spacing:-.02em;">
+                    Kelola Reward Poin
+                </h2>
+
+                <p style="margin:.65rem 0 0;color:#dbeafe;line-height:1.6;max-width:620px;font-size:.98rem;">
+                    Tukarkan poin dari misi testing ke e-wallet. Pastikan nomor e-wallet dan nama pemilik akun sudah benar sebelum mengajukan pencairan.
+                </p>
+            </div>
+
+            <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:1.15rem;backdrop-filter:blur(10px);">
+                <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#cbd5e1;">
+                    Saldo Tersedia
+                </div>
+
+                <div style="font-size:2rem;font-weight:900;margin-top:.25rem;">
+                    {$points} poin
+                </div>
+
+                <div style="font-size:.92rem;color:#dbeafe;margin-top:.25rem;">
+                    Estimasi pencairan {$estimatedBalance}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top:1rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">
+        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:20px;padding:1rem;display:flex;gap:.85rem;align-items:flex-start;box-shadow:0 12px 30px -24px rgba(15,23,42,.28);">
+            <div style="width:42px;height:42px;border-radius:14px;background:#eff5fa;color:#5374ac;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                {$bankIcon}
+            </div>
+            <div>
+                <div style="font-weight:850;color:#0f172a;">1. Ajukan Pencairan</div>
+                <div style="font-size:.84rem;color:#64748b;line-height:1.55;margin-top:.2rem;">Isi e-wallet, atas nama, dan jumlah poin yang ingin dicairkan.</div>
+            </div>
+        </div>
+
+        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:20px;padding:1rem;display:flex;gap:.85rem;align-items:flex-start;box-shadow:0 12px 30px -24px rgba(15,23,42,.28);">
+            <div style="width:42px;height:42px;border-radius:14px;background:#eff5fa;color:#5374ac;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                {$clockIcon}
+            </div>
+            <div>
+                <div style="font-weight:850;color:#0f172a;">2. Diproses Admin</div>
+                <div style="font-size:.84rem;color:#64748b;line-height:1.55;margin-top:.2rem;">Admin mengecek detail pengajuan dan melakukan pembayaran di luar aplikasi.</div>
+            </div>
+        </div>
+
+        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:20px;padding:1rem;display:flex;gap:.85rem;align-items:flex-start;box-shadow:0 12px 30px -24px rgba(15,23,42,.28);">
+            <div style="width:42px;height:42px;border-radius:14px;background:#eff5fa;color:#5374ac;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                {$checkIcon}
+            </div>
+            <div>
+                <div style="font-weight:850;color:#0f172a;">3. Status Selesai</div>
+                <div style="font-size:.84rem;color:#64748b;line-height:1.55;margin-top:.2rem;">Setelah bukti pembayaran diunggah, status pencairan berubah menjadi selesai.</div>
+            </div>
+        </div>
+    </div>
+</div>
+HTML);
+                }
+            )
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
                 fn () => new HtmlString(
@@ -416,20 +714,13 @@ class TesterPanelProvider extends PanelProvider
                     </div>'
                 )
             )
-
             ->discoverResources(in: app_path('Filament/Tester/Resources'), for: 'App\\Filament\\Tester\\Resources')
             ->discoverPages(in: app_path('Filament/Tester/Pages'), for: 'App\\Filament\\Tester\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            // Widgets are removed in favor of the custom HTML banner above
-            // ->discoverWidgets(in: app_path('Filament/Tester/Widgets'), for: 'App\\Filament\\Tester\\Widgets')
-            ->widgets([
-                \App\Filament\Tester\Widgets\TesterPointsChart::class,
-                \App\Filament\Tester\Widgets\TesterPointsOutChart::class,
-                \App\Filament\Tester\Widgets\TesterMissionsChart::class,
-            ])
-
+            ->widgets($chartWidgets)
+            ->databaseNotifications()
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -443,7 +734,6 @@ class TesterPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->databaseNotifications();
+            ]);
     }
 }
