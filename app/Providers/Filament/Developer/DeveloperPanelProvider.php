@@ -21,6 +21,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DeveloperPanelProvider extends PanelProvider
 {
@@ -315,61 +317,190 @@ class DeveloperPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
                 function () {
-                    if (request()->routeIs('filament.developer.pages.dashboard')) {
-                        /** @var \App\Models\User|null $user */
-                        $user = Auth::user();
-                        $userName = $user?->name ?? 'Developer';
+                    if (! request()->is('developer') && ! request()->is('developer/')) {
+                        return null;
+                    }
 
-                        $hour = now()->timezone('Asia/Jakarta')->format('H');
-                        $greeting = match(true) {
-                            $hour >= 5 && $hour < 11 => 'Selamat Pagi',
-                            $hour >= 11 && $hour < 15 => 'Selamat Siang',
-                            $hour >= 15 && $hour < 18 => 'Selamat Sore',
-                            default => 'Selamat Malam',
-                        };
+                    /** @var \App\Models\User|null $user */
+                    $user = Auth::user();
+                    $userName = e($user?->name ?? 'Developer');
+                    $userId = $user?->id;
 
-                        // ─── REVISI: URL DINAMIS DI SINI ───
-                        $urlAddApp = \App\Filament\Developer\Resources\AppResource::getUrl('create');
-                        $urlHistory = \App\Filament\Developer\Resources\TestingReportResource::getUrl('index');
+                    $hour = now()->timezone('Asia/Jakarta')->format('H');
+                    $greeting = match (true) {
+                        $hour >= 5 && $hour < 11 => 'Selamat Pagi',
+                        $hour >= 11 && $hour < 15 => 'Selamat Siang',
+                        $hour >= 15 && $hour < 18 => 'Selamat Sore',
+                        default => 'Selamat Malam',
+                    };
 
-                        return new HtmlString("
-                            <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
-                                <div style='background: linear-gradient(135deg, #141c33 0%, #2f456f 50%, #5374ac 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(20,28,51,0.4);'>
-                                    <div style='position: relative; z-index: 10;'>
-                                        <h2 style='font-size: 2.25rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;'>{$greeting}, {$userName}!</h2>
-                                        <p style='margin-top: 0.75rem; color: #cbdcf0; max-width: 550px; font-size: 1.125rem; line-height: 1.6;'>
-                                            Wujudkan aplikasi impianmu. Pantau progres verifikasi, kelola pengujian, dan siapkan aplikasimu untuk meluncur ke tangan pengguna.
-                                        </p>
+                    $svg = fn (string $path): string => "
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width:1.75rem;height:1.75rem;'>
+                            {$path}
+                        </svg>
+                    ";
+
+                    $icons = [
+                        'app' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M3.75 6A2.25 2.25 0 0 1 6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6Z' /><path stroke-linecap='round' stroke-linejoin='round' d='M8.25 8.25h7.5M8.25 12h7.5M8.25 15.75h4.5' />"),
+                        'clock' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M12 6v6h4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />"),
+                        'check' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />"),
+                        'users' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z' />"),
+                    ];
+
+                    $urlAddApp = \App\Filament\Developer\Resources\AppResource::getUrl('create');
+                    $urlApps = \App\Filament\Developer\Resources\AppResource::getUrl('index');
+
+                    $reportResource = \App\Filament\Developer\Resources\TestingReportResource::class;
+                    $urlReports = class_exists($reportResource) ? $reportResource::getUrl('index') : '#';
+
+                    $appsQuery = null;
+
+                    if (Schema::hasTable('applications')) {
+                        $appsQuery = DB::table('applications');
+
+                        if (Schema::hasColumn('applications', 'developer_id')) {
+                            $appsQuery->where('developer_id', $userId);
+                        }
+                    }
+
+                    $totalApps = $appsQuery ? (clone $appsQuery)->count() : 0;
+
+                    $pendingApps = $appsQuery && Schema::hasColumn('applications', 'payment_status')
+                        ? (clone $appsQuery)->where('payment_status', 'pending')->count()
+                        : 0;
+
+                    $validApps = $appsQuery && Schema::hasColumn('applications', 'payment_status')
+                        ? (clone $appsQuery)->where('payment_status', 'valid')->count()
+                        : 0;
+
+                    $testerJoined = 0;
+
+                    if (Schema::hasTable('application_testers') && Schema::hasTable('applications')) {
+                        $testerJoinedQuery = DB::table('application_testers')
+                            ->join('applications', 'application_testers.application_id', '=', 'applications.id');
+
+                        if (Schema::hasColumn('applications', 'developer_id')) {
+                            $testerJoinedQuery->where('applications.developer_id', $userId);
+                        }
+
+                        $testerJoined = $testerJoinedQuery->count();
+                    }
+
+                    $latestApps = $appsQuery
+                        ? (clone $appsQuery)->latest('created_at')->limit(5)->get()
+                        : collect();
+
+                    $appRows = '';
+
+                    foreach ($latestApps as $app) {
+                        $title = e($app->title ?? $app->name ?? 'Aplikasi');
+                        $status = e($app->payment_status ?? $app->testing_status ?? 'pending');
+                        $target = $app->max_testers ?? 20;
+
+                        $joined = 0;
+
+                        if (Schema::hasTable('application_testers')) {
+                            $joined = DB::table('application_testers')
+                                ->where('application_id', $app->id)
+                                ->count();
+                        }
+
+                        $percent = $target > 0 ? min(100, round(($joined / $target) * 100)) : 0;
+
+                        $appRows .= "
+                            <div style='padding:1rem 0;border-bottom:1px solid #e2e8f0;'>
+                                <div style='display:flex;align-items:center;justify-content:space-between;gap:1rem;'>
+                                    <div>
+                                        <div style='font-weight:800;color:#0f172a;'>{$title}</div>
+                                        <div style='font-size:0.8rem;color:#64748b;margin-top:0.2rem;'>Status: {$status}</div>
                                     </div>
-                                    <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px);'></div>
+                                    <div style='font-size:0.8rem;font-weight:800;color:#2f456f;'>{$joined}/{$target} tester</div>
                                 </div>
-
-                                <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;'>
-                                    
-                                    <a href='{$urlAddApp}' class='custom-card-stats' style='text-decoration: none; color: inherit;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 4.5v15m7.5-7.5h-15' /></svg>
-                                        </div>
-                                        <div>
-                                            <p class='stat-label'>Mulai Proyek</p>
-                                            <p class='stat-value'>Daftarkan Aplikasi Baru</p>
-                                        </div>
-                                    </a>
-
-                                    <a href='{$urlHistory}' class='custom-card-stats' style='text-decoration: none; color: inherit;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M9 12h3.75M9 15h3.375M9 18h3.375m1.875-12h7.5c.621 0 1.125.504 1.125 1.125v13.5c0 .621-.504 1.125-1.125 1.125h-7.5c-.621 0-1.125-.504-1.125-1.125V7.125c0-.621.504-1.125 1.125-1.125zm-8.25 1.5H5.25A2.25 2.25 0 003 3.75v16.5a2.25 2.25 0 002.25 2.25h13.5a2.25 2.25 0 002.25-2.25V14.25' /></svg>
-                                        </div>
-                                        <div>
-                                            <p class='stat-label'>Cek Status</p>
-                                            <p class='stat-value'>Riwayat & Progres Testing</p>
-                                        </div>
-                                    </a>
-
+                                <div style='height:8px;background:#e2e8f0;border-radius:999px;margin-top:0.8rem;overflow:hidden;'>
+                                    <div style='height:100%;width:{$percent}%;background:#5374ac;border-radius:999px;'></div>
                                 </div>
                             </div>
-                        ");
+                        ";
                     }
+
+                    if ($appRows === '') {
+                        $appRows = "
+                            <div style='padding:1.5rem;text-align:center;color:#64748b;border:1px dashed #cbd5e1;border-radius:18px;'>
+                                Belum ada aplikasi terdaftar. Daftarkan aplikasi pertamamu untuk mulai testing.
+                            </div>
+                        ";
+                    }
+
+                    return new HtmlString(<<<HTML
+                        <div style="margin-bottom:2rem;display:flex;flex-direction:column;gap:1.5rem;">
+                            <div style="background:linear-gradient(135deg,#141c33 0%,#2f456f 50%,#5374ac 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(20,28,51,0.4);">
+                                <div style="position:relative;z-index:10;">
+                                    <h2 style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
+                                    <p style="margin-top:0.75rem;color:#cbdcf0;max-width:620px;font-size:1.125rem;line-height:1.6;">
+                                        Kelola aplikasi, pantau jumlah tester, dan lihat progress testing aplikasi kamu.
+                                    </p>
+                                </div>
+                                <div style="position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;filter:blur(40px);"></div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;">
+                                <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['app']}</div>
+                                    <div>
+                                        <p class="stat-label">Aplikasi Saya</p>
+                                        <p class="stat-value">{$totalApps}</p>
+                                    </div>
+                                </a>
+
+                                <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['clock']}</div>
+                                    <div>
+                                        <p class="stat-label">Menunggu Verifikasi</p>
+                                        <p class="stat-value">{$pendingApps}</p>
+                                    </div>
+                                </a>
+
+                                <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['check']}</div>
+                                    <div>
+                                        <p class="stat-label">Aplikasi Valid</p>
+                                        <p class="stat-value">{$validApps}</p>
+                                    </div>
+                                </a>
+
+                                <a href="{$urlReports}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['users']}</div>
+                                    <div>
+                                        <p class="stat-label">Tester Bergabung</p>
+                                        <p class="stat-value">{$testerJoined}</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1.3fr 0.7fr;gap:1.5rem;">
+                                <div class="fi-section" style="padding:1.5rem;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                                        <div>
+                                            <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Progress Aplikasi</h3>
+                                            <p style="font-size:0.9rem;color:#64748b;margin:0.25rem 0 0;">Pantau kuota tester dan status aplikasi terbaru.</p>
+                                        </div>
+                                        <a href="{$urlApps}" style="font-size:0.85rem;font-weight:800;color:#2f456f;text-decoration:none;">Lihat Semua</a>
+                                    </div>
+                                    {$appRows}
+                                </div>
+
+                                <div class="fi-section" style="padding:1.5rem;">
+                                    <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Mulai Testing</h3>
+                                    <p style="font-size:0.9rem;color:#64748b;line-height:1.6;margin-top:0.5rem;">
+                                        Daftarkan aplikasi yang sudah lulus review awal Google Play Console, lalu tunggu validasi admin.
+                                    </p>
+                                    <a href="{$urlAddApp}" style="display:inline-flex;margin-top:1rem;padding:0.8rem 1rem;border-radius:999px;background:#5374ac;color:white;font-weight:800;text-decoration:none;">
+                                        Daftarkan Aplikasi
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    HTML);
                 }
             );
     }
