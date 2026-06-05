@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -17,13 +16,15 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
-            'password' => Hash::make('password123'), // Password default
+            'email_verified_at' => now()->subDay(),
+            'password' => Hash::make('password123'),
             'role' => 'super_admin',
         ]);
 
         User::create([
             'name' => 'Admin Sistem',
             'email' => 'admin@gmail.com',
+            'email_verified_at' => now()->subDay(),
             'password' => Hash::make('password123'),
             'role' => 'admin',
         ]);
@@ -31,6 +32,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Developer',
             'email' => 'developer@gmail.com',
+            'email_verified_at' => now()->subDay(),
             'password' => Hash::make('password123'),
             'role' => 'developer',
         ]);
@@ -38,6 +40,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Tester',
             'email' => 'tester@gmail.com',
+            'email_verified_at' => now()->subDay(),
             'password' => Hash::make('password123'),
             'role' => 'tester',
         ]);
@@ -48,13 +51,14 @@ class UserSeeder extends Seeder
             $user = User::create([
                 'name' => 'Tester ' . $i,
                 'email' => 'tester' . $i . '@gmail.com',
+                'email_verified_at' => now()->subDay(),
                 'password' => Hash::make('password123'),
                 'role' => 'tester',
             ]);
 
             // Otomatis buat tester_profile
             $user->testerProfile()->create([
-                'points' => rand(5, 50), // 5 - 50 poin
+                'points' => rand(5, 50),
             ]);
         }
     }
