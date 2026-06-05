@@ -85,10 +85,29 @@ class TesterPanelProvider extends PanelProvider
                     }
 
                     .fi-sidebar-header {
-                        background: transparent !important;
-                        border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
-                        box-shadow: none !important;
-                        padding: 1rem 1.1rem !important;
+                        margin-bottom: 1rem !important;
+                        padding-top: 50px !important;
+                        padding-bottom: 50px !important;
+                        border-bottom: 1px solid rgba(238, 238, 238, 0.08) !important;
+                    }
+
+                    .fi-sidebar-header a,
+                    .fi-sidebar-header .fi-logo,
+                    .fi-sidebar-header .fi-logo-link {
+                        gap: 1.25rem !important;
+                    }
+
+                    .fi-sidebar-header img {
+                        margin-right: 0.5rem !important;
+                    }
+
+                    .fi-sidebar-header .fi-logo-text,
+                    .fi-sidebar-header .fi-brand-name {
+                        margin-left: 0.5rem !important;
+                    }
+
+                    .fi-sidebar-nav {
+                        padding-top: 0.75rem !important;
                     }
 
                     .fi-logo,

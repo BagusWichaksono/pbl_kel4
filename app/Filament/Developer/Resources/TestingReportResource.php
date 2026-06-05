@@ -25,7 +25,7 @@ class TestingReportResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Daftar Hasil Pengujian';
 
-    protected static ?string $navigationGroup = 'Laporan';
+    protected static ?string $navigationGroup = 'Testing';
 
     public static function getEloquentQuery(): Builder
     {

@@ -27,7 +27,7 @@ class EvaluationResultResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Hasil Evaluasi Tester';
 
-    protected static ?string $navigationGroup = 'Laporan';
+    protected static ?string $navigationGroup = 'Testing';
 
     protected static ?int $navigationSort = 2;
 

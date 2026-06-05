@@ -27,7 +27,7 @@ class LaporanHarianAppResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Laporan Harian Tester';
 
-    protected static ?string $navigationGroup = 'Laporan';
+    protected static ?string $navigationGroup = 'Testing';
 
     protected static ?int $navigationSort = 1;
 

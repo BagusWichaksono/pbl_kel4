@@ -25,9 +25,9 @@ class TransactionResource extends Resource
     
     protected static ?string $pluralModelLabel = 'Riwayat Transaksi';
     
-    protected static ?int $navigationSort = 2; // Biar posisinya pas di bawah menu Aplikasi Saya
+    protected static ?int $navigationSort = 2;
 
-    protected static ?string $navigationGroup = 'Riwayat';
+    protected static ?string $navigationGroup = 'Transaksi';
 
     // KUNCI KEAMANAN: Developer cuma bisa lihat transaksi miliknya sendiri
     public static function getEloquentQuery(): Builder

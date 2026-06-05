@@ -23,7 +23,7 @@ class DailyReportResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Laporan';
+    protected static ?string $navigationGroup = 'Testing';
 
     protected static ?string $navigationLabel = 'Laporan Harian Tester';
 

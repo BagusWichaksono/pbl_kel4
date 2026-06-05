@@ -24,9 +24,9 @@ class AppResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationLabel = 'Verifikasi Aplikasi';
+    protected static ?string $navigationLabel = 'Manajemen Testing';
 
-    protected static ?string $navigationGroup = 'Verifikasi';
+    protected static ?string $navigationGroup = 'Manajemen Testing';
 
     protected static ?int $navigationSort = 2;
 
