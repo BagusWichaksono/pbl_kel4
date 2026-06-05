@@ -73,11 +73,26 @@ class UserResource extends Resource
                         'developer' => 'info',
                         'tester' => 'success',
                         default => 'gray',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('admin', $search)) $matched[] = 'admin';
+                        if (str_contains('developer', $search)) $matched[] = 'developer';
+                        if (str_contains('tester', $search)) $matched[] = 'tester';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('role', $matched);
+                        }
+                        return $query->where('role', 'like', "%{$search}%");
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Terdaftar')
                     ->dateTime('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('role')

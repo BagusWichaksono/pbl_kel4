@@ -63,7 +63,10 @@ class DailyReportResource extends Resource
                 TextColumn::make('report_date')
                     ->label('Tanggal Laporan')
                     ->date('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(report_date, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
 
                 ImageColumn::make('screenshot')
                     ->label('Screenshot')
@@ -89,6 +92,9 @@ class DailyReportResource extends Resource
                     ->label('Dikirim Pada')
                     ->dateTime('d M Y H:i')
                     ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

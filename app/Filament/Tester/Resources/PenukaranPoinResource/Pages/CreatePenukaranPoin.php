@@ -64,6 +64,14 @@ class CreatePenukaranPoin extends CreateRecord
         if ($profile) {
             $profile->points -= (int) $this->record->points_withdrawn;
             $profile->save();
+            
+            // Catat ke riwayat (Point Ledger)
+            \App\Models\PointHistory::create([
+                'tester_id' => $profile->user_id,
+                'amount' => (int) $this->record->points_withdrawn,
+                'type' => 'debit',
+                'description' => 'Penarikan dana dengan invoice: ' . $this->record->invoice_code,
+            ]);
         }
 
         Notification::make()

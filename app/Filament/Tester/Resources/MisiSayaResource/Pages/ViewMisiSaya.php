@@ -340,7 +340,7 @@ class ViewMisiSaya extends Page
 
                     foreach ($ratings as $questionId => $ratingValue) {
                         // Validasi pertanyaan masih ada dan aktif
-                        $question = EvaluationQuestion::find($questionId);
+                        $question = EvaluationQuestion::query()->find($questionId);
                         if (! $question) {
                             continue;
                         }

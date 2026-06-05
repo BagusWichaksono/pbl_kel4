@@ -64,12 +64,27 @@ class TestingReportResource extends Resource
                         'pending'   => 'warning',
                         'ditolak'   => 'danger',
                         default     => 'gray',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) $matched[] = 'pending';
+                        if (str_contains('disetujui', $search)) $matched[] = 'disetujui';
+                        if (str_contains('ditolak', $search)) $matched[] = 'ditolak';
+                        
+                        if (count($matched) > 0) {
+                            return $query->whereIn('status', $matched);
+                        }
+                        return $query->where('status', 'like', "%{$search}%");
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Dikirim')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -127,13 +142,23 @@ class TestingReportResource extends Resource
                                 )->increment('points', 10);
 
                                 $appTester->update(['points_awarded' => true]);
+
+                                // Catat ke riwayat (Point Ledger)
+                                \App\Models\PointHistory::create([
+                                    'tester_id' => $appTester->tester_id,
+                                    'amount' => 10,
+                                    'type' => 'credit',
+                                    'description' => 'Mendapatkan poin dari pengujian aplikasi: ' . $appTester->application->title,
+                                ]);
                             }
                         });
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Laporan disetujui')
+                            ->title('Laporan Akhir Disetujui')
+                            ->body('Selamat! Laporan akhir pengujian aplikasi Anda telah disetujui. Anda mendapatkan 10 poin.')
                             ->success()
-                            ->send();
+                            ->send()
+                            ->sendToDatabase($record->applicationTester->tester);
                     }),
 
                 Tables\Actions\Action::make('tolak')
@@ -156,9 +181,11 @@ class TestingReportResource extends Resource
                         ]);
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Laporan ditolak')
-                            ->success()
-                            ->send();
+                            ->title('Laporan Akhir Ditolak')
+                            ->body('Laporan akhir Anda ditolak. Alasan: ' . $data['alasan_penolakan'])
+                            ->danger()
+                            ->send()
+                            ->sendToDatabase($record->applicationTester->tester);
                     }),
             ])
             ->bulkActions([

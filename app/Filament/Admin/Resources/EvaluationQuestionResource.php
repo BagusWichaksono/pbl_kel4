@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
 
 class EvaluationQuestionResource extends Resource
 {
@@ -112,7 +113,10 @@ class EvaluationQuestionResource extends Resource
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Diperbarui')
                     ->dateTime('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("DATE_FORMAT(updated_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
+                    }),
             ])
             ->defaultSort('order')
             ->reorderable('order')
