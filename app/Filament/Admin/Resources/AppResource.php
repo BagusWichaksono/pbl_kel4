@@ -18,13 +18,13 @@ class AppResource extends Resource
 {
     protected static ?string $model = App::class;
 
-    protected static ?string $modelLabel = 'Validasi Aplikasi';
+    protected static ?string $modelLabel = 'Verifikasi Aplikasi';
 
     protected static ?string $pluralModelLabel = 'Verifikasi Aplikasi';
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationLabel = 'Manajemen Testing';
+    protected static ?string $navigationLabel = 'Verifikasi Aplikasi';
 
     protected static ?string $navigationGroup = 'Manajemen Testing';
 
