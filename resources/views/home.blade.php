@@ -146,10 +146,10 @@
         <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center" data-aos="fade-up">
             <h1 class="text-5xl lg:text-[72px] font-black leading-[1.1] tracking-tight mb-8">
                 Validasi Aplikasi <br />
-                dengan <span class="text-winter-500">User Nyata.</span>
+                dengan <span class="text-winter-500">Pengguna Langsung.</span>
             </h1>
             <p class="text-lg text-winter-700/70 max-w-2xl mx-auto mb-16 font-medium">
-                Ekosistem pengujian aplikasi paling transparan. Bantu Developer menyempurnakan sistem dan dapatkan apresiasi finansial di setiap misi.
+                Ekosistem pengujian aplikasi paling transparan. Membantu para Developer menyempurnakan sistem dan dapatkan apresiasi finansial di setiap misi.
             </p>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -217,7 +217,7 @@
                             <i class="ph-fill ph-wallet text-3xl"></i>
                         </div>
                         <h4 class="text-xl font-bold mb-2">Pencairan Instan</h4>
-                        <p class="text-sm text-winter-700/60 leading-relaxed">Tukarkan poin hasil kerja kerasmu ke saldo E-Wallet favorit tanpa ribet.</p>
+                        <p class="text-sm text-winter-700/60 leading-relaxed">Tukarkan poin hasil testingmu ke saldo E-Wallet favorit tanpa ribet.</p>
                     </div>
                 </div>
 
@@ -229,7 +229,7 @@
         <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-20 items-center">
             <div class="lg:w-1/2" data-aos="fade-right">
                 <h2 class="text-4xl lg:text-5xl font-black mb-8 leading-tight">Menjaga Kualitas <br> Ekosistem Digital.</h2>
-                <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback nyata seringkali sulit didapat secara cepat dan akurat.</p>
+                <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback pengguna langsung seringkali sulit didapat secara cepat dan akurat.</p>
                 <div class="grid grid-cols-2 gap-8">
                     <div>
                         <h4 class="text-3xl font-black text-winter-900">50+</h4>
@@ -245,12 +245,12 @@
                 <div class="bg-winter-900 rounded-[3rem] p-12 text-white relative overflow-hidden group">
                     <div class="absolute inset-0 bg-winter-500/10 group-hover:scale-110 transition-transform duration-700"></div>
                     <i class="ph-bold ph-quotes text-8xl opacity-10 absolute top-5 right-10"></i>
-                    <p class="text-2xl font-light italic leading-relaxed relative z-10">"Sangat membantu para developer dalam mencari feedback dari pengguna nyata, Thanks TesYuk!."</p>
+                    <p class="text-2xl font-light italic leading-relaxed relative z-10">"Sangat membantu para developer dalam mencari feedback dari pengguna langsung, Terimakasih TesYuk!."</p>
                     <div class="mt-12 flex items-center gap-4 relative z-10">
                         <div class="w-12 h-12 bg-winter-500 rounded-full flex items-center justify-center font-bold text-lg">A</div>
                         <div>
                             <p class="font-bold">Adalah Pokoknya Developer</p>
-                            <p class="text-xs text-winter-300">PT Gacorrr</p>
+                            <p class="text-xs text-winter-300">PT Suhat Malang</p>
                         </div>
                     </div>
                 </div>
@@ -318,11 +318,11 @@
                         <ul class="space-y-4 mb-12 flex-1">
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
                                 <div class="mt-0.5 bg-winter-700/80 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-300 text-sm"></i></div>
-                                <span class="text-winter-50/90 text-sm leading-relaxed">Identifikasi masalah teknis secara dini sebelum perangkat lunak rilis ke publik.</span>
+                                <span class="text-winter-50/90 text-sm leading-relaxed">Identifikasi masalah teknis lebih awal sebelum perangkat lunak rilis ke publik.</span>
                             </li>
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
                                 <div class="mt-0.5 bg-winter-700/80 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-300 text-sm"></i></div>
-                                <span class="text-winter-50/90 text-sm leading-relaxed">Terima ulasan objektif disertai bukti tangkapan layar dari berbagai jenis gawai.</span>
+                                <span class="text-winter-50/90 text-sm leading-relaxed">Terima ulasan objektif disertai bukti screenshot dari berbagai pengguna.</span>
                             </li>
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
                                 <div class="mt-0.5 bg-winter-700/80 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-300 text-sm"></i></div>
