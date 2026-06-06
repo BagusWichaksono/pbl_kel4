@@ -131,9 +131,14 @@
                 </a>
             </div>
 
-            <div class="flex items-center gap-6">
-                <a href="/login" class="text-sm font-bold text-winter-700 hover:text-winter-900 transition">Masuk</a>
-                <a href="/register" class="bg-winter-900 text-white text-sm font-bold px-7 py-3 rounded-full hover:bg-winter-700 transition-all shadow-xl shadow-winter-900/20 active:scale-95">
+            <div class="flex items-center">
+                <a href="/login"
+                    class="text-sm font-bold text-winter-700 hover:text-winter-900 px-7 py-3 rounded-full border border-winter-300/30 bg-winter-100/30 backdrop-blur-md transition-all active:scale-95">
+                    Masuk
+                </a>
+
+                <a href="/register"
+                    class="-ml-2 bg-winter-900 text-white text-sm font-bold px-7 py-3 rounded-full hover:bg-winter-700 transition-all shadow-xl shadow-winter-900/20 active:scale-95">
                     Buat Akun
                 </a>
             </div>
