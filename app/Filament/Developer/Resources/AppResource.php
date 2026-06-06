@@ -67,9 +67,10 @@ class AppResource extends Resource
                     ->schema([
                         Forms\Components\FileUpload::make('review_screenshot')
                             ->label('Bukti Lulus Review Awal')
+                            ->disk('public')
+                            ->directory('review_screenshots')
                             ->image()
                             ->imagePreviewHeight('220')
-                            ->directory('review_screenshots')
                             ->required()
                             ->columnSpanFull()
                             ->helperText('Contoh: screenshot status review aplikasi di Google Play Console.'),
@@ -114,13 +115,14 @@ class AppResource extends Resource
                             ->columnSpanFull(),
 
                         Forms\Components\FileUpload::make('payment_proof')
-                            ->label('Bukti Pembayaran')
-                            ->image()
-                            ->imagePreviewHeight('220')
-                            ->directory('payment_proofs')
-                            ->required()
-                            ->columnSpanFull()
-                            ->helperText('Upload screenshot atau foto bukti pembayaran Rp300.000.'),
+                        ->label('Bukti Pembayaran')
+                        ->disk('public')
+                        ->directory('payment_proofs')
+                        ->image()
+                        ->imagePreviewHeight('220')
+                        ->required()
+                        ->columnSpanFull()
+                        ->helperText('Upload screenshot atau foto bukti pembayaran Rp300.000.'),
 
                         Forms\Components\Hidden::make('payment_status')
                             ->default('pending'),
