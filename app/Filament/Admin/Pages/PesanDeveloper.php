@@ -10,21 +10,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
 
-class PesanTester extends Page
+class PesanDeveloper extends Page
 {
     use WithFileUploads;
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    protected static ?string $navigationLabel = 'Pesan Tester';
+    protected static ?string $navigationLabel = 'Pesan Developer';
 
-    protected static ?string $title = 'Pesan Tester';
+    protected static ?string $title = 'Pesan Developer';
 
     protected static ?string $navigationGroup = 'Bantuan';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
-    protected static string $view = 'filament.admin.pages.pesan-tester';
+    protected static string $view = 'filament.admin.pages.pesan-developer';
 
     public ?int $selectedTicketId = null;
 
@@ -35,21 +35,21 @@ class PesanTester extends Page
     public function mount(): void
     {
         $this->selectedTicketId = SupportTicket::query()
-            ->where('subject', 'Bantuan Tester')
+            ->where('subject', 'Bantuan Developer')
             ->latest('last_message_at')
             ->value('id');
 
-        $this->markTesterMessagesAsRead();
+        $this->markDeveloperMessagesAsRead();
     }
 
     public function getTicketsProperty()
     {
         return SupportTicket::query()
-            ->where('subject', 'Bantuan Tester')
+            ->where('subject', 'Bantuan Developer')
             ->with(['tester', 'latestMessage'])
             ->withCount([
                 'messages as unread_count' => fn ($query) => $query
-                    ->where('sender_role', 'tester')
+                    ->where('sender_role', 'developer')
                     ->where('is_read', false),
             ])
             ->latest('last_message_at')
@@ -73,7 +73,7 @@ class PesanTester extends Page
         $this->reply = '';
         $this->attachment_upload = null;
 
-        $this->markTesterMessagesAsRead();
+        $this->markDeveloperMessagesAsRead();
     }
 
     public function sendReply(): void
@@ -148,10 +148,10 @@ class PesanTester extends Page
 
     public function refreshInbox(): void
     {
-        $this->markTesterMessagesAsRead();
+        $this->markDeveloperMessagesAsRead();
     }
 
-    private function markTesterMessagesAsRead(): void
+    private function markDeveloperMessagesAsRead(): void
     {
         if (! $this->selectedTicketId) {
             return;
@@ -159,7 +159,7 @@ class PesanTester extends Page
 
         SupportMessage::query()
             ->where('support_ticket_id', $this->selectedTicketId)
-            ->where('sender_role', 'tester')
+            ->where('sender_role', 'developer')
             ->where('is_read', false)
             ->update([
                 'is_read' => true,

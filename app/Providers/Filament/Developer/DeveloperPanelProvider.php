@@ -445,6 +445,20 @@ class DeveloperPanelProvider extends PanelProvider
                         ");
                     }
                 }
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => '
+                <a href="/developer/hubungi-admin" style="position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; background: linear-gradient(135deg, var(--tesyuk-secondary), #ffffff); border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.24); color: var(--tesyuk-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 30px -5px rgba(0,0,0,0.25); z-index: 9999; text-decoration: none; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);" onmouseover="this.style.transform=\'scale(1.1) translateY(-4px)\'; this.style.boxShadow=\'0 20px 40px -5px rgba(0,0,0,0.3)\'; this.style.background=\'#ffffff\';" onmouseout="this.style.transform=\'none\'; this.style.boxShadow=\'0 12px 30px -5px rgba(0,0,0,0.25)\'; this.style.background=\'linear-gradient(135deg, var(--tesyuk-secondary), #ffffff)\';">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 32px; height: 32px;">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
+                    </svg>
+                    <span style="position: absolute; top: -4px; right: -4px; display: flex; height: 18px; width: 18px; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--tesyuk-accent); color: white; font-size: 10px; font-weight: bold; border: 2px solid white; display: none;" id="chat-notification-badge"></span>
+                </a>
+                <script>
+                    // Only show badge if needed, can implement real-time unread fetch later
+                </script>
+                '
             );
     }
 }

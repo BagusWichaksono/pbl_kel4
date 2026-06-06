@@ -80,6 +80,12 @@
             </div>
         @endif
 
+        @if (session('warning'))
+            <div class="bg-amber-50 border border-amber-200 text-amber-700 px-5 py-4 rounded-2xl text-sm font-bold mb-6 text-center shadow-sm">
+                {{ session('warning') }}
+            </div>
+        @endif
+
         <form action="/login" method="POST" class="space-y-5">
             @csrf
             <div class="group">

@@ -5,8 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 // Halaman Landing Page Utama
 Route::get('/', function () {
@@ -113,35 +112,52 @@ Route::post('/register', function (Request $request) {
         ]);
     }
 
-    event(new Registered($user));
+    try {
+        $user->sendEmailVerificationNotification();
+    } catch (TransportExceptionInterface $exception) {
+        report($exception);
 
-    Auth::login($user);
+        return redirect()->route('login')
+            ->with('warning', 'Pendaftaran berhasil, tetapi email verifikasi belum bisa dikirim. Silakan coba login lalu kirim ulang email verifikasi.');
+    }
 
-    return redirect()->route('verification.notice')
-        ->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi akun.');
-
+    return redirect()->route('login')
+        ->with('success', 'Pendaftaran berhasil! Silakan cek inbox atau spam email Anda, lalu klik link verifikasi sebelum login.');
 });
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
+Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, string $hash) {
+    /** @var \App\Models\User|null $user */
+    $user = User::query()->find($id);
 
-    /** @var \App\Models\User $user */
-    $user = Auth::user();
+    if (! $user || ! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        abort(403);
+    }
 
-    return match ($user->role) {
-        'super_admin', 'admin' => redirect('/admin'),
-        'developer' => redirect('/developer'),
-        'tester' => redirect('/tester'),
-        default => redirect('/'),
-    };
-})->middleware(['auth', 'signed'])->name('verification.verify');
+    if (! $user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('login')
+        ->with('success', 'Akun berhasil diverifikasi. Silakan login untuk masuk ke dashboard Anda.');
+})->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
+    try {
+        $request->user()->sendEmailVerificationNotification();
+    } catch (TransportExceptionInterface $exception) {
+        report($exception);
+
+        return back()->with('warning', 'Email verifikasi belum bisa dikirim. Periksa konfigurasi email aplikasi atau coba lagi nanti.');
+    }
 
     return back()->with('success', 'Link verifikasi baru telah dikirim ke email Anda.');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');

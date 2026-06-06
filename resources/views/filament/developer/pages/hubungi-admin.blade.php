@@ -387,7 +387,7 @@
         wire:poll.2s="refreshMessages"
         x-data
         x-init="
-            const boxId = 'chat-box-tester';
+            const boxId = 'chat-box-developer';
             let shouldAutoScroll = true;
             let lastScrollHeight = 0;
 
@@ -470,16 +470,16 @@
                 </svg>
                 <div>
                     <p style="margin: 0; font-size: 13.5px; color: #92400e; line-height: 1.5;">
-                        <strong>Catatan:</strong> Fitur chat ini dikhususkan untuk menanyakan kendala terkait platform aplikasi <strong>TesYuk</strong> (misal: laporan bug sistem, kendala penarikan poin, keluhan sistem).<br>
-                        <strong>Bukan untuk menanyakan hal-hal terkait aplikasi yang sedang diuji. Terimakasih!</strong> (silakan manfaatkan form report atau instruksi misi untuk aplikasi tersebut).
+                        <strong>Catatan:</strong> Fitur chat ini dikhususkan untuk menanyakan kendala terkait platform <strong>TesYuk</strong> (misal: kendala pendaftaran apk, verifikasi, keluhan sistem).<br>
+                        <strong>Bukan tempat untuk berdiskusi dengan tester mengenai aplikasi Anda yang sedang diuji. Terimakasih!</strong>
                     </p>
                 </div>
             </div>
 
-            <div id="chat-box-tester" class="chat-body">
+            <div id="chat-box-developer" class="chat-body">
                 @forelse ($this->messages as $chat)
                     @php
-                        $isMine = $chat->sender_role === 'tester';
+                        $isMine = $chat->sender_role === 'developer';
                     @endphp
 
                     <div class="message-row {{ $isMine ? 'mine' : 'admin' }}">

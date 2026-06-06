@@ -104,6 +104,12 @@
             </div>
         @endif
 
+        @if (session('warning'))
+            <div class="bg-amber-50 border border-amber-200 text-amber-700 px-5 py-4 rounded-2xl text-sm font-bold mb-6 text-center shadow-sm">
+                {{ session('warning') }}
+            </div>
+        @endif
+
         <div class="bg-winter-50 border border-winter-300/30 rounded-3xl p-5 mb-6">
             <div class="flex items-start gap-4">
                 <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center shadow-sm shrink-0">
