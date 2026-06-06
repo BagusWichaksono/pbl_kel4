@@ -89,11 +89,6 @@ class DeveloperPanelProvider extends PanelProvider
                         background-color: #f8fafc !important;
                     }
 
-                    .dark body,
-                    .dark .fi-layout {
-                        background-color: #0f172a !important;
-                    }
-
                     .fi-main {
                         background: transparent !important;
                     }
@@ -138,11 +133,6 @@ class DeveloperPanelProvider extends PanelProvider
                         padding-top: 0.75rem !important;
                     }
 
-                    .dark .fi-sidebar {
-                        background-color: #1e293b !important;
-                        border-right: 1px solid #334155 !important;
-                    }
-
                     .fi-sidebar-item-button {
                         border-radius: 9999px !important;
                         margin-bottom: 4px !important;
@@ -161,60 +151,41 @@ class DeveloperPanelProvider extends PanelProvider
                         transform: none !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-label {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-label {
                         color: #475569 !important;
                         font-weight: 600 !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-icon {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-icon {
                         color: #64748b !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
                         background-color: #f1f5f9 !important;
                         border-color: #e2e8f0 !important;
                         transform: none !important;
                         box-shadow: none !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
                         color: var(--tesyuk-primary) !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button {
+                    .fi-sidebar-item-active .fi-sidebar-item-button {
                         background-color: var(--tesyuk-secondary) !important;
                         border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.24) !important;
                         box-shadow: none !important;
                         transform: none !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label {
+                    .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label {
                         color: var(--tesyuk-primary) !important;
                         font-weight: 700 !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
+                    .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
                         color: var(--tesyuk-accent) !important;
-                    }
-
-                    .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: #334155 !important;
-                        border-color: #475569 !important;
-                        transform: none !important;
-                        box-shadow: none !important;
-                    }
-
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: rgba(var(--tesyuk-accent-rgb), 0.18) !important;
-                        border: 1px solid rgba(var(--tesyuk-accent-rgb), 0.12) !important;
-                        box-shadow: none !important;
-                    }
-
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
-                        color: #dbeafe !important;
-                        font-weight: 700 !important;
                     }
 
                     .fi-sidebar-group-collapse-button {
@@ -228,13 +199,6 @@ class DeveloperPanelProvider extends PanelProvider
                         border: 1px solid rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                         box-shadow: 0 4px 20px -5px rgba(var(--tesyuk-accent-rgb), 0.05) !important;
                         background-color: white !important;
-                    }
-
-                    .dark .fi-ta-ctn,
-                    .dark .fi-modal-window,
-                    .dark .fi-section {
-                        background-color: #1e293b !important;
-                        border-color: #334155 !important;
                     }
 
                     .custom-card-stats {
@@ -254,11 +218,6 @@ class DeveloperPanelProvider extends PanelProvider
                         box-shadow: 0 10px 25px -5px rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                     }
 
-                    .dark .custom-card-stats {
-                        background: #1e293b !important;
-                        border-color: #334155 !important;
-                    }
-
                     .stat-label {
                         color: #6b7280;
                         font-size: 0.75rem;
@@ -274,20 +233,11 @@ class DeveloperPanelProvider extends PanelProvider
                         margin: 0;
                     }
 
-                    .dark .stat-value {
-                        color: #f8fafc !important;
-                    }
-
                     .icon-bg {
                         background: var(--tesyuk-secondary);
                         padding: 0.75rem;
                         border-radius: 12px;
                         color: var(--tesyuk-accent);
-                    }
-
-                    .dark .icon-bg {
-                        background: rgba(var(--tesyuk-accent-rgb), 0.2) !important;
-                        color: var(--tesyuk-accent) !important;
                     }
 
                     .fi-topbar .fi-user-menu {
@@ -301,11 +251,6 @@ class DeveloperPanelProvider extends PanelProvider
                         border: 1px solid #e2e8f0 !important;
                         border-radius: 9999px !important;
                         padding: 4px !important;
-                    }
-
-                    .dark .fi-topbar .fi-user-menu > button {
-                        background-color: #ffffff !important;
-                        border-color: #e2e8f0 !important;
                     }
 
                     .fi-topbar .fi-user-menu .fi-avatar {
@@ -369,6 +314,8 @@ class DeveloperPanelProvider extends PanelProvider
                         $urlAddApp = \App\Filament\Developer\Resources\AppResource::getUrl('create');
                         $urlHistory = \App\Filament\Developer\Resources\TestingReportResource::getUrl('index');
                         
+                        $logoDevUrl = asset('assets/logo-developer.png');
+                        
                         $devId = $user?->id;
                         $totalApps = \App\Models\App::query()->where('developer_id', '=', $devId, 'and')->count();
                         $totalTesters = \App\Models\ApplicationTester::query()->whereHas('application', fn($q) => $q->where('developer_id', '=', $devId, 'and'))
@@ -385,7 +332,9 @@ class DeveloperPanelProvider extends PanelProvider
                                             Wujudkan aplikasi impianmu. Pantau progres verifikasi, kelola pengujian, dan siapkan aplikasimu untuk meluncur ke tangan pengguna.
                                         </p>
                                     </div>
-                                    <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px);'></div>
+                                    
+                                    <img src='{$logoDevUrl}' alt='Developer Logo' style='position: absolute; right: 2rem; bottom: -1.5rem; height: 110%; z-index: 5; object-fit: contain; pointer-events: none;'>
+                                    <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px); z-index: 1;'></div>
                                 </div>
 
                                 <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;'>

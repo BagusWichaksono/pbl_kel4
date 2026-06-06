@@ -48,8 +48,8 @@ class LaporanHarianAppResource extends Resource
     {
         return $table
             ->contentGrid([
-                'md' => 2,
-                'xl' => 3,
+                'md' => 1,
+                'xl' => 2,
             ])
             ->columns([
                 Tables\Columns\Layout\Stack::make([
@@ -66,8 +66,6 @@ class LaporanHarianAppResource extends Resource
                                 : 'Pilih aplikasi ini untuk melihat detail laporan harian dari para tester.';
 
                             $filled = (int) ($record->testers_count ?? 0);
-                            $maxTester = max((int) ($record->max_testers ?? 20), 1);
-                            $percent = min(100, (int) round(($filled / $maxTester) * 100));
 
                             $testingStatus = $record->testing_status ?? 'in_progress';
 
@@ -123,184 +121,141 @@ class LaporanHarianAppResource extends Resource
                                         src='{$imageUrl}'
                                         alt='{$title}'
                                         style='
-                                            width:96px;
-                                            height:96px;
-                                            border-radius:26px;
+                                            width:64px;
+                                            height:64px;
+                                            border-radius:18px;
                                             object-fit:contain;
-                                            padding:10px;
-                                            border:1px solid rgba(255,255,255,.22);
-                                            box-shadow:0 18px 30px -18px rgba(0,0,0,.55);
+                                            padding:7px;
+                                            border:1px solid rgba(var(--tesyuk-accent-rgb),.16);
+                                            box-shadow:0 14px 26px -22px rgba(0,0,0,.45);
                                             background:#ffffff;
                                         '
                                     >
                                 "
                                 : "
                                     <div style='
-                                        width:96px;
-                                        height:96px;
-                                        border-radius:26px;
-                                        background:rgba(255,255,255,.14);
-                                        border:1px solid rgba(255,255,255,.18);
+                                        width:64px;
+                                        height:64px;
+                                        border-radius:18px;
+                                        background:var(--tesyuk-ink);
+                                        border:1px solid rgba(var(--tesyuk-accent-rgb),.18);
                                         color:#ffffff;
                                         display:flex;
                                         align-items:center;
                                         justify-content:center;
-                                        font-size:2rem;
+                                        font-size:1.35rem;
                                         font-weight:800;
                                         letter-spacing:.04em;
-                                        backdrop-filter:blur(10px);
-                                        box-shadow:0 18px 30px -18px rgba(0,0,0,.45);
+                                        box-shadow:0 14px 26px -22px rgba(0,0,0,.45);
                                     '>
                                         {$initials}
                                     </div>
                                 ";
 
                             $totalReports = 0;
+                            $reportingTesters = 0;
+                            $bugReports = 0;
+                            $latestReportLabel = 'Belum ada laporan';
+                            $reportCoverage = 0;
 
                             if (Schema::hasTable('daily_reports')) {
                                 $query = DB::table('daily_reports');
 
                                 if (Schema::hasColumn('daily_reports', 'app_id')) {
                                     $query->where('app_id', $record->id);
-                                    $totalReports = $query->count();
                                 } elseif (Schema::hasColumn('daily_reports', 'application_id')) {
                                     $query->where('application_id', $record->id);
-                                    $totalReports = $query->count();
                                 }
+
+                                $totalReports = (clone $query)->count();
+                                $reportingTesters = (clone $query)->distinct('tester_id')->count('tester_id');
+
+                                if (Schema::hasColumn('daily_reports', 'bug_report')) {
+                                    $bugReports = (clone $query)
+                                        ->whereNotNull('bug_report')
+                                        ->where('bug_report', '!=', '')
+                                        ->count();
+                                }
+
+                                $latestReport = (clone $query)
+                                    ->orderByDesc('report_date')
+                                    ->orderByDesc('created_at')
+                                    ->first();
+
+                                if ($latestReport?->report_date) {
+                                    $latestReportLabel = \Carbon\Carbon::parse($latestReport->report_date)->translatedFormat('d M Y');
+                                }
+                            }
+
+                            if ($filled > 0) {
+                                $reportCoverage = min(100, (int) round(($reportingTesters / $filled) * 100));
                             }
 
                             return new HtmlString(<<<HTML
                                 <div style="
                                     height:100%;
-                                    display:flex;
-                                    flex-direction:column;
-                                    border-radius:24px;
+                                    display:grid;
+                                    grid-template-columns:7px minmax(0,1fr);
+                                    border-radius:22px;
                                     overflow:hidden;
-                                    border:1px solid #e5e7eb;
+                                    border:1px solid rgba(var(--tesyuk-accent-rgb),.14);
                                     background:#ffffff;
-                                    box-shadow:0 16px 40px -24px rgba(15,23,42,.28);
+                                    box-shadow:0 14px 36px -28px rgba(var(--tesyuk-ink-rgb),.42);
                                     transition:all .2s ease;
                                 ">
                                     <div style="
-                                        background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);
-                                        min-height:170px;
-                                        position:relative;
-                                        padding:1rem;
-                                        display:flex;
-                                        flex-direction:column;
-                                        justify-content:space-between;
-                                    ">
-                                        <div style="display:flex;align-items:flex-start;justify-content:flex-end;gap:.75rem;position:relative;z-index:2;">
-                                            <span style="
-                                                font-size:.76rem;
-                                                font-weight:800;
-                                                padding:.42rem .72rem;
-                                                border-radius:999px;
-                                                {$platformStyle}
-                                            ">
-                                                {$platform}
-                                            </span>
-                                        </div>
+                                        background:linear-gradient(180deg,var(--tesyuk-ink),var(--tesyuk-primary));
+                                    "></div>
 
-                                        <div style="margin-top:1rem;position:relative;z-index:2;">
-                                            {$appVisual}
-                                        </div>
-
-                                        <div style="
-                                            position:absolute;
-                                            right:-18px;
-                                            top:-18px;
-                                            width:120px;
-                                            height:120px;
-                                            background:rgba(255,255,255,.08);
-                                            border-radius:999px;
-                                            filter:blur(8px);
-                                        "></div>
-                                    </div>
-
-                                    <div style="padding:1.15rem 1.15rem 1rem;display:flex;flex-direction:column;flex:1;">
-                                        <div style="
-                                            display:flex;
-                                            align-items:center;
-                                            justify-content:space-between;
-                                            gap:.75rem;
-                                        ">
-                                            <div style="
-                                                font-size:1.05rem;
-                                                font-weight:800;
-                                                line-height:1.4;
-                                                color:#0f172a;
-                                                word-break:break-word;
-                                            ">
-                                                {$title}
+                                    <div style="padding:1.15rem 1.15rem 1rem;display:flex;flex-direction:column;gap:1rem;">
+                                        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+                                            <div style="display:flex;align-items:center;gap:.85rem;min-width:0;">
+                                                {$appVisual}
+                                                <div style="min-width:0;">
+                                                    <div style="font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--tesyuk-primary);">Pusat Laporan</div>
+                                                    <div style="margin-top:.18rem;font-size:1.08rem;font-weight:850;line-height:1.32;color:var(--tesyuk-ink);word-break:break-word;">{$title}</div>
+                                                </div>
                                             </div>
 
-                                            <span style="
-                                                flex-shrink:0;
-                                                font-size:.72rem;
-                                                font-weight:800;
-                                                padding:.36rem .65rem;
-                                                border-radius:999px;
-                                                {$statusStyle}
-                                            ">
+                                            <span style="flex-shrink:0;font-size:.72rem;font-weight:850;padding:.38rem .66rem;border-radius:999px;{$statusStyle}">
                                                 {$statusLabel}
                                             </span>
                                         </div>
 
-                                        <div style="
-                                            margin-top:.85rem;
-                                            color:#475569;
-                                            font-size:.82rem;
-                                            line-height:1.55;
-                                            min-height:2.7rem;
-                                            display:-webkit-box;
-                                            -webkit-line-clamp:2;
-                                            -webkit-box-orient:vertical;
-                                            overflow:hidden;
-                                        ">
+                                        <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+                                            <span style="font-size:.74rem;font-weight:800;padding:.38rem .64rem;border-radius:999px;{$platformStyle}">{$platform}</span>
+                                            <span style="font-size:.74rem;font-weight:800;padding:.38rem .64rem;border-radius:999px;background:#f8fafc;color:#475569;border:1px solid #e2e8f0;">Terakhir: {$latestReportLabel}</span>
+                                        </div>
+
+                                        <div style="color:#64748b;font-size:.82rem;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
                                             {$description}
                                         </div>
 
-                                        <div style="
-                                            margin-top:1rem;
-                                            display:grid;
-                                            grid-template-columns:repeat(3,1fr);
-                                            gap:.6rem;
-                                        ">
-                                            <div style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:16px;padding:.75rem;">
-                                                <div style="font-size:.72rem;color:#64748b;font-weight:700;">Tester</div>
-                                                <div style="margin-top:.2rem;font-size:.9rem;font-weight:800;color:#0f172a;">{$filled}</div>
+                                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.62rem;">
+                                            <div style="background:#fffafa;border:1px solid rgba(var(--tesyuk-accent-rgb),.15);border-radius:16px;padding:.78rem;">
+                                                <div style="font-size:.68rem;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.04em;">Laporan</div>
+                                                <div style="margin-top:.25rem;font-size:1.18rem;font-weight:900;color:var(--tesyuk-ink);">{$totalReports}</div>
                                             </div>
 
-                                            <div style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:16px;padding:.75rem;">
-                                                <div style="font-size:.72rem;color:#64748b;font-weight:700;">Target</div>
-                                                <div style="margin-top:.2rem;font-size:.9rem;font-weight:800;color:#0f172a;">{$maxTester}</div>
+                                            <div style="background:#fffafa;border:1px solid rgba(var(--tesyuk-accent-rgb),.15);border-radius:16px;padding:.78rem;">
+                                                <div style="font-size:.68rem;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.04em;">Tester Kirim</div>
+                                                <div style="margin-top:.25rem;font-size:1.18rem;font-weight:900;color:var(--tesyuk-ink);">{$reportingTesters}</div>
                                             </div>
 
-                                            <div style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:16px;padding:.75rem;">
-                                                <div style="font-size:.72rem;color:#64748b;font-weight:700;">Laporan</div>
-                                                <div style="margin-top:.2rem;font-size:.9rem;font-weight:800;color:#0f172a;">{$totalReports}</div>
+                                            <div style="background:#fffafa;border:1px solid rgba(var(--tesyuk-accent-rgb),.15);border-radius:16px;padding:.78rem;">
+                                                <div style="font-size:.68rem;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.04em;">Bug</div>
+                                                <div style="margin-top:.25rem;font-size:1.18rem;font-weight:900;color:var(--tesyuk-primary);">{$bugReports}</div>
                                             </div>
                                         </div>
 
-                                        <div style="margin-top:1rem;">
-                                            <div style="
-                                                display:flex;
-                                                align-items:center;
-                                                justify-content:space-between;
-                                                margin-bottom:.48rem;
-                                            ">
-                                                <span style="font-size:.78rem;font-weight:800;color:#475569;">Progress Tester</span>
-                                                <span style="font-size:.82rem;font-weight:800;color:var(--tesyuk-primary);">{$filled} / {$maxTester}</span>
+                                        <div>
+                                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.48rem;">
+                                                <span style="font-size:.78rem;font-weight:850;color:#475569;">Cakupan laporan tester</span>
+                                                <span style="font-size:.82rem;font-weight:850;color:var(--tesyuk-primary);">{$reportingTesters} / {$filled}</span>
                                             </div>
 
-                                            <div style="height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
-                                                <div style="
-                                                    height:100%;
-                                                    width:{$percent}%;
-                                                    background:linear-gradient(90deg,var(--tesyuk-accent) 0%,var(--tesyuk-primary) 100%);
-                                                    border-radius:999px;
-                                                "></div>
+                                            <div style="height:8px;background:#f1f5f9;border-radius:999px;overflow:hidden;">
+                                                <div style="height:100%;width:{$reportCoverage}%;background:linear-gradient(90deg,var(--tesyuk-ink) 0%,var(--tesyuk-primary) 100%);border-radius:999px;"></div>
                                             </div>
                                         </div>
                                     </div>

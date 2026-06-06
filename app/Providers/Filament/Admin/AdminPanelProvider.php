@@ -71,11 +71,6 @@ class AdminPanelProvider extends PanelProvider
                         background-color: #f8fafc !important;
                     }
 
-                    .dark body,
-                    .dark .fi-layout {
-                        background-color: #0f172a !important;
-                    }
-
                     .fi-main {
                         background: transparent !important;
                     }
@@ -120,11 +115,6 @@ class AdminPanelProvider extends PanelProvider
                         padding-top: 0.75rem !important;
                     }
 
-                    .dark .fi-sidebar {
-                        background-color: #1e293b !important;
-                        border-right: 1px solid #334155 !important;
-                    }
-
                     .fi-sidebar-item-button {
                         border-radius: 9999px !important;
                         margin-bottom: 4px !important;
@@ -139,60 +129,41 @@ class AdminPanelProvider extends PanelProvider
                         transform: scale(0.98) !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-label {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-label {
                         color: #475569 !important;
                         font-weight: 600 !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-icon {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button .fi-sidebar-item-icon {
                         color: #64748b !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
                         background-color: #f1f5f9 !important;
                         border-color: #e2e8f0 !important;
                         transform: none !important;
                         box-shadow: none !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
-                    html:not(.dark) .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-label,
+                    .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover .fi-sidebar-item-icon {
                         color: var(--tesyuk-primary) !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button {
+                    .fi-sidebar-item-active .fi-sidebar-item-button {
                         background-color: var(--tesyuk-secondary) !important;
                         border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.24) !important;
                         box-shadow: none !important;
                         transform: none !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label {
+                    .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label {
                         color: var(--tesyuk-primary) !important;
                         font-weight: 700 !important;
                     }
 
-                    html:not(.dark) .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
+                    .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
                         color: var(--tesyuk-accent) !important;
-                    }
-
-                    .dark .fi-sidebar-item:not(.fi-sidebar-item-active) .fi-sidebar-item-button:hover {
-                        background-color: #334155 !important;
-                        border-color: #475569 !important;
-                        transform: none !important;
-                        box-shadow: none !important;
-                    }
-
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button {
-                        background-color: rgba(var(--tesyuk-accent-rgb), 0.18) !important;
-                        border: 1px solid rgba(var(--tesyuk-accent-rgb), 0.12) !important;
-                        box-shadow: none !important;
-                    }
-
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-label,
-                    .dark .fi-sidebar-item-active .fi-sidebar-item-button .fi-sidebar-item-icon {
-                        color: #dbeafe !important;
-                        font-weight: 700 !important;
                     }
 
                     .fi-sidebar-group-collapse-button {
@@ -206,13 +177,6 @@ class AdminPanelProvider extends PanelProvider
                         border: 1px solid rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                         box-shadow: 0 4px 20px -5px rgba(var(--tesyuk-accent-rgb), 0.05) !important;
                         background-color: white !important;
-                    }
-
-                    .dark .fi-ta-ctn,
-                    .dark .fi-modal-window,
-                    .dark .fi-section {
-                        background-color: #1e293b !important;
-                        border-color: #334155 !important;
                     }
 
                     .custom-card-stats {
@@ -232,11 +196,6 @@ class AdminPanelProvider extends PanelProvider
                         box-shadow: 0 10px 25px -5px rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                     }
 
-                    .dark .custom-card-stats {
-                        background: #1e293b !important;
-                        border-color: #334155 !important;
-                    }
-
                     .stat-label {
                         color: #6b7280;
                         font-size: 0.75rem;
@@ -252,10 +211,6 @@ class AdminPanelProvider extends PanelProvider
                         margin: 0;
                     }
 
-                    .dark .stat-value {
-                        color: #f8fafc !important;
-                    }
-
                     .icon-bg {
                         background: var(--tesyuk-secondary);
                         padding: 0.75rem;
@@ -264,11 +219,6 @@ class AdminPanelProvider extends PanelProvider
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                    }
-
-                    .dark .icon-bg {
-                        background: rgba(var(--tesyuk-accent-rgb), 0.2) !important;
-                        color: var(--tesyuk-accent) !important;
                     }
 
                     .fi-topbar .fi-user-menu {
@@ -282,11 +232,6 @@ class AdminPanelProvider extends PanelProvider
                         border: 1px solid #e2e8f0 !important;
                         border-radius: 9999px !important;
                         padding: 4px !important;
-                    }
-
-                    .dark .fi-topbar .fi-user-menu > button {
-                        background-color: #ffffff !important;
-                        border-color: #e2e8f0 !important;
                     }
 
                     .fi-topbar .fi-user-menu .fi-avatar {
@@ -349,6 +294,8 @@ class AdminPanelProvider extends PanelProvider
                         default => 'Selamat Malam',
                     };
 
+                    $logoAdminUrl = asset('assets/logo-admin.png');
+
                     $svg = fn (string $path): string => "
                         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width:1.75rem;height:1.75rem;'>
                             {$path}
@@ -368,13 +315,10 @@ class AdminPanelProvider extends PanelProvider
                         if (! Schema::hasTable($table)) {
                             return 0;
                         }
-
                         $query = DB::table($table);
-
                         if ($column && Schema::hasColumn($table, $column)) {
                             $query->where($column, $value);
                         }
-
                         return $query->count();
                     };
 
@@ -426,81 +370,83 @@ class AdminPanelProvider extends PanelProvider
                     }
 
                     return new HtmlString(<<<HTML
-<div style="margin-bottom:2rem;display:flex;flex-direction:column;gap:1.5rem;">
-    <div style="background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);">
-        <div style="position:relative;z-index:10;">
-            <h2 style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
-            <p style="margin-top:0.75rem;color:rgba(var(--tesyuk-secondary-rgb), 0.78);max-width:620px;font-size:1.125rem;line-height:1.6;">
-                Pusat kendali TesYuk untuk memantau verifikasi aplikasi, validasi pembayaran, pencairan reward tester, dan pertumbuhan platform.
-            </p>
-        </div>
-        <div style="position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;filter:blur(40px);"></div>
-        <div style="position:absolute;left:60%;bottom:-50px;width:150px;height:150px;background:rgba(255,255,255,0.03);border-radius:50%;filter:blur(30px);"></div>
-    </div>
+                        <div style="margin-bottom:2rem;display:flex;flex-direction:column;gap:1.5rem;">
+                            <div style="background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);min-height:260px;">
+                                <div style="position:relative;z-index:10;max-width:640px;">
+                                    <h2 style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
+                                    <p style="margin-top:0.75rem;color:rgba(var(--tesyuk-secondary-rgb), 0.78);max-width:560px;font-size:1.125rem;line-height:1.6;">
+                                        Pusat kendali TesYuk untuk memantau verifikasi aplikasi, validasi pembayaran, pencairan reward tester, dan pertumbuhan platform.
+                                    </p>
+                                </div>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;">
-        <a href="{$urlPayment}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['payment']}</div>
-            <div>
-                <p class="stat-label">Pembayaran Pending</p>
-                <p class="stat-value">{$pendingPayments}</p>
-            </div>
-        </a>
+                                <img src="{$logoAdminUrl}" alt="Admin Logo" style="position:absolute;right:2rem;bottom:-1.5rem;height:110%;z-index:5;object-fit:contain;pointer-events:none;">
+                                    <div style="position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;filter:blur(40px);z-index:1;"></div>
+                                    <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(var(--tesyuk-accent-rgb),0.18);border-radius:50%;filter:blur(40px);z-index:1;"></div>
+                                </div>
 
-        <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['app']}</div>
-            <div>
-                <p class="stat-label">Aplikasi Pending</p>
-                <p class="stat-value">{$pendingApps}</p>
-            </div>
-        </a>
+                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;">
+                                <a href="{$urlPayment}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['payment']}</div>
+                                    <div>
+                                        <p class="stat-label">Pembayaran Pending</p>
+                                        <p class="stat-value">{$pendingPayments}</p>
+                                    </div>
+                                </a>
 
-        <a href="#" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['revenue']}</div>
-            <div>
-                <p class="stat-label">Total Pendapatan</p>
-                <p class="stat-value">Rp {$totalRevenueFormatted}</p>
-            </div>
-        </a>
+                                <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['app']}</div>
+                                    <div>
+                                        <p class="stat-label">Aplikasi Pending</p>
+                                        <p class="stat-value">{$pendingApps}</p>
+                                    </div>
+                                </a>
 
-        <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['check']}</div>
-            <div>
-                <p class="stat-label">Aplikasi Valid</p>
-                <p class="stat-value">{$totalValidApps}</p>
-            </div>
-        </a>
+                                <a href="#" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['revenue']}</div>
+                                    <div>
+                                        <p class="stat-label">Total Pendapatan</p>
+                                        <p class="stat-value">Rp {$totalRevenueFormatted}</p>
+                                    </div>
+                                </a>
 
-        <a href="#" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['users']}</div>
-            <div>
-                <p class="stat-label">Tester Aktif</p>
-                <p class="stat-value">{$activeTesters}</p>
-            </div>
-        </a>
+                                <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['check']}</div>
+                                    <div>
+                                        <p class="stat-label">Aplikasi Valid</p>
+                                        <p class="stat-value">{$totalValidApps}</p>
+                                    </div>
+                                </a>
 
-        <a href="{$urlWithdrawals}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['wallet']}</div>
-            <div>
-                <p class="stat-label">Pencairan Pending</p>
-                <p class="stat-value">{$pendingWithdrawals}</p>
-            </div>
-        </a>
-    </div>
+                                <a href="#" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['users']}</div>
+                                    <div>
+                                        <p class="stat-label">Tester Aktif</p>
+                                        <p class="stat-value">{$activeTesters}</p>
+                                    </div>
+                                </a>
 
-    <div class="fi-section" style="padding:1.5rem;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-            <div>
-                <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Antrian Aplikasi Terbaru</h3>
-                <p style="font-size:0.9rem;color:#64748b;margin:0.25rem 0 0;">Cek aplikasi terbaru yang masuk ke TesYuk.</p>
-            </div>
-            <a href="{$urlApps}" style="font-size:0.85rem;font-weight:800;color:var(--tesyuk-primary);text-decoration:none;">Lihat Semua</a>
-        </div>
+                                <a href="{$urlWithdrawals}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['wallet']}</div>
+                                    <div>
+                                        <p class="stat-label">Pencairan Pending</p>
+                                        <p class="stat-value">{$pendingWithdrawals}</p>
+                                    </div>
+                                </a>
+                            </div>
 
-        {$appRows}
-    </div>
-</div>
-HTML);
+                            <div class="fi-section" style="padding:1.5rem;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                                    <div>
+                                        <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Antrian Aplikasi Terbaru</h3>
+                                        <p style="font-size:0.9rem;color:#64748b;margin:0.25rem 0 0;">Cek aplikasi terbaru yang masuk ke TesYuk.</p>
+                                    </div>
+                                    <a href="{$urlApps}" style="font-size:0.85rem;font-weight:800;color:var(--tesyuk-primary);text-decoration:none;">Lihat Semua</a>
+                                </div>
+
+                                {$appRows}
+                            </div>
+                        </div>
+                        HTML);
                 }
             )
             ->middleware([

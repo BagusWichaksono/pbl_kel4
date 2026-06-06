@@ -13,16 +13,34 @@ class ListDailyReports extends ListRecords
 
     protected static string $view = 'filament.developer.pages.list-daily-reports';
 
-        public function getGroupedReportsProperty(): Collection
+    public function getGroupedReportsProperty(): Collection
     {
+        $appId = request()->input('tableFilters.app_id.value')
+            ?? data_get($this->tableFilters ?? [], 'app_id.value');
+
+        $search = request()->input('tableSearch')
+            ?? ($this->tableSearch ?? null);
+
         return DailyReport::query()
             ->with(['application', 'tester'])
-            // Jika hanya ingin menampilkan application milik developer login, aktifkan ini:
             ->whereHas('application', function ($query) {
-            $query->where('developer_id', auth()->id());
-             })
+                $query->where('developer_id', auth()->id());
+            })
+            ->when(filled($appId), function ($query) use ($appId) {
+                $query->where('app_id', $appId);
+            })
+            ->when(filled($search), function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query
+                        ->whereHas('tester', function ($testerQuery) use ($search) {
+                            $testerQuery->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhere('notes', 'like', "%{$search}%")
+                        ->orWhere('bug_report', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('app_id')
-            ->orderBy('report_date')
+            ->orderByDesc('report_date')
             ->orderBy('tester_id')
             ->get()
             ->groupBy(function ($report) {

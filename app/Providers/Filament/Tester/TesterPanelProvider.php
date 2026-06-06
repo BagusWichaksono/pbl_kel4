@@ -405,6 +405,8 @@ class TesterPanelProvider extends PanelProvider
                         'clock' => $svg("<path stroke-linecap='round' stroke-linejoin='round' d='M12 6v6h4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />"),
                     ];
 
+                    $logoTesterUrl = asset('assets/logo-tester.png');
+
                     $urlPenukaran = \App\Filament\Tester\Resources\PenukaranPoinResource::getUrl('index');
                     $urlMisi = \App\Filament\Tester\Resources\MisiSayaResource::getUrl('index');
                     $urlCariMisi = \App\Filament\Tester\Resources\CariMisiResource::getUrl('index');
@@ -532,144 +534,140 @@ class TesterPanelProvider extends PanelProvider
                     $dailyStatusBorder = $laporanHariIni > 0 ? '#bbf7d0' : '#fde68a';
 
                     return new HtmlString(<<<HTML
-<div style="margin-bottom:2rem;display:flex;flex-direction:column;gap:1.5rem;">
-    <div style="background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);">
-        <div style="position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1.5rem;">
-            <div>
-                <h2 style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
-                <p style="margin-top:0.75rem;color:rgba(var(--tesyuk-secondary-rgb), 0.78);max-width:600px;font-size:1.125rem;line-height:1.6;">
-                    Jalankan misi harian, upload screenshot sebagai absensi, dan kumpulkan reward poin setelah testing selesai.
-                </p>
-            </div>
+                        <div style="margin-bottom:2rem;display:flex;flex-direction:column;gap:1.5rem;">
+                            <div style="background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);">
+                                <div style="position:relative;z-index:10;max-width:620px;">
+                                    <h2 style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
+                                    <p style="margin-top:0.75rem;color:rgba(var(--tesyuk-secondary-rgb), 0.78);max-width:560px;font-size:1.125rem;line-height:1.6;">
+                                        Jalankan misi harian, upload screenshot sebagai absensi, dan kumpulkan reward poin setelah testing selesai.
+                                    </p>
+                                </div>
 
-            <div class="hidden md:block" style="padding-right:1.5rem;color:rgba(255,255,255,0.72);">
-                {$icons['rocket']}
-            </div>
-        </div>
-        <div style="position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;filter:blur(40px);"></div>
-        <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(var(--tesyuk-accent-rgb),0.2);border-radius:50%;filter:blur(40px);"></div>
-    </div>
+                                <img src="{$logoTesterUrl}" alt="Tester Logo" style="position:absolute;right:2rem;bottom:-1.5rem;height:110%;z-index:5;object-fit:contain;pointer-events:none;">
+                                <div style="position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;filter:blur(40px);z-index:1;"></div>
+                                <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(var(--tesyuk-accent-rgb),0.2);border-radius:50%;filter:blur(40px);z-index:1;"></div>
+                            </div>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;">
-        <a href="{$urlPenukaran}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['money']}</div>
-            <div>
-                <p class="stat-label">Saldo Poin</p>
-                <p class="stat-value">{$userPoints} pts</p>
-            </div>
-        </a>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;">
+                                <a href="{$urlPenukaran}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['money']}</div>
+                                    <div>
+                                        <p class="stat-label">Saldo Poin</p>
+                                        <p class="stat-value">{$userPoints} pts</p>
+                                    </div>
+                                </a>
 
-        <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['rocket']}</div>
-            <div>
-                <p class="stat-label">Misi Aktif</p>
-                <p class="stat-value">{$misiAktif}</p>
-            </div>
-        </a>
+                                <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['rocket']}</div>
+                                    <div>
+                                        <p class="stat-label">Misi Aktif</p>
+                                        <p class="stat-value">{$misiAktif}</p>
+                                    </div>
+                                </a>
 
-        <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['check']}</div>
-            <div>
-                <p class="stat-label">Misi Selesai</p>
-                <p class="stat-value">{$misiSelesai}</p>
-            </div>
-        </a>
+                                <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['check']}</div>
+                                    <div>
+                                        <p class="stat-label">Misi Selesai</p>
+                                        <p class="stat-value">{$misiSelesai}</p>
+                                    </div>
+                                </a>
 
-        <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['camera']}</div>
-            <div>
-                <p class="stat-label">Laporan Hari Ini</p>
-                <p class="stat-value">{$laporanHariIni}</p>
-            </div>
-        </a>
+                                <a href="{$urlMisi}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['camera']}</div>
+                                    <div>
+                                        <p class="stat-label">Laporan Hari Ini</p>
+                                        <p class="stat-value">{$laporanHariIni}</p>
+                                    </div>
+                                </a>
 
-        <a href="{$urlPenukaran}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-            <div class="icon-bg">{$icons['clock']}</div>
-            <div>
-                <p class="stat-label">Penarikan Diproses</p>
-                <p class="stat-value">Rp {$pendingWithdrawalsFormatted}</p>
-            </div>
-        </a>
-    </div>
+                                <a href="{$urlPenukaran}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
+                                    <div class="icon-bg">{$icons['clock']}</div>
+                                    <div>
+                                        <p class="stat-label">Penarikan Diproses</p>
+                                        <p class="stat-value">Rp {$pendingWithdrawalsFormatted}</p>
+                                    </div>
+                                </a>
+                            </div>
 
-    <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;">
-        <div class="fi-section" style="padding:1.5rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-                <div>
-                    <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Misi Aktif</h3>
-                    <p style="font-size:0.9rem;color:#64748b;margin:0.25rem 0 0;">Pantau progres testing aplikasi yang sedang kamu jalankan.</p>
-                </div>
-                <a href="{$urlMisi}" style="font-size:0.85rem;font-weight:800;color:var(--tesyuk-primary);text-decoration:none;">Lihat Misi</a>
-            </div>
+                            <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;">
+                                <div class="fi-section" style="padding:1.5rem;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                                        <div>
+                                            <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Misi Aktif</h3>
+                                            <p style="font-size:0.9rem;color:#64748b;margin:0.25rem 0 0;">Pantau progres testing aplikasi yang sedang kamu jalankan.</p>
+                                        </div>
+                                        <a href="{$urlMisi}" style="font-size:0.85rem;font-weight:800;color:var(--tesyuk-primary);text-decoration:none;">Lihat Misi</a>
+                                    </div>
 
-            {$missionRows}
-        </div>
+                                    {$missionRows}
+                                </div>
 
-        <div class="fi-section" style="padding:1.5rem;">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
-                <div>
-                    <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Statistik Misi</h3>
-                    <p style="font-size:0.9rem;color:#64748b;line-height:1.6;margin-top:0.4rem;">
-                        Ringkasan progres misi testing aktif kamu.
-                    </p>
-                </div>
+                                <div class="fi-section" style="padding:1.5rem;">
+                                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+                                        <div>
+                                            <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:#0f172a;">Statistik Misi</h3>
+                                            <p style="font-size:0.9rem;color:#64748b;line-height:1.6;margin-top:0.4rem;">
+                                                Ringkasan progres misi testing aktif kamu.
+                                            </p>
+                                        </div>
 
-                <span style="font-size:.74rem;font-weight:800;padding:.38rem .68rem;border-radius:999px;background:{$dailyStatusBg};color:{$dailyStatusColor};border:1px solid {$dailyStatusBorder};white-space:nowrap;">
-                    {$dailyStatusLabel}
-                </span>
-            </div>
+                                        <span style="font-size:.74rem;font-weight:800;padding:.38rem .68rem;border-radius:999px;background:{$dailyStatusBg};color:{$dailyStatusColor};border:1px solid {$dailyStatusBorder};white-space:nowrap;">
+                                            {$dailyStatusLabel}
+                                        </span>
+                                    </div>
 
-            <div style="margin-top:1rem;padding:1rem;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;">
-                <div style="font-size:.78rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">
-                    Misi Aktif
-                </div>
+                                    <div style="margin-top:1rem;padding:1rem;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;">
+                                        <div style="font-size:.78rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">
+                                            Misi Aktif
+                                        </div>
 
-                <div style="margin-top:.35rem;font-size:1rem;font-weight:850;color:#0f172a;line-height:1.35;">
-                    {$activeMissionTitle}
-                </div>
+                                        <div style="margin-top:.35rem;font-size:1rem;font-weight:850;color:#0f172a;line-height:1.35;">
+                                            {$activeMissionTitle}
+                                        </div>
 
-                <div style="margin-top:1rem;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem;">
-                        <span style="font-size:.82rem;font-weight:800;color:#475569;">Progress 14 Hari</span>
-                        <span style="font-size:.82rem;font-weight:900;color:var(--tesyuk-primary);">{$progressPercent}%</span>
-                    </div>
+                                        <div style="margin-top:1rem;">
+                                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem;">
+                                                <span style="font-size:.82rem;font-weight:800;color:#475569;">Progress 14 Hari</span>
+                                                <span style="font-size:.82rem;font-weight:900;color:var(--tesyuk-primary);">{$progressPercent}%</span>
+                                            </div>
 
-                    <div style="height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
-                        <div style="height:100%;width:{$progressPercent}%;background:linear-gradient(90deg,var(--tesyuk-accent),var(--tesyuk-primary));border-radius:999px;"></div>
-                    </div>
-                </div>
-            </div>
+                                            <div style="height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+                                                <div style="height:100%;width:{$progressPercent}%;background:linear-gradient(90deg,var(--tesyuk-accent),var(--tesyuk-primary));border-radius:999px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:.9rem;">
-                <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
-                    <div style="font-size:.72rem;color:#64748b;font-weight:800;">Hari Ini</div>
-                    <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">{$currentDay}</div>
-                </div>
+                                    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:.9rem;">
+                                        <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
+                                            <div style="font-size:.72rem;color:#64748b;font-weight:800;">Hari Ini</div>
+                                            <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">{$currentDay}</div>
+                                        </div>
 
-                <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
-                    <div style="font-size:.72rem;color:#64748b;font-weight:800;">Sisa Hari</div>
-                    <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">{$remainingDays}</div>
-                </div>
+                                        <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
+                                            <div style="font-size:.72rem;color:#64748b;font-weight:800;">Sisa Hari</div>
+                                            <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">{$remainingDays}</div>
+                                        </div>
 
-                <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
-                    <div style="font-size:.72rem;color:#64748b;font-weight:800;">Target</div>
-                    <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">14</div>
-                </div>
-            </div>
+                                        <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:.85rem;">
+                                            <div style="font-size:.72rem;color:#64748b;font-weight:800;">Target</div>
+                                            <div style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-top:.2rem;">14</div>
+                                        </div>
+                                    </div>
 
-            <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem;">
-                <a href="{$urlMisi}" style="display:inline-flex;padding:0.78rem 1rem;border-radius:999px;background:var(--tesyuk-accent);color:white;font-weight:800;text-decoration:none;">
-                    Lihat Misi
-                </a>
+                                    <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem;">
+                                        <a href="{$urlMisi}" style="display:inline-flex;padding:0.78rem 1rem;border-radius:999px;background:var(--tesyuk-accent);color:white;font-weight:800;text-decoration:none;">
+                                            Lihat Misi
+                                        </a>
 
-                <a href="{$urlCariMisi}" style="display:inline-flex;padding:0.78rem 1rem;border-radius:999px;background:var(--tesyuk-secondary);color:var(--tesyuk-primary);font-weight:800;text-decoration:none;border:1px solid rgba(var(--tesyuk-primary-rgb), 0.24);">
-                    Cari Misi Baru
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-HTML);
+                                        <a href="{$urlCariMisi}" style="display:inline-flex;padding:0.78rem 1rem;border-radius:999px;background:var(--tesyuk-secondary);color:var(--tesyuk-primary);font-weight:800;text-decoration:none;border:1px solid rgba(var(--tesyuk-primary-rgb), 0.24);">
+                                            Cari Misi Baru
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        HTML);
                 }
             )
             ->renderHook(
