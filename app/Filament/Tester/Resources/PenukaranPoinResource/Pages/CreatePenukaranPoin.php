@@ -3,6 +3,7 @@
 namespace App\Filament\Tester\Resources\PenukaranPoinResource\Pages;
 
 use App\Filament\Tester\Resources\PenukaranPoinResource;
+use App\Support\AppNotifier;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Exceptions\Halt;
@@ -79,6 +80,21 @@ class CreatePenukaranPoin extends CreateRecord
             ->body('Poin kamu sudah dipotong dan request akan diproses oleh admin.')
             ->success()
             ->send();
+
+        if ($tester = Auth::user()) {
+            AppNotifier::database(
+                $tester,
+                'Penukaran poin diajukan',
+                'Permintaan penukaran ' . number_format((int) $this->record->points_withdrawn, 0, ',', '.') . ' poin sedang diproses admin.',
+                'warning',
+            );
+        }
+
+        AppNotifier::adminsDatabase(
+            'Pengajuan penukaran poin baru',
+            (Auth::user()?->name ?? 'Tester') . ' mengajukan penukaran ' . number_format((int) $this->record->points_withdrawn, 0, ',', '.') . ' poin.',
+            'warning',
+        );
     }
 
     protected function getRedirectUrl(): string

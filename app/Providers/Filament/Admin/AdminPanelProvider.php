@@ -51,7 +51,6 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Manajemen Testing')->collapsible(false),
                 NavigationGroup::make('Keuangan')->collapsible(false),
                 NavigationGroup::make('Bantuan')->collapsible(false),
-                NavigationGroup::make('Akun')->collapsible(false),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')

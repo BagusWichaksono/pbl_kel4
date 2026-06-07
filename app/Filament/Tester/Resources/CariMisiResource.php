@@ -5,6 +5,7 @@ namespace App\Filament\Tester\Resources;
 use App\Filament\Tester\Resources\CariMisiResource\Pages;
 use App\Models\App;
 use App\Models\ApplicationTester;
+use App\Support\AppNotifier;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -450,6 +451,15 @@ class CariMisiResource extends Resource
                             ->body("Kamu berhasil mengambil misi aplikasi \"{$record->title}\".")
                             ->success()
                             ->send();
+
+                        if ($tester = Auth::user()) {
+                            AppNotifier::database(
+                                $tester,
+                                'Misi berhasil diambil',
+                                "Kamu berhasil mengambil misi aplikasi {$record->title}.",
+                                'success',
+                            );
+                        }
 
                         if ($record->developer) {
                             Notification::make()

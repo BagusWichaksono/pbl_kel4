@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\AppResource\Pages;
 use App\Models\App;
+use App\Support\AppNotifier;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -200,6 +201,15 @@ class AppResource extends Resource
                                 ->title('Aplikasi & Pembayaran Disetujui')
                                 ->success()
                                 ->send();
+
+                            if ($record->developer) {
+                                AppNotifier::database(
+                                    $record->developer,
+                                    'Aplikasi disetujui',
+                                    "Aplikasi {$record->title} sudah disetujui dan siap mencari tester.",
+                                    'success',
+                                );
+                            }
                         }),
 
                     Tables\Actions\Action::make('reject')
@@ -217,6 +227,15 @@ class AppResource extends Resource
                                 ->title('Aplikasi Ditolak')
                                 ->danger()
                                 ->send();
+
+                            if ($record->developer) {
+                                AppNotifier::database(
+                                    $record->developer,
+                                    'Aplikasi ditolak',
+                                    "Aplikasi {$record->title} ditolak oleh admin. Silakan cek kembali data pengajuan.",
+                                    'danger',
+                                );
+                            }
                         }),
                 ])->icon('heroicon-m-ellipsis-vertical'),
             ])

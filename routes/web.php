@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Support\AppNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -112,6 +113,18 @@ Route::post('/register', function (Request $request) {
         ]);
     }
 
+    AppNotifier::database(
+        $user,
+        'Pendaftaran akun berhasil',
+        'Akun TesYuk kamu sudah dibuat. Silakan verifikasi email sebelum login.',
+        'success',
+    );
+
+    AppNotifier::adminsDatabase(
+        'Akun baru terdaftar',
+        "{$user->name} mendaftar sebagai {$user->role}.",
+    );
+
     try {
         $user->sendEmailVerificationNotification();
     } catch (TransportExceptionInterface $exception) {
@@ -139,6 +152,13 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, 
 
     if (! $user->hasVerifiedEmail()) {
         $user->markEmailAsVerified();
+
+        AppNotifier::database(
+            $user,
+            'Email berhasil diverifikasi',
+            'Akun kamu sudah aktif. Silakan login untuk masuk ke dashboard.',
+            'success',
+        );
     }
 
     Auth::logout();

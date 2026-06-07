@@ -94,6 +94,151 @@
             letter-spacing: 0.15em;
         }
 
+        @keyframes tesyuk-soft-enter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @supports (view-transition-name: root) {
+            ::view-transition-old(root),
+            ::view-transition-new(root) {
+                animation-duration: 0.26s;
+                animation-timing-function: ease;
+            }
+        }
+
+        nav,
+        section,
+        footer,
+        .section-inner,
+        .group,
+        a,
+        button {
+            transition:
+                background-color 0.24s ease,
+                border-color 0.24s ease,
+                box-shadow 0.24s ease,
+                color 0.18s ease,
+                opacity 0.24s ease,
+                transform 0.24s ease;
+        }
+
+        section {
+            animation: tesyuk-soft-enter 0.3s ease both;
+        }
+
+        .landing-nav-inner {
+            width: 100%;
+            max-width: 92rem;
+            min-height: 4rem;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .landing-brand,
+        .landing-actions {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .landing-brand {
+            left: 1.5rem;
+        }
+
+        .landing-actions {
+            right: 1.5rem;
+        }
+
+        .section-soft {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .section-soft::before {
+            content: "";
+            position: absolute;
+            top: -5.5rem;
+            left: 50%;
+            width: min(76rem, 92vw);
+            height: 12rem;
+            transform: translateX(-50%);
+            background:
+                radial-gradient(circle at 18% 50%, rgba(var(--tesyuk-accent-rgb), 0.12), transparent 34%),
+                radial-gradient(circle at 82% 45%, rgba(var(--tesyuk-primary-rgb), 0.10), transparent 36%),
+                linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.74), transparent);
+            filter: blur(28px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .section-soft::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -6rem;
+            width: min(72rem, 90vw);
+            height: 10rem;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, rgba(var(--tesyuk-accent-rgb), 0.08), transparent 68%);
+            filter: blur(34px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .section-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-link {
+            color: rgba(238, 238, 238, 0.68);
+            transition: color 0.25s ease, transform 0.25s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+            transform: translateX(2px);
+        }
+
+        @media (min-width: 1024px) {
+            .landing-nav-inner {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+
+            .landing-brand {
+                left: 2rem;
+            }
+
+            .landing-actions {
+                right: 2rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .landing-nav-inner {
+                justify-content: flex-start;
+            }
+
+            .landing-brand {
+                position: static;
+                transform: none;
+            }
+        }
+
         .transition-all {
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -107,8 +252,8 @@
     <nav
         class="fixed w-full top-0 z-[1000] transition-all duration-500"
         :class="scrolled ? 'bg-white/70 backdrop-blur-lg border-b border-winter-300/20 py-3 shadow-lg' : 'bg-transparent py-6'">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 group">
+        <div class="landing-nav-inner">
+            <a href="/" class="landing-brand flex items-center gap-3 group">
                 <img src="{{ asset(\App\Support\AppPalette::LOGO_ASSET) }}" class="w-10 h-10 transition-transform group-hover:rotate-6" alt="Logo TesYuk">
 
                 <div class="h-6 w-px bg-winter-300"></div>
@@ -131,7 +276,7 @@
                 </a>
             </div>
 
-            <div class="hidden md:flex items-center p-1.5 rounded-full border border-winter-300/30 bg-winter-100/30 backdrop-blur-md">
+            <div class="landing-actions hidden md:flex items-center p-1.5 rounded-full border border-winter-300/30 bg-winter-100/30 backdrop-blur-md">
                 <a href="/login"
                     class="px-10 py-3 text-sm font-bold text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
                     Masuk
@@ -145,10 +290,10 @@
         </div>
     </nav>
 
-    <section class="relative pt-48 pb-20 overflow-hidden">
-        <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[700px] h-[700px] bg-winter-300/20 rounded-full blur-[150px] -z-10"></div>
+    <section class="section-soft relative pt-48 pb-20 overflow-hidden bg-gradient-to-b from-winter-50 via-white to-white">
+        <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[700px] h-[700px] bg-winter-300/20 rounded-full blur-[150px] z-0"></div>
 
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="section-inner max-w-7xl mx-auto px-6 lg:px-8 text-center" data-aos="fade-up">
             <h1 class="text-5xl lg:text-[72px] font-black leading-[1.1] tracking-tight mb-8">
                 Validasi Aplikasi <br />
                 dengan <span class="text-winter-500">Pengguna Langsung.</span>
@@ -230,8 +375,8 @@
         </div>
     </section>
 
-    <section id="tentang" class="py-32 bg-white">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-20 items-center">
+    <section id="tentang" class="section-soft py-32 bg-gradient-to-b from-white via-white to-winter-50/80">
+        <div class="section-inner max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-20 items-center">
             <div class="lg:w-1/2" data-aos="fade-right">
                 <h2 class="text-4xl lg:text-5xl font-black mb-8 leading-tight">Menjaga Kualitas <br> Ekosistem Digital.</h2>
                 <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback pengguna langsung seringkali sulit didapat secara cepat dan akurat.</p>
@@ -263,8 +408,8 @@
         </div>
     </section>
 
-    <section id="cara-kerja" class="py-24 bg-winter-50 border-t border-winter-300/20">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id="cara-kerja" class="section-soft py-24 bg-gradient-to-b from-winter-50/80 via-winter-50 to-white border-t border-winter-300/20">
+        <div class="section-inner max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl lg:text-4xl font-black text-winter-900 mb-4">Proses Sederhana, Hasil Nyata.</h2>
                 <p class="text-winter-700/80 max-w-xl mx-auto text-lg font-medium">Tiga langkah sistematis untuk memastikan kualitas perangkat lunak.</p>
@@ -300,8 +445,8 @@
         </div>
     </section>
 
-    <section id="fitur" class="py-24 bg-white border-t border-winter-300/20 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id="fitur" class="section-soft py-24 bg-gradient-to-b from-white via-white to-winter-50/70 border-t border-winter-300/20 overflow-hidden">
+        <div class="section-inner max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-20" data-aos="fade-up">
                 <h2 class="text-3xl lg:text-5xl font-black text-winter-900 mb-6">Satu Ekosistem, Dua Manfaat.</h2>
                 <p class="text-winter-700/80 max-w-2xl mx-auto text-lg font-medium">Solusi yang dirancang khusus dengan fitur unggulan untuk memenuhi kebutuhan spesifik kedua belah pihak.</p>
@@ -379,15 +524,53 @@
         </div>
     </section>
 
-    <footer class="bg-winter-900 text-white py-20">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h3 class="text-3xl font-black mb-10">TesYuk!</h3>
-            <div class="flex justify-center gap-6 mb-16">
-                <!-- <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-mail-send"></i></a> -->
-                <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-whatsapp-logo"></i></a>
-                <!-- <a href="#" class="text-winter-300 hover:text-white transition text-2xl"><i class="ph-bold ph-youtube-logo"></i></a> -->
+    <footer class="relative overflow-hidden bg-winter-900 text-white pt-20 pb-10">
+        <div class="absolute -top-24 left-1/2 h-64 w-[70rem] -translate-x-1/2 rounded-full bg-winter-700/20 blur-[90px]"></div>
+        <div class="absolute bottom-0 right-0 h-72 w-72 translate-x-1/3 translate-y-1/3 rounded-full bg-winter-500/20 blur-[80px]"></div>
+
+        <div class="relative max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 gap-10 text-left md:grid-cols-2 lg:grid-cols-4">
+                <div class="lg:col-span-2">
+                    <div class="mb-6 flex items-center gap-3">
+                        <img src="{{ asset(\App\Support\AppPalette::LOGO_ASSET) }}" class="h-11 w-11 object-contain" alt="Logo TesYuk">
+                        <h3 class="text-3xl font-black">TesYuk!</h3>
+                    </div>
+                    <p class="max-w-md text-sm leading-7 text-winter-50/70">
+                        Platform validasi aplikasi yang mempertemukan Developer dengan Tester aktif untuk mendapatkan feedback nyata, laporan harian, dan bukti pengujian yang lebih transparan.
+                    </p>
+                    <div class="mt-7 flex gap-4">
+                        <a href="#" class="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-winter-300 transition hover:bg-white/10 hover:text-white">
+                            <i class="ph-bold ph-whatsapp-logo"></i>
+                        </a>
+                        <a href="mailto:admin@tesyuk.my.id" class="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-winter-300 transition hover:bg-white/10 hover:text-white">
+                            <i class="ph-bold ph-envelope-simple"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="mb-5 text-sm font-black uppercase tracking-widest text-white">Navigasi</h4>
+                    <div class="flex flex-col gap-3 text-sm">
+                        <a href="#tentang" class="footer-link">Tentang TesYuk</a>
+                        <a href="#fitur" class="footer-link">Fitur Utama</a>
+                        <a href="#cara-kerja" class="footer-link">Cara Kerja</a>
+                        <a href="/paket" class="footer-link">Skema Biaya</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="mb-5 text-sm font-black uppercase tracking-widest text-white">Ringkasnya</h4>
+                    <div class="space-y-4 text-sm leading-7 text-winter-50/70">
+                        <p>Developer mengunggah aplikasi dan memantau laporan tester dari satu dashboard.</p>
+                        <p>Tester menjalankan misi, mengirim bukti pengujian, lalu mengumpulkan poin reward.</p>
+                    </div>
+                </div>
             </div>
-            <p class="text-sm text-winter-500">© 2026 TesYuk! • Solusi Validasi Aplikasi Terpercaya</p>
+
+            <div class="mt-16 flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-winter-300/70 md:flex-row md:items-center md:justify-between">
+                <p>© 2026 TesYuk! • Solusi Validasi Aplikasi Terpercaya</p>
+                <p>Dibuat untuk pengujian aplikasi yang lebih rapi, terukur, dan manusiawi.</p>
+            </div>
         </div>
     </footer>
 

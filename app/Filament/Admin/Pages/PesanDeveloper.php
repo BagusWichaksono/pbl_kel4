@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
+use App\Support\AppNotifier;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
@@ -117,7 +118,7 @@ class PesanDeveloper extends Page
             $attachmentPath = $this->attachment_upload->store('support-attachments', 'public');
         }
 
-        DB::transaction(function () use ($replyText, $attachmentPath, $attachmentName, $attachmentMime) {
+        $ticket = DB::transaction(function () use ($replyText, $attachmentPath, $attachmentName, $attachmentMime) {
             $ticket = SupportTicket::query()->findOrFail($this->selectedTicketId);
 
             SupportMessage::create([
@@ -135,10 +136,20 @@ class PesanDeveloper extends Page
                 'status' => 'open',
                 'last_message_at' => now(),
             ]);
+
+            return $ticket->load('tester');
         });
 
         $this->reply = '';
         $this->attachment_upload = null;
+
+        if ($ticket->tester) {
+            AppNotifier::database(
+                $ticket->tester,
+                'Balasan admin baru',
+                'Admin membalas pesan bantuan developer kamu.',
+            );
+        }
 
         Notification::make()
             ->title('Balasan berhasil dikirim.')

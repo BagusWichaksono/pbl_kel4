@@ -4,6 +4,7 @@ namespace App\Filament\Developer\Pages;
 
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
+use App\Support\AppNotifier;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,8 @@ class HubungiAdmin extends Page
     protected static ?string $navigationGroup = 'Bantuan';
 
     protected static ?int $navigationSort = 10;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static string $view = 'filament.developer.pages.hubungi-admin';
 
@@ -116,6 +119,11 @@ class HubungiAdmin extends Page
 
         $this->message = '';
         $this->attachment_upload = null;
+
+        AppNotifier::adminsDatabase(
+            'Pesan bantuan baru',
+            (Auth::user()?->name ?? 'Developer') . ' mengirim pesan bantuan dari panel Developer.',
+        );
 
         Notification::make()
             ->title('Pesan berhasil dikirim.')

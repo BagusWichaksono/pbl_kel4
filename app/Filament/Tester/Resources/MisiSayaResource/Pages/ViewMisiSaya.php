@@ -8,6 +8,7 @@ use App\Models\DailyReport;
 use App\Models\EvaluationAnswer;
 use App\Models\EvaluationQuestion;
 use App\Models\TesterProfile;
+use App\Support\AppNotifier;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -209,6 +210,25 @@ class ViewMisiSaya extends Page
                     ->title('Misi harian berhasil dikirim!')
                     ->body('Terima kasih. Kembali lagi besok untuk melanjutkan misi berikutnya.')
                     ->success()->send();
+
+                $appTitle = $record->application?->title ?? 'aplikasi';
+
+                if ($tester = Auth::user()) {
+                    AppNotifier::database(
+                        $tester,
+                        'Laporan harian terkirim',
+                        "Laporan harian untuk {$appTitle} berhasil dikirim.",
+                        'success',
+                    );
+                }
+
+                if ($record->application?->developer) {
+                    AppNotifier::database(
+                        $record->application->developer,
+                        'Laporan harian baru',
+                        (Auth::user()?->name ?? 'Tester') . " mengirim laporan harian untuk {$appTitle}.",
+                    );
+                }
             });
     }
 
@@ -362,6 +382,26 @@ class ViewMisiSaya extends Page
                     ->title('Laporan akhir & evaluasi berhasil dikirim!')
                     ->body('Terima kasih atas feedback-mu! Tunggu developer memvalidasi laporanmu.')
                     ->success()->send();
+
+                $appTitle = $record->application?->title ?? 'aplikasi';
+
+                if ($tester = Auth::user()) {
+                    AppNotifier::database(
+                        $tester,
+                        'Laporan akhir terkirim',
+                        "Laporan akhir dan evaluasi untuk {$appTitle} berhasil dikirim.",
+                        'success',
+                    );
+                }
+
+                if ($record->application?->developer) {
+                    AppNotifier::database(
+                        $record->application->developer,
+                        'Laporan akhir menunggu validasi',
+                        (Auth::user()?->name ?? 'Tester') . " mengirim laporan akhir untuk {$appTitle}.",
+                        'warning',
+                    );
+                }
             });
     }
 

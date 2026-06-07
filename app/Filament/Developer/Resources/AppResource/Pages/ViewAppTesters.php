@@ -4,6 +4,7 @@ namespace App\Filament\Developer\Resources\AppResource\Pages;
 
 use App\Filament\Developer\Resources\AppResource;
 use App\Models\App;
+use App\Support\AppNotifier;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms;
@@ -151,11 +152,20 @@ class ViewAppTesters extends Page
                     $startDate = Carbon::parse($data['start_date']);
                     $endDate = $startDate->copy()->addDays(14);
 
-                    App::findOrFail($this->recordId)->update([
+                    $app = App::with('testerUsers')->findOrFail($this->recordId);
+
+                    $app->update([
                         'start_date' => $startDate,
                         'end_date' => $endDate,
                         'testing_status' => 'in_progress',
                     ]);
+
+                    AppNotifier::database(
+                        $app->testerUsers,
+                        'Sesi testing dimulai',
+                        "Sesi testing aplikasi {$app->title} sudah dimulai. Jangan lupa kirim laporan harian.",
+                        'success',
+                    );
 
                     Notification::make()
                         ->title('Sesi testing berhasil dimulai!')

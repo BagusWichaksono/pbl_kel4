@@ -1,33 +1,21 @@
 <?php
 
-namespace App\Filament\Tester\Pages;
+namespace App\Livewire;
 
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Support\AppNotifier;
 use Filament\Notifications\Notification;
-use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
-class HubungiAdmin extends Page
+class SupportChatWidget extends Component
 {
     use WithFileUploads;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
-
-    protected static ?string $navigationLabel = 'Hubungi Admin';
-
-    protected static ?string $title = 'Hubungi Admin';
-
-    protected static ?string $navigationGroup = 'Bantuan';
-
-    protected static ?int $navigationSort = 1;
-
-    protected static bool $shouldRegisterNavigation = false;
-
-    protected static string $view = 'filament.tester.pages.hubungi-admin';
+    public string $role = 'tester';
 
     public ?SupportTicket $ticket = null;
 
@@ -35,24 +23,10 @@ class HubungiAdmin extends Page
 
     public $attachment_upload = null;
 
-    public function mount(): void
+    public function mount(string $role = 'tester'): void
     {
+        $this->role = in_array($role, ['developer', 'tester'], true) ? $role : 'tester';
         $this->ticket = $this->getOrCreateTicket();
-        $this->markAdminMessagesAsRead();
-    }
-
-    private function getOrCreateTicket(): SupportTicket
-    {
-        return SupportTicket::query()->firstOrCreate(
-            [
-                'tester_id' => Auth::id(),
-                'status' => 'open',
-            ],
-            [
-                'subject' => 'Bantuan Tester',
-                'last_message_at' => now(),
-            ]
-        );
     }
 
     public function getMessagesProperty()
@@ -63,6 +37,19 @@ class HubungiAdmin extends Page
             ->with('sender')
             ->oldest()
             ->get();
+    }
+
+    public function getUnreadAdminMessagesProperty(): int
+    {
+        if (! $this->ticket) {
+            return 0;
+        }
+
+        return SupportMessage::query()
+            ->where('support_ticket_id', $this->ticket->id)
+            ->where('sender_role', 'admin')
+            ->where('is_read', false)
+            ->count();
     }
 
     public function sendMessage(): void
@@ -97,13 +84,13 @@ class HubungiAdmin extends Page
             $attachmentPath = $this->attachment_upload->store('support-attachments', 'public');
         }
 
-        DB::transaction(function () use ($messageText, $attachmentPath, $attachmentName, $attachmentMime) {
+        DB::transaction(function () use ($messageText, $attachmentPath, $attachmentName, $attachmentMime): void {
             $ticket = $this->ticket ?? $this->getOrCreateTicket();
 
             SupportMessage::create([
                 'support_ticket_id' => $ticket->id,
                 'sender_id' => Auth::id(),
-                'sender_role' => 'tester',
+                'sender_role' => $this->role,
                 'message' => $messageText,
                 'attachment_path' => $attachmentPath,
                 'attachment_original_name' => $attachmentName,
@@ -117,13 +104,14 @@ class HubungiAdmin extends Page
             ]);
         });
 
-        $this->message = '';
-        $this->attachment_upload = null;
-
         AppNotifier::adminsDatabase(
             'Pesan bantuan baru',
-            (Auth::user()?->name ?? 'Tester') . ' mengirim pesan bantuan dari panel Tester.',
+            (Auth::user()?->name ?? 'Pengguna') . ' mengirim pesan bantuan dari panel ' . ucfirst($this->role) . '.',
         );
+
+        $this->message = '';
+        $this->attachment_upload = null;
+        $this->ticket = $this->getOrCreateTicket();
 
         Notification::make()
             ->title('Pesan berhasil dikirim.')
@@ -133,7 +121,35 @@ class HubungiAdmin extends Page
 
     public function refreshMessages(): void
     {
+        $this->ticket = $this->getOrCreateTicket();
+    }
+
+    public function openChat(): void
+    {
+        $this->ticket = $this->getOrCreateTicket();
         $this->markAdminMessagesAsRead();
+    }
+
+    public function render()
+    {
+        return view('livewire.support-chat-widget', [
+            'messages' => $this->messages,
+            'unreadAdminMessages' => $this->unreadAdminMessages,
+        ]);
+    }
+
+    private function getOrCreateTicket(): SupportTicket
+    {
+        return SupportTicket::query()->firstOrCreate(
+            [
+                'tester_id' => Auth::id(),
+                'status' => 'open',
+            ],
+            [
+                'subject' => $this->role === 'developer' ? 'Bantuan Developer' : 'Bantuan Tester',
+                'last_message_at' => now(),
+            ]
+        );
     }
 
     private function markAdminMessagesAsRead(): void
