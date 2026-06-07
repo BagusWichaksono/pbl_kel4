@@ -95,24 +95,34 @@ class AppResource extends Resource
                             '))
                             ->columnSpanFull(),
 
-                        Forms\Components\Actions::make([
-                            Forms\Components\Actions\Action::make('show_qris')
-                                ->label('Tampilkan Barcode QRIS')
-                                ->icon('heroicon-m-qr-code')
-                                ->color('primary')
-                                ->modalHeading('Scan Barcode QRIS')
-                                ->modalContent(fn() => new HtmlString('
+                    Forms\Components\Actions::make([
+                        Forms\Components\Actions\Action::make('show_qris')
+                            ->label('Tampilkan Barcode QRIS')
+                            ->icon('heroicon-m-qr-code')
+                            ->color('primary')
+                            ->modalHeading('Scan Barcode QRIS')
+                            ->modalContent(function () {
+                                $qrisPath = public_path('assets/qris.png');
+                                $qrisVersion = file_exists($qrisPath) ? filemtime($qrisPath) : time();
+                                $qrisUrl = asset('assets/qris.png') . '?v=' . $qrisVersion;
+
+                                return new HtmlString('
                                     <div style="text-align: center;">
-                                        <img src="' . asset('assets/qris.png') . '" alt="QRIS Barcode" style="max-width: 280px; width: 100%; margin: 0 auto; border-radius: 16px;">
-                                        <p style="margin-top: 16px; color: #475569;">
+                                        <img src="' . $qrisUrl . '" alt="QRIS TesYuk" style="max-width: 430px; width: 100%; margin: 0 auto; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.35);">
+                                        <p style="margin-top: 16px; color: #475569; font-size: 0.95rem; line-height: 1.6;">
                                             Scan QRIS ini menggunakan e-wallet atau mobile banking.
                                         </p>
+                                        <p style="margin-top: 8px; color: #dc2626; font-size: 0.82rem; font-weight: 700;">
+                                            Catatan: QRIS ini digunakan untuk simulasi/demo pembayaran TesYuk.
+                                        </p>
                                     </div>
-                                '))
-                                ->modalSubmitAction(false)
-                                ->modalCancelActionLabel('Tutup'),
-                        ])
-                            ->columnSpanFull(),
+                                ');
+                            })
+                            ->modalWidth('lg')
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('Tutup'),
+                    ])
+                        ->columnSpanFull(),
 
                         Forms\Components\FileUpload::make('payment_proof')
                         ->label('Bukti Pembayaran')
