@@ -772,6 +772,11 @@
 
                                         <div class="admin-message-time">
                                             {{ $chat->created_at->format('H:i') }}
+                                            @if ($isAdmin)
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="{{ $chat->is_read ? '#3b82f6' : '#9ca3af' }}" viewBox="0 0 16 16" style="width: 14px; height: 14px; display: inline-block; margin-bottom: -2px; margin-left: 3px;">
+                                                    <path d="M8.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L2.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093L8.95 4.992a.252.252 0 0 1 .02-.022zm-.92 5.14.92.92a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 1 0-1.091-1.028L9.477 9.417l-.485-.486-.943 1.179z"/>
+                                                </svg>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -800,9 +805,13 @@
                             ></textarea>
 
                             <label class="admin-attach-button">
-                                Kirim Foto
+                                + Kirim Foto
                                 <input type="file" wire:model="attachment_upload" accept="image/*">
                             </label>
+
+                            <div wire:loading wire:target="attachment_upload" style="font-size: 12px; color: #64748b; margin-top: 8px;">
+                                Mengunggah foto...
+                            </div>
 
                             @error('reply')
                                 <p style="margin-top: 8px; color: #e11d48; font-size: 13px;">{{ $message }}</p>
@@ -813,8 +822,8 @@
                             @enderror
                         </div>
 
-                        <button type="submit" class="admin-send-button">
-                            Balas
+                        <button type="submit" class="admin-send-button" wire:loading.attr="disabled" wire:target="attachment_upload,sendReply">
+                            Kirim
                         </button>
                     </form>
                 </div>

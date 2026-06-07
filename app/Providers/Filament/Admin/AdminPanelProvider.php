@@ -193,6 +193,19 @@ class AdminPanelProvider extends PanelProvider
                     .custom-card-stats:hover {
                         transform: translateY(-3px) !important;
                         box-shadow: 0 10px 25px -5px rgba(var(--tesyuk-accent-rgb), 0.12) !important;
+                        border-color: rgba(var(--tesyuk-primary-rgb), 0.4) !important;
+                    }
+
+                    .custom-card-display {
+                        background: white !important;
+                        border: 1px dashed rgba(var(--tesyuk-accent-rgb), 0.15) !important;
+                        border-radius: 20px !important;
+                        padding: 1.5rem !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 1rem !important;
+                        box-shadow: none !important;
+                        opacity: 0.9 !important;
                     }
 
                     .stat-label {
@@ -346,8 +359,22 @@ class AdminPanelProvider extends PanelProvider
 
                     foreach ($latestApps as $app) {
                         $title = e($app->title ?? 'Aplikasi');
-                        $status = e($app->payment_status ?? $app->testing_status ?? 'pending');
+                        $status = strtolower($app->payment_status ?? $app->testing_status ?? 'pending');
                         $date = isset($app->created_at) ? \Carbon\Carbon::parse($app->created_at)->format('d M Y') : '-';
+
+                        $badgeBg = '#f1f5f9';
+                        $badgeColor = '#64748b';
+                        
+                        if (in_array($status, ['valid', 'approved', 'completed', 'diterima'])) {
+                            $badgeBg = '#dcfce7';
+                            $badgeColor = '#166534';
+                        } elseif (in_array($status, ['invalid', 'rejected', 'ditolak'])) {
+                            $badgeBg = '#fee2e2';
+                            $badgeColor = '#991b1b';
+                        } elseif (in_array($status, ['pending', 'menunggu'])) {
+                            $badgeBg = '#fef3c7';
+                            $badgeColor = '#92400e';
+                        }
 
                         $appRows .= "
                             <div style='display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;border-bottom:1px solid #e2e8f0;gap:1rem;'>
@@ -355,7 +382,7 @@ class AdminPanelProvider extends PanelProvider
                                     <div style='font-weight:800;color:#0f172a;'>{$title}</div>
                                     <div style='font-size:0.8rem;color:#64748b;margin-top:0.2rem;'>Diajukan {$date}</div>
                                 </div>
-                                <span style='font-size:0.75rem;font-weight:800;padding:0.35rem 0.7rem;border-radius:999px;background:var(--tesyuk-secondary);color:var(--tesyuk-primary);'>{$status}</span>
+                                <span style='font-size:0.75rem;font-weight:800;padding:0.35rem 0.7rem;border-radius:999px;background:{$badgeBg};color:{$badgeColor};'>{$status}</span>
                             </div>
                         ";
                     }
@@ -383,55 +410,71 @@ class AdminPanelProvider extends PanelProvider
                                     <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(var(--tesyuk-accent-rgb),0.18);border-radius:50%;filter:blur(40px);z-index:1;"></div>
                                 </div>
 
+                                <h3 style="font-size:1.15rem;font-weight:800;margin:1.5rem 0 1rem;color:#0f172a;">Ringkasan Sistem</h3>
+                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem;">
+                                    <div class="custom-card-display" style="color:inherit;">
+                                        <div class="icon-bg" style="background:#f1f5f9;color:#64748b;">{$icons['revenue']}</div>
+                                        <div>
+                                            <p class="stat-label">Total Pendapatan</p>
+                                            <p class="stat-value">Rp {$totalRevenueFormatted}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-card-display" style="color:inherit;">
+                                        <div class="icon-bg" style="background:#f1f5f9;color:#64748b;">{$icons['users']}</div>
+                                        <div>
+                                            <p class="stat-label">Tester Aktif</p>
+                                            <p class="stat-value">{$activeTesters}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 style="font-size:1.15rem;font-weight:800;margin:0 0 1rem;color:#0f172a;">Aksi Cepat</h3>
                                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;">
-                                <a href="{$urlPayment}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-                                    <div class="icon-bg">{$icons['payment']}</div>
-                                    <div>
-                                        <p class="stat-label">Pembayaran Pending</p>
-                                        <p class="stat-value">{$pendingPayments}</p>
-                                    </div>
-                                </a>
+                                    <a href="{$urlPayment}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;position:relative;">
+                                        <div class="icon-bg">{$icons['payment']}</div>
+                                        <div>
+                                            <p class="stat-label">Pembayaran Pending</p>
+                                            <p class="stat-value">{$pendingPayments}</p>
+                                        </div>
+                                        <div style="position:absolute;right:1rem;opacity:0.4;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:1rem;height:1rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                        </div>
+                                    </a>
 
-                                <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-                                    <div class="icon-bg">{$icons['app']}</div>
-                                    <div>
-                                        <p class="stat-label">Aplikasi Pending</p>
-                                        <p class="stat-value">{$pendingApps}</p>
-                                    </div>
-                                </a>
+                                    <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;position:relative;">
+                                        <div class="icon-bg">{$icons['app']}</div>
+                                        <div>
+                                            <p class="stat-label">Aplikasi Pending</p>
+                                            <p class="stat-value">{$pendingApps}</p>
+                                        </div>
+                                        <div style="position:absolute;right:1rem;opacity:0.4;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:1rem;height:1rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                        </div>
+                                    </a>
 
-                                <a href="#" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-                                    <div class="icon-bg">{$icons['revenue']}</div>
-                                    <div>
-                                        <p class="stat-label">Total Pendapatan</p>
-                                        <p class="stat-value">Rp {$totalRevenueFormatted}</p>
-                                    </div>
-                                </a>
+                                    <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;position:relative;">
+                                        <div class="icon-bg">{$icons['check']}</div>
+                                        <div>
+                                            <p class="stat-label">Aplikasi Valid</p>
+                                            <p class="stat-value">{$totalValidApps}</p>
+                                        </div>
+                                        <div style="position:absolute;right:1rem;opacity:0.4;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:1rem;height:1rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                        </div>
+                                    </a>
 
-                                <a href="{$urlApps}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-                                    <div class="icon-bg">{$icons['check']}</div>
-                                    <div>
-                                        <p class="stat-label">Aplikasi Valid</p>
-                                        <p class="stat-value">{$totalValidApps}</p>
-                                    </div>
-                                </a>
-
-                                <a href="#" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-                                    <div class="icon-bg">{$icons['users']}</div>
-                                    <div>
-                                        <p class="stat-label">Tester Aktif</p>
-                                        <p class="stat-value">{$activeTesters}</p>
-                                    </div>
-                                </a>
-
-                                <a href="{$urlWithdrawals}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
-                                    <div class="icon-bg">{$icons['wallet']}</div>
-                                    <div>
-                                        <p class="stat-label">Pencairan Pending</p>
-                                        <p class="stat-value">{$pendingWithdrawals}</p>
-                                    </div>
-                                </a>
-                            </div>
+                                    <a href="{$urlWithdrawals}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;position:relative;">
+                                        <div class="icon-bg">{$icons['wallet']}</div>
+                                        <div>
+                                            <p class="stat-label">Pencairan Pending</p>
+                                            <p class="stat-value">{$pendingWithdrawals}</p>
+                                        </div>
+                                        <div style="position:absolute;right:1rem;opacity:0.4;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:1rem;height:1rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                        </div>
+                                    </a>
+                                </div>
 
                             <div class="fi-section" style="padding:1.5rem;">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
@@ -445,10 +488,17 @@ class AdminPanelProvider extends PanelProvider
                                 {$appRows}
                             </div>
 
-                            <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:20px;padding:1rem 1.15rem;box-shadow:0 14px 30px -26px rgba(15,23,42,.32);">
-                                <div style="font-size:.92rem;font-weight:850;color:#0f172a;">Cara baca grafik</div>
-                                <div style="font-size:.84rem;color:#64748b;line-height:1.6;margin-top:.25rem;">
-                                    Grafik di bawah menampilkan data 6 bulan terakhir. Arahkan kursor ke titik atau batang untuk melihat angka per bulan.
+                            <div style="background:linear-gradient(to right, #eff6ff, #ffffff);border:1px solid #bfdbfe;border-left:4px solid #3b82f6;border-radius:16px;padding:1.25rem 1.5rem;display:flex;gap:1rem;align-items:flex-start;">
+                                <div style="color:#3b82f6;flex-shrink:0;margin-top:2px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:1.5rem;height:1.5rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style="font-size:1rem;font-weight:800;color:#1e3a8a;">Informasi Grafik</div>
+                                    <div style="font-size:.875rem;color:#1d4ed8;line-height:1.6;margin-top:.25rem;">
+                                        Grafik di bawah menampilkan data 6 bulan terakhir. Anda dapat mengarahkan kursor ke titik atau batang grafik untuk melihat detail angka per bulan dengan lebih jelas.
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -423,12 +423,19 @@ class DeveloperPanelProvider extends PanelProvider
 
                                 </div>
 
-                                <div style='border:1px solid #e2e8f0;background:#ffffff;border-radius:20px;padding:1rem 1.15rem;box-shadow:0 14px 30px -26px rgba(15,23,42,.32);'>
-                                    <div style='font-size:.92rem;font-weight:850;color:#0f172a;'>Cara baca grafik</div>
-                                    <div style='font-size:.84rem;color:#64748b;line-height:1.6;margin-top:.25rem;'>
-                                        Grafik di bawah menampilkan aplikasi, tester bergabung, dan laporan harian dalam 6 bulan terakhir. Arahkan kursor ke grafik untuk melihat angkanya.
+                                <div style='background:linear-gradient(to right, #eff6ff, #ffffff);border:1px solid #bfdbfe;border-left:4px solid #3b82f6;border-radius:16px;padding:1.25rem 1.5rem;display:flex;gap:1rem;align-items:flex-start;'>
+                                <div style='color:#3b82f6;flex-shrink:0;margin-top:2px;'>
+                                    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='currentColor' style='width:1.5rem;height:1.5rem;'>
+                                        <path stroke-linecap='round' stroke-linejoin='round' d='M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z' />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style='font-size:1rem;font-weight:800;color:#1e3a8a;'>Informasi Grafik</div>
+                                    <div style='font-size:.875rem;color:#1d4ed8;line-height:1.6;margin-top:.25rem;'>
+                                        Grafik di bawah menampilkan data 6 bulan terakhir. Anda dapat mengarahkan kursor ke titik atau batang grafik untuk melihat detail angka per bulan dengan lebih jelas.
                                     </div>
                                 </div>
+                            </div>
                             </div>
                         ");
                     }

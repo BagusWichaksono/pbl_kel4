@@ -13,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Builder;
 
 class AppResource extends Resource
@@ -78,6 +80,23 @@ class AppResource extends Resource
                         Forms\Components\FileUpload::make('review_screenshot')
                             ->label('Bukti Closed Testing')
                             ->disabled(),
+                    ])
+                    ->columns(2),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Berkas Validasi')
+                    ->schema([
+                        Infolists\Components\ImageEntry::make('payment_proof')
+                            ->label('Bukti Pembayaran')
+                            ->columnSpan(1),
+                        Infolists\Components\ImageEntry::make('review_screenshot')
+                            ->label('Bukti Closed Testing')
+                            ->columnSpan(1),
                     ])
                     ->columns(2),
             ]);
@@ -191,13 +210,10 @@ class AppResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\Action::make('cek_bukti')
+                Tables\Actions\ViewAction::make()
                     ->label('Cek Bukti')
                     ->icon('heroicon-m-magnifying-glass')
-                    ->color('info')
-                    ->modalHeading('Validasi Berkas Developer')
-                    ->modalContent(fn (App $record) => new HtmlString(self::renderPreviewBukti($record)))
-                    ->modalSubmitAction(false),
+                    ->color('info'),
 
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('approve')
@@ -289,6 +305,7 @@ class AppResource extends Resource
     {
         return [
             'index' => Pages\ListApps::route('/'),
+            'view' => Pages\ViewApp::route('/{record}'),
         ];
     }
 }
