@@ -32,7 +32,7 @@ class ViewAppTesters extends Page
         $app = App::findOrFail($record);
 
         abort_unless(
-            $app->developer_id === Auth::id(),
+            $app->developer_id == Auth::id(),
             403,
             'Anda tidak memiliki akses ke halaman ini.'
         );
