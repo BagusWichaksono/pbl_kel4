@@ -95,12 +95,14 @@ class AppResource extends Resource
                     ->schema([
                         Infolists\Components\ImageEntry::make('payment_proof')
                             ->label('Bukti Pembayaran')
-                            ->columnSpan(1),
+                            ->columnSpanFull()
+                            ->extraImgAttributes(['style' => 'max-width: 100%; height: auto; object-fit: contain; max-height: 800px;']),
                         Infolists\Components\ImageEntry::make('review_screenshot')
                             ->label('Bukti Closed Testing')
-                            ->columnSpan(1),
+                            ->columnSpanFull()
+                            ->extraImgAttributes(['style' => 'max-width: 100%; height: auto; object-fit: contain; max-height: 800px;']),
                     ])
-                    ->columns(2),
+                    ->columns(1),
             ]);
     }
 
