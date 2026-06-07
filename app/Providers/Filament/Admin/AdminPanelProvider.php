@@ -28,7 +28,6 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         $chartWidgets = array_values(array_filter([
-            \App\Filament\Admin\Widgets\AdminDashboardStats::class,
             \App\Filament\Admin\Widgets\AdminRevenueChart::class,
             \App\Filament\Admin\Widgets\AdminAppsChart::class,
             \App\Filament\Admin\Widgets\AdminUsersChart::class,
@@ -444,6 +443,13 @@ class AdminPanelProvider extends PanelProvider
                                 </div>
 
                                 {$appRows}
+                            </div>
+
+                            <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:20px;padding:1rem 1.15rem;box-shadow:0 14px 30px -26px rgba(15,23,42,.32);">
+                                <div style="font-size:.92rem;font-weight:850;color:#0f172a;">Cara baca grafik</div>
+                                <div style="font-size:.84rem;color:#64748b;line-height:1.6;margin-top:.25rem;">
+                                    Grafik di bawah menampilkan data 6 bulan terakhir. Arahkan kursor ke titik atau batang untuk melihat angka per bulan.
+                                </div>
                             </div>
                         </div>
                         HTML);

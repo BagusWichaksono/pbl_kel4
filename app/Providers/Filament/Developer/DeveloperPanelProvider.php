@@ -51,7 +51,6 @@ class DeveloperPanelProvider extends PanelProvider
             ])
             // ->discoverWidgets(in: app_path('Filament/Developer/Widgets'), for: 'App\\Filament\\Developer\\Widgets')
             ->widgets([
-                \App\Filament\Developer\Widgets\DeveloperDashboardStats::class,
                 \App\Filament\Developer\Widgets\DeveloperAppsChart::class,
                 \App\Filament\Developer\Widgets\DeveloperTestersChart::class,
                 \App\Filament\Developer\Widgets\DeveloperReportsChart::class,
@@ -209,6 +208,79 @@ class DeveloperPanelProvider extends PanelProvider
                         box-shadow: 0 10px 25px -5px rgba(var(--tesyuk-accent-rgb), 0.12) !important;
                     }
 
+                    .developer-action-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 1rem !important;
+                    }
+
+                    .developer-action-button {
+                        background: #ffffff !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 999px !important;
+                        padding: 1rem 1.2rem !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        gap: 1rem !important;
+                        box-shadow: 0 18px 34px -28px rgba(15, 23, 42, .38) !important;
+                        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease !important;
+                    }
+
+                    .developer-action-button:hover {
+                        transform: translateY(-2px) !important;
+                        border-color: rgba(var(--tesyuk-primary-rgb), .22) !important;
+                        box-shadow: 0 24px 42px -30px rgba(var(--tesyuk-primary-rgb), .48) !important;
+                    }
+
+                    .developer-action-button-main {
+                        background: var(--tesyuk-primary) !important;
+                        border-color: var(--tesyuk-primary) !important;
+                        color: #ffffff !important;
+                    }
+
+                    .developer-action-button-main .stat-label,
+                    .developer-action-button-main .stat-value {
+                        color: #ffffff !important;
+                    }
+
+                    .developer-action-button-main .stat-label {
+                        opacity: .72 !important;
+                    }
+
+                    .developer-action-button .icon-bg {
+                        border-radius: 999px !important;
+                        flex-shrink: 0 !important;
+                    }
+
+                    .developer-action-button-main .icon-bg {
+                        background: rgba(255,255,255,.14) !important;
+                        color: #ffffff !important;
+                    }
+
+                    .developer-action-arrow {
+                        width: 2rem !important;
+                        height: 2rem !important;
+                        border-radius: 999px !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        flex-shrink: 0 !important;
+                        background: #f8fafc !important;
+                        color: var(--tesyuk-primary) !important;
+                    }
+
+                    .developer-action-button-main .developer-action-arrow {
+                        background: rgba(255,255,255,.16) !important;
+                        color: #ffffff !important;
+                    }
+
+                    @media (max-width: 768px) {
+                        .developer-action-grid {
+                            grid-template-columns: 1fr !important;
+                        }
+                    }
+
                     .stat-label {
                         color: #6b7280;
                         font-size: 0.75rem;
@@ -307,13 +379,6 @@ class DeveloperPanelProvider extends PanelProvider
                         
                         $logoDevUrl = asset('assets/logo-developer.png');
                         
-                        $devId = $user?->id;
-                        $totalApps = \App\Models\App::query()->where('developer_id', '=', $devId, 'and')->count();
-                        $totalTesters = \App\Models\ApplicationTester::query()->whereHas('application', fn($q) => $q->where('developer_id', '=', $devId, 'and'))
-                            ->where('status', '!=', 'rejected', 'and')
-                            ->count();
-                        $totalReports = \App\Models\DailyReport::query()->whereHas('application', fn($q) => $q->where('developer_id', '=', $devId, 'and'))->count();
-
                         return new HtmlString("
                             <div style='margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;'>
                                 <div style='background: linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%); border-radius: 24px; padding: 3rem; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);'>
@@ -328,58 +393,41 @@ class DeveloperPanelProvider extends PanelProvider
                                     <div style='position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(40px); z-index: 1;'></div>
                                 </div>
 
-                                <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;'>
+                                <div class='developer-action-grid'>
                                     
-                                    <a href='{$urlAddApp}' class='custom-card-stats' style='text-decoration: none; color: inherit;'>
+                                    <a href='{$urlAddApp}' class='developer-action-button developer-action-button-main' style='text-decoration: none;'>
                                         <div class='icon-bg'>
                                             <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M12 4.5v15m7.5-7.5h-15' /></svg>
                                         </div>
-                                        <div>
+                                        <div style='min-width:0;flex:1;'>
                                             <p class='stat-label'>Mulai Proyek</p>
                                             <p class='stat-value'>Daftarkan Aplikasi Baru</p>
                                         </div>
+                                        <div class='developer-action-arrow'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='currentColor' style='width:1rem;height:1rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' /></svg>
+                                        </div>
                                     </a>
 
-                                    <a href='{$urlHistory}' class='custom-card-stats' style='text-decoration: none; color: inherit;'>
+                                    <a href='{$urlHistory}' class='developer-action-button' style='text-decoration: none; color: inherit;'>
                                         <div class='icon-bg'>
                                             <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M9 12h3.75M9 15h3.375M9 18h3.375m1.875-12h7.5c.621 0 1.125.504 1.125 1.125v13.5c0 .621-.504 1.125-1.125 1.125h-7.5c-.621 0-1.125-.504-1.125-1.125V7.125c0-.621.504-1.125 1.125-1.125zm-8.25 1.5H5.25A2.25 2.25 0 003 3.75v16.5a2.25 2.25 0 002.25 2.25h13.5a2.25 2.25 0 002.25-2.25V14.25' /></svg>
                                         </div>
-                                        <div>
+                                        <div style='min-width:0;flex:1;'>
                                             <p class='stat-label'>Cek Status</p>
                                             <p class='stat-value'>Riwayat & Progres Testing</p>
                                         </div>
-                                    </a>
-                                    
-                                    <a href='#' class='custom-card-stats' style='text-decoration: none; color: inherit;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.45 15.04 15.04 0 01.06-.312m-2.24 2.39a4.499 4.499 0 00-1.757 4.306 4.433 4.433 0 002.723-2.023c-2.03-2.03-2.023-2.722-2.023-2.722z' /></svg>
-                                        </div>
-                                        <div>
-                                            <p class='stat-label'>Total Aplikasi Anda</p>
-                                            <p class='stat-value'>{$totalApps} Aplikasi</p>
-                                        </div>
-                                    </a>
-                                    
-                                    <a href='#' class='custom-card-stats' style='text-decoration: none; color: inherit;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z' /></svg>
-                                        </div>
-                                        <div>
-                                            <p class='stat-label'>Total Tester Terlibat</p>
-                                            <p class='stat-value'>{$totalTesters} Tester</p>
-                                        </div>
-                                    </a>
-                                    
-                                    <a href='#' class='custom-card-stats' style='text-decoration: none; color: inherit;'>
-                                        <div class='icon-bg'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' style='width: 1.75rem; height: 1.75rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' /></svg>
-                                        </div>
-                                        <div>
-                                            <p class='stat-label'>Laporan Masuk</p>
-                                            <p class='stat-value'>{$totalReports} Laporan</p>
+                                        <div class='developer-action-arrow'>
+                                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='currentColor' style='width:1rem;height:1rem;'><path stroke-linecap='round' stroke-linejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' /></svg>
                                         </div>
                                     </a>
 
+                                </div>
+
+                                <div style='border:1px solid #e2e8f0;background:#ffffff;border-radius:20px;padding:1rem 1.15rem;box-shadow:0 14px 30px -26px rgba(15,23,42,.32);'>
+                                    <div style='font-size:.92rem;font-weight:850;color:#0f172a;'>Cara baca grafik</div>
+                                    <div style='font-size:.84rem;color:#64748b;line-height:1.6;margin-top:.25rem;'>
+                                        Grafik di bawah menampilkan aplikasi, tester bergabung, dan laporan harian dalam 6 bulan terakhir. Arahkan kursor ke grafik untuk melihat angkanya.
+                                    </div>
                                 </div>
                             </div>
                         ");
