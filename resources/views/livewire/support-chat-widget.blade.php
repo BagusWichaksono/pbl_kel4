@@ -3,6 +3,10 @@
     x-data="{ open: false }"
     x-on:keydown.escape.window="open = false"
 >
+    @php
+        $helpLogo = asset('assets/logo-bantuan.png') . '?v=20260607';
+    @endphp
+
     <button
         type="button"
         class="tesyuk-chat-button"
@@ -10,7 +14,7 @@
         title="Hubungi Admin"
         x-on:click="open = ! open; if (open) { $wire.openChat() }"
     >
-        <img src="{{ asset('assets/logo-bantuan.png') }}" alt="Hubungi Admin" class="tesyuk-chat-button-logo">
+        <img src="{{ $helpLogo }}" alt="Hubungi Admin" class="tesyuk-chat-button-logo">
 
         @if ($unreadAdminMessages > 0)
             <span class="tesyuk-chat-badge">{{ $unreadAdminMessages > 9 ? '9+' : $unreadAdminMessages }}</span>
@@ -33,7 +37,7 @@
     >
         <header class="tesyuk-chat-header">
             <div class="tesyuk-chat-header-logo">
-                <img src="{{ asset('assets/logo-bantuan.png') }}" alt="">
+                <img src="{{ $helpLogo }}" alt="">
             </div>
             <div>
                 <h2>Hubungi Admin</h2>
@@ -45,6 +49,10 @@
                 </svg>
             </button>
         </header>
+
+        <p class="tesyuk-chat-note">
+            Chat ini khusus untuk bantuan platform TesYuk seperti akun, verifikasi, dashboard, misi, poin, atau kendala sistem. Untuk aplikasi yang sedang diuji, gunakan instruksi misi dan form report.
+        </p>
 
         <div class="tesyuk-chat-messages" wire:poll.8s="refreshMessages">
             @forelse ($messages as $chatMessage)
@@ -72,7 +80,7 @@
                 </article>
             @empty
                 <div class="tesyuk-chat-empty">
-                    <img src="{{ asset('assets/logo-bantuan.png') }}" alt="">
+                    <img src="{{ $helpLogo }}" alt="">
                     <h3>Butuh bantuan?</h3>
                     <p>Kirim pesan ke admin, nanti balasannya akan muncul di sini.</p>
                 </div>
@@ -102,9 +110,9 @@
                     maxlength="1000"
                 ></textarea>
 
-                <button type="submit" class="tesyuk-chat-send" wire:loading.attr="disabled">
-                    <span wire:loading.remove>Kirim</span>
-                    <span wire:loading>Mengirim</span>
+                <button type="submit" class="tesyuk-chat-send" wire:loading.attr="disabled" wire:target="sendMessage">
+                    <span wire:loading.remove wire:target="sendMessage">Kirim</span>
+                    <span wire:loading wire:target="sendMessage">Mengirim</span>
                 </button>
             </div>
 

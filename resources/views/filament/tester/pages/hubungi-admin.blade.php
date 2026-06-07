@@ -470,8 +470,8 @@
                 </svg>
                 <div>
                     <p style="margin: 0; font-size: 13.5px; color: #92400e; line-height: 1.5;">
-                        <strong>Catatan:</strong> Fitur chat ini dikhususkan untuk menanyakan kendala terkait platform aplikasi <strong>TesYuk</strong> (misal: laporan bug sistem, kendala penarikan poin, keluhan sistem).<br>
-                        <strong>Bukan untuk menanyakan hal-hal terkait aplikasi yang sedang diuji. Terimakasih!</strong> (silakan manfaatkan form report atau instruksi misi untuk aplikasi tersebut).
+                        <strong>Catatan:</strong> Fitur chat ini khusus untuk pertanyaan seputar platform <strong>TesYuk</strong> seperti akun, verifikasi, dashboard, misi, poin, atau kendala sistem.<br>
+                        <strong>Bukan untuk menanyakan aplikasi milik developer yang sedang diuji.</strong> Gunakan instruksi misi dan form report untuk aplikasi tersebut.
                     </p>
                 </div>
             </div>

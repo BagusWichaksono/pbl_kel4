@@ -67,14 +67,14 @@
         /* Glassmorphism Background Pattern */
         .bg-grid-pattern {
             background-size: 40px 40px;
-            background-image: radial-gradient(circle, rgba(var(--tesyuk-accent-rgb), 0.1) 1px, transparent 1px);
+            background-image: radial-gradient(circle, rgba(var(--tesyuk-crimson-rgb), 0.055) 1px, transparent 1px);
         }
 
         /* --- Gradasi Teks Kustom --- */
 
         /* Gradasi untuk "Tes" (Ink ke primary) */
         .text-gradient-tes {
-            background: linear-gradient(to right, var(--tesyuk-ink), var(--tesyuk-primary));
+            background: linear-gradient(to right, var(--tesyuk-obsidian), var(--tesyuk-maroon));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -83,7 +83,7 @@
 
         /* Gradasi untuk "Yuk!" (Primary ke accent) */
         .text-gradient-yuk {
-            background: linear-gradient(to right, var(--tesyuk-primary), var(--tesyuk-accent));
+            background: linear-gradient(to right, var(--tesyuk-crimson), var(--tesyuk-coral));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -176,9 +176,8 @@
             height: 12rem;
             transform: translateX(-50%);
             background:
-                radial-gradient(circle at 18% 50%, rgba(var(--tesyuk-accent-rgb), 0.12), transparent 34%),
-                radial-gradient(circle at 82% 45%, rgba(var(--tesyuk-primary-rgb), 0.10), transparent 36%),
-                linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.74), transparent);
+                radial-gradient(circle at 18% 50%, rgba(var(--tesyuk-coral-rgb), 0.09), transparent 34%),
+                radial-gradient(circle at 82% 45%, rgba(var(--tesyuk-berry-rgb), 0.08), transparent 36%);
             filter: blur(28px);
             pointer-events: none;
             z-index: 0;
@@ -201,6 +200,71 @@
         .section-inner {
             position: relative;
             z-index: 1;
+        }
+
+        .section-hero {
+            background: #fbfbfb;
+        }
+
+        .section-navy {
+            background: var(--tesyuk-navy);
+            color: #ffffff;
+        }
+
+        .section-cream {
+            background: #f7f7f7;
+        }
+
+        .section-plain {
+            background: #ffffff;
+        }
+
+        .section-berry {
+            background: #fff7f8;
+        }
+
+        .accent-panel {
+            border: 1px solid rgba(var(--tesyuk-berry-rgb), 0.16);
+            background: rgba(255, 255, 255, 0.72);
+            box-shadow: 0 18px 48px -38px rgba(var(--tesyuk-obsidian-rgb), 0.42);
+        }
+
+        .dark-panel {
+            background: var(--tesyuk-obsidian);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 60px -38px rgba(0, 0, 0, 0.85);
+        }
+
+        .role-logo-card {
+            background: rgba(255, 255, 255, 0.84);
+            border: 1px solid rgba(var(--tesyuk-berry-rgb), 0.14);
+            box-shadow: 0 16px 40px -32px rgba(var(--tesyuk-obsidian-rgb), 0.48);
+        }
+
+        .section-navy .role-logo-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: none;
+        }
+
+        .section-navy .muted-text {
+            color: rgba(255, 255, 255, 0.68);
+        }
+
+        .section-navy .soft-label {
+            color: rgba(255, 255, 255, 0.58);
+        }
+
+        .palette-chip {
+            width: 2.25rem;
+            height: 0.42rem;
+            border-radius: 999px;
+            display: block;
+        }
+
+        .mini-metric {
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(var(--tesyuk-berry-rgb), 0.13);
         }
 
         .footer-link {
@@ -247,7 +311,7 @@
     </style>
 </head>
 
-<body id="page-content" class="bg-winter-50 text-winter-900 font-sans antialiased overflow-x-hidden bg-grid-pattern opacity-0 transition-opacity duration-500 ease-in-out" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 50)">
+<body id="page-content" class="bg-[#fbfbfb] text-winter-900 font-sans antialiased overflow-x-hidden bg-grid-pattern opacity-0 transition-opacity duration-500 ease-in-out" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 50)">
 
     <nav
         class="fixed w-full top-0 z-[1000] transition-all duration-500"
@@ -290,8 +354,8 @@
         </div>
     </nav>
 
-    <section class="section-soft relative pt-48 pb-20 overflow-hidden bg-gradient-to-b from-winter-50 via-white to-white">
-        <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[700px] h-[700px] bg-winter-300/20 rounded-full blur-[150px] z-0"></div>
+    <section class="section-soft section-hero relative pt-48 pb-20 overflow-hidden">
+        <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[560px] h-[560px] bg-[rgba(232,69,69,0.10)] rounded-full blur-[140px] z-0"></div>
 
         <div class="section-inner max-w-7xl mx-auto px-6 lg:px-8 text-center" data-aos="fade-up">
             <h1 class="text-5xl lg:text-[72px] font-black leading-[1.1] tracking-tight mb-8">
@@ -301,6 +365,30 @@
             <p class="text-lg text-winter-700/70 max-w-2xl mx-auto mb-16 font-medium">
                 Ekosistem pengujian aplikasi paling transparan. Membantu para Developer menyempurnakan sistem dan dapatkan apresiasi finansial di setiap misi.
             </p>
+
+            <div class="mx-auto mb-16 grid max-w-4xl grid-cols-1 gap-4 text-left sm:grid-cols-3">
+                <div class="role-logo-card rounded-3xl p-4 flex items-center gap-4" data-aos="fade-up" data-aos-delay="80">
+                    <img src="{{ asset('assets/logo-developer.png') }}" class="h-14 w-14 object-contain" alt="Logo Developer">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-widest text-[var(--tesyuk-berry)]">Developer</p>
+                        <p class="mt-1 text-sm font-bold text-winter-900">Upload aplikasi, pantau validasi.</p>
+                    </div>
+                </div>
+                <div class="role-logo-card rounded-3xl p-4 flex items-center gap-4" data-aos="fade-up" data-aos-delay="140">
+                    <img src="{{ asset('assets/logo-tester.png') }}" class="h-14 w-14 object-contain" alt="Logo Tester">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-widest text-[var(--tesyuk-coral)]">Tester</p>
+                        <p class="mt-1 text-sm font-bold text-winter-900">Kerjakan misi, kumpulkan poin.</p>
+                    </div>
+                </div>
+                <div class="role-logo-card rounded-3xl p-4 flex items-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                    <img src="{{ asset('assets/logo-bantuan.png') }}" class="h-14 w-14 object-contain" alt="Logo Bantuan">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-widest text-[var(--tesyuk-crimson)]">Bantuan</p>
+                        <p class="mt-1 text-sm font-bold text-winter-900">Admin siap bantu saat proses.</p>
+                    </div>
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
@@ -321,8 +409,8 @@
                     </div>
                 </div>
 
-                <div class="lg:col-span-4 flex justify-center relative animate-float">
-                    <div class="absolute inset-0 bg-winter-500/20 blur-[100px] rounded-full scale-75 -z-10"></div>
+                <div class="lg:col-span-4 flex flex-col items-center justify-center gap-5 relative animate-float">
+                    <div class="absolute inset-0 bg-[rgba(144,55,73,0.12)] blur-[100px] rounded-full scale-75 -z-10"></div>
                     <div class="w-[300px] h-[620px] bg-white rounded-[3.5rem] border-[10px] border-winter-900 shadow-2xl relative overflow-hidden flex flex-col ring-8 ring-winter-900/5">
                         <div class="dynamic-island"></div>
 
@@ -352,6 +440,22 @@
                             <button class="w-full py-3 bg-winter-900 text-white rounded-xl text-xs font-bold mt-auto shadow-lg">Ambil Reward</button>
                         </div>
                     </div>
+
+                    <div class="hidden w-full max-w-[300px] grid-cols-2 gap-3 lg:grid">
+                        <div class="rounded-2xl bg-white/90 p-3 text-left shadow-xl ring-1 ring-[rgba(144,55,73,0.12)]">
+                            <div class="flex items-center gap-2">
+                                <span class="palette-chip bg-[var(--tesyuk-obsidian)]"></span>
+                                <span class="palette-chip bg-[var(--tesyuk-crimson)]"></span>
+                                <span class="palette-chip bg-[var(--tesyuk-coral)]"></span>
+                            </div>
+                            <p class="mt-2 text-[10px] font-black uppercase tracking-widest text-winter-900/60">Live Progress</p>
+                        </div>
+
+                        <div class="rounded-2xl bg-[var(--tesyuk-navy)] px-4 py-3 text-left text-white shadow-xl">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-white/50">Report</p>
+                            <p class="text-sm font-black leading-tight">3 laporan hari ini</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="hidden lg:flex lg:col-span-4 flex-col gap-16 text-left" data-aos="fade-left" data-aos-delay="200">
@@ -375,32 +479,48 @@
         </div>
     </section>
 
-    <section id="tentang" class="section-soft py-32 bg-gradient-to-b from-white via-white to-winter-50/80">
+    <section id="tentang" class="section-soft section-navy py-32">
         <div class="section-inner max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-20 items-center">
             <div class="lg:w-1/2" data-aos="fade-right">
-                <h2 class="text-4xl lg:text-5xl font-black mb-8 leading-tight">Menjaga Kualitas <br> Ekosistem Digital.</h2>
-                <p class="text-lg text-winter-700/70 mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback pengguna langsung seringkali sulit didapat secara cepat dan akurat.</p>
+                <div class="mb-6 flex items-center gap-2">
+                    <span class="palette-chip bg-[var(--tesyuk-coral)]"></span>
+                    <span class="palette-chip bg-[var(--tesyuk-berry)]"></span>
+                    <span class="palette-chip bg-[var(--tesyuk-plum)]"></span>
+                </div>
+                <h2 class="text-4xl lg:text-5xl font-black mb-8 leading-tight text-white">Menjaga Kualitas <br> Ekosistem Digital.</h2>
+                <p class="muted-text text-lg mb-8 leading-relaxed">TesYuk! hadir untuk menjawab tantangan dunia pengembangan aplikasi di mana feedback pengguna langsung seringkali sulit didapat secara cepat dan akurat.</p>
                 <div class="grid grid-cols-2 gap-8">
                     <div>
-                        <h4 class="text-3xl font-black text-winter-900">50+</h4>
-                        <p class="text-xs font-bold text-winter-500 uppercase mt-1">Startup Terbantu</p>
+                        <h4 class="text-3xl font-black text-white">50+</h4>
+                        <p class="soft-label text-xs font-bold uppercase mt-1">Startup Terbantu</p>
                     </div>
                     <div>
-                        <h4 class="text-3xl font-black text-winter-900">10k+</h4>
-                        <p class="text-xs font-bold text-winter-500 uppercase mt-1">Misi Berhasil</p>
+                        <h4 class="text-3xl font-black text-white">10k+</h4>
+                        <p class="soft-label text-xs font-bold uppercase mt-1">Misi Berhasil</p>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="role-logo-card rounded-3xl p-5">
+                        <img src="{{ asset('assets/logo-admin.png') }}" class="mb-4 h-16 w-16 object-contain" alt="Logo Admin">
+                        <p class="text-sm font-bold text-white">Admin memvalidasi transaksi, aplikasi, dan laporan agar alur tetap rapi.</p>
+                    </div>
+                    <div class="role-logo-card rounded-3xl p-5">
+                        <img src="{{ asset(\App\Support\AppPalette::LOGO_ASSET) }}" class="mb-4 h-16 w-16 object-contain" alt="Logo TesYuk">
+                        <p class="text-sm font-bold text-white">TesYuk menjadi ruang kerja bersama untuk pengujian yang terukur.</p>
                     </div>
                 </div>
             </div>
             <div class="lg:w-1/2 relative" data-aos="fade-left">
-                <div class="bg-winter-900 rounded-[3rem] p-12 text-white relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-winter-500/10 group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="dark-panel rounded-[3rem] p-12 text-white relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-[rgba(232,69,69,0.08)] group-hover:scale-110 transition-transform duration-700"></div>
                     <i class="ph-bold ph-quotes text-8xl opacity-10 absolute top-5 right-10"></i>
                     <p class="text-2xl font-light italic leading-relaxed relative z-10">"Sangat membantu para developer dalam mencari feedback dari pengguna langsung, Terimakasih TesYuk!."</p>
                     <div class="mt-12 flex items-center gap-4 relative z-10">
-                        <div class="w-12 h-12 bg-winter-500 rounded-full flex items-center justify-center font-bold text-lg">A</div>
+                        <div class="w-12 h-12 bg-[var(--tesyuk-coral)] rounded-full flex items-center justify-center font-bold text-lg">A</div>
                         <div>
                             <p class="font-bold">Adalah Pokoknya Developer</p>
-                            <p class="text-xs text-winter-300">PT Suhat Malang</p>
+                            <p class="text-xs text-white/55">PT Suhat Malang</p>
                         </div>
                     </div>
                 </div>
@@ -408,7 +528,7 @@
         </div>
     </section>
 
-    <section id="cara-kerja" class="section-soft py-24 bg-gradient-to-b from-winter-50/80 via-winter-50 to-white border-t border-winter-300/20">
+    <section id="cara-kerja" class="section-soft section-cream py-24 border-t border-[rgba(144,55,73,0.12)]">
         <div class="section-inner max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl lg:text-4xl font-black text-winter-900 mb-4">Proses Sederhana, Hasil Nyata.</h2>
@@ -416,10 +536,10 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-                <div class="hidden md:block absolute top-[30%] left-[20%] right-[20%] h-[2px] bg-gradient-to-r from-transparent via-winter-300 to-transparent z-0"></div>
+                <div class="hidden md:block absolute top-[30%] left-[20%] right-[20%] h-[2px] bg-[rgba(43,46,74,0.16)] z-0"></div>
 
                 <div class="relative z-10 text-center px-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-20 h-20 bg-white border border-winter-300/50 shadow-lg rounded-2xl flex items-center justify-center text-3xl text-winter-700 mx-auto mb-6 rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <div class="w-20 h-20 bg-[var(--tesyuk-obsidian)] border border-winter-300/50 shadow-lg rounded-2xl flex items-center justify-center text-3xl text-white mx-auto mb-6 rotate-3 hover:rotate-0 transition-transform duration-300">
                         <i class="ph-fill ph-user-plus"></i>
                     </div>
                     <h3 class="font-bold text-xl text-winter-900 mb-3">Registrasi Profil</h3>
@@ -427,7 +547,7 @@
                 </div>
 
                 <div class="relative z-10 text-center px-4 mt-8 md:mt-0" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-20 h-20 bg-white border border-winter-300/50 shadow-lg rounded-2xl flex items-center justify-center text-3xl text-winter-500 mx-auto mb-6 -rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <div class="w-20 h-20 bg-[var(--tesyuk-coral)] border border-winter-300/50 shadow-lg rounded-2xl flex items-center justify-center text-3xl text-white mx-auto mb-6 -rotate-3 hover:rotate-0 transition-transform duration-300">
                         <i class="ph-fill ph-rocket-launch"></i>
                     </div>
                     <h3 class="font-bold text-xl text-winter-900 mb-3">Pengerjaan Misi</h3>
@@ -435,17 +555,32 @@
                 </div>
 
                 <div class="relative z-10 text-center px-4 mt-8 md:mt-0" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-20 h-20 bg-white border border-winter-300/50 shadow-lg rounded-2xl flex items-center justify-center text-3xl text-winter-900 mx-auto mb-6 rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <div class="w-20 h-20 bg-[var(--tesyuk-plum)] border border-winter-300/50 shadow-lg rounded-2xl flex items-center justify-center text-3xl text-white mx-auto mb-6 rotate-3 hover:rotate-0 transition-transform duration-300">
                         <i class="ph-fill ph-medal"></i>
                     </div>
                     <h3 class="font-bold text-xl text-winter-900 mb-3">Validasi & Imbalan</h3>
                     <p class="text-winter-700 text-sm leading-relaxed">Developer memperoleh ulasan berharga, sementara Tester menerima poin yang dapat dikonversi menjadi saldo finansial.</p>
                 </div>
             </div>
+
+            <div class="mt-16 grid grid-cols-1 gap-5 md:grid-cols-3">
+                <div class="mini-metric rounded-3xl p-6">
+                    <p class="text-xs font-black uppercase tracking-widest text-[var(--tesyuk-berry)]">01</p>
+                    <p class="mt-2 text-lg font-black text-winter-900">Data misi tersimpan rapi</p>
+                </div>
+                <div class="mini-metric rounded-3xl p-6">
+                    <p class="text-xs font-black uppercase tracking-widest text-[var(--tesyuk-coral)]">02</p>
+                    <p class="mt-2 text-lg font-black text-winter-900">Feedback tester lebih mudah dipantau</p>
+                </div>
+                <div class="mini-metric rounded-3xl p-6">
+                    <p class="text-xs font-black uppercase tracking-widest text-[var(--tesyuk-navy)]">03</p>
+                    <p class="mt-2 text-lg font-black text-winter-900">Reward dan validasi lebih transparan</p>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section id="fitur" class="section-soft py-24 bg-gradient-to-b from-white via-white to-winter-50/70 border-t border-winter-300/20 overflow-hidden">
+    <section id="fitur" class="section-soft section-berry py-24 border-t border-[rgba(144,55,73,0.12)] overflow-hidden">
         <div class="section-inner max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-20" data-aos="fade-up">
                 <h2 class="text-3xl lg:text-5xl font-black text-winter-900 mb-6">Satu Ekosistem, Dua Manfaat.</h2>
@@ -454,46 +589,52 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
 
-                <div class="bg-winter-900 rounded-[2.5rem] p-10 lg:p-12 relative overflow-hidden group shadow-2xl hover:-translate-y-2 hover:shadow-winter-900/40 transition-all duration-500 border border-winter-700/50" data-aos="fade-right">
-                    <div class="absolute right-0 top-0 w-96 h-96 bg-winter-700/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-winter-500/30 transition-colors duration-700"></div>
-                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-winter-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+                <div class="bg-[var(--tesyuk-obsidian)] rounded-[2.5rem] p-10 lg:p-12 relative overflow-hidden group shadow-2xl hover:-translate-y-2 hover:shadow-winter-900/40 transition-all duration-500 border border-white/10" data-aos="fade-right">
+                    <div class="absolute right-0 top-0 h-32 w-32 bg-[var(--tesyuk-maroon)] opacity-70"></div>
+                    <div class="absolute bottom-0 left-0 h-24 w-24 bg-[var(--tesyuk-crimson)] opacity-70"></div>
 
                     <div class="relative z-10 flex flex-col h-full">
-                        <div class="w-16 h-16 bg-gradient-to-br from-winter-500 to-winter-700 text-white rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-lg shadow-winter-500/30 group-hover:scale-110 transition-transform duration-500">
-                            <i class="ph-fill ph-code-block"></i>
+                        <div class="mb-8 flex items-center justify-between gap-4">
+                            <div class="w-16 h-16 bg-white/10 text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                <i class="ph-fill ph-code-block"></i>
+                            </div>
+                            <img src="{{ asset('assets/logo-developer.png') }}" class="h-20 w-20 object-contain" alt="Logo Developer">
                         </div>
 
                         <h3 class="text-3xl font-black text-white mb-8">Untuk Developer</h3>
 
                         <ul class="space-y-4 mb-12 flex-1">
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
-                                <div class="mt-0.5 bg-winter-700/80 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-300 text-sm"></i></div>
+                                <div class="mt-0.5 bg-white/10 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-[var(--tesyuk-coral)] text-sm"></i></div>
                                 <span class="text-winter-50/90 text-sm leading-relaxed">Identifikasi masalah teknis lebih awal sebelum perangkat lunak rilis ke publik.</span>
                             </li>
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
-                                <div class="mt-0.5 bg-winter-700/80 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-300 text-sm"></i></div>
+                                <div class="mt-0.5 bg-white/10 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-[var(--tesyuk-coral)] text-sm"></i></div>
                                 <span class="text-winter-50/90 text-sm leading-relaxed">Terima ulasan objektif disertai bukti screenshot dari berbagai pengguna.</span>
                             </li>
                             <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-winter-700/30 transition-colors">
-                                <div class="mt-0.5 bg-winter-700/80 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-winter-300 text-sm"></i></div>
+                                <div class="mt-0.5 bg-white/10 p-1.5 rounded-full shrink-0"><i class="ph-bold ph-check text-[var(--tesyuk-coral)] text-sm"></i></div>
                                 <span class="text-winter-50/90 text-sm leading-relaxed">Tentukan kriteria target perangkat dan demografi tester yang sangat spesifik.</span>
                             </li>
                         </ul>
 
-                        <a href="/paket" class="mt-auto inline-flex items-center justify-between w-full bg-winter-700/50 hover:bg-winter-500 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 border border-winter-500/30 group/btn">
+                        <a href="/paket" class="mt-auto inline-flex items-center justify-between w-full bg-white/10 hover:bg-[var(--tesyuk-crimson)] text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 border border-white/10 group/btn">
                             <span>Lihat Skema Biaya</span>
                             <i class="ph-bold ph-arrow-right group-hover/btn:translate-x-2 transition-transform text-xl"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-b from-white to-winter-50 rounded-[2.5rem] p-10 lg:p-12 relative overflow-hidden group shadow-xl hover:shadow-2xl hover:-translate-y-2 hover:shadow-winter-300/40 transition-all duration-500 border border-winter-300/40" data-aos="fade-left">
-                    <div class="absolute right-0 top-0 w-96 h-96 bg-winter-300/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-winter-300/40 transition-colors duration-700"></div>
-                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+                <div class="bg-white rounded-[2.5rem] p-10 lg:p-12 relative overflow-hidden group shadow-xl hover:shadow-2xl hover:-translate-y-2 hover:shadow-winter-300/40 transition-all duration-500 border border-[rgba(144,55,73,0.16)]" data-aos="fade-left">
+                    <div class="absolute right-0 top-0 h-28 w-28 bg-[var(--tesyuk-coral)] opacity-15"></div>
+                    <div class="absolute bottom-0 left-0 h-24 w-24 bg-[var(--tesyuk-plum)] opacity-15"></div>
 
                     <div class="relative z-10 flex flex-col h-full">
-                        <div class="w-16 h-16 bg-white text-winter-700 rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-lg shadow-winter-300/20 border border-winter-300/30 group-hover:scale-110 transition-transform duration-500">
-                            <i class="ph-fill ph-device-mobile"></i>
+                        <div class="mb-8 flex items-center justify-between gap-4">
+                            <div class="w-16 h-16 bg-[var(--tesyuk-secondary)] text-[var(--tesyuk-berry)] rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-winter-300/20 border border-winter-300/30 group-hover:scale-110 transition-transform duration-500">
+                                <i class="ph-fill ph-device-mobile"></i>
+                            </div>
+                            <img src="{{ asset('assets/logo-tester.png') }}" class="h-20 w-20 object-contain" alt="Logo Tester">
                         </div>
 
                         <h3 class="text-3xl font-black text-winter-900 mb-8">Untuk Tester</h3>
@@ -524,9 +665,47 @@
         </div>
     </section>
 
-    <footer class="relative overflow-hidden bg-winter-900 text-white pt-20 pb-10">
-        <div class="absolute -top-24 left-1/2 h-64 w-[70rem] -translate-x-1/2 rounded-full bg-winter-700/20 blur-[90px]"></div>
-        <div class="absolute bottom-0 right-0 h-72 w-72 translate-x-1/3 translate-y-1/3 rounded-full bg-winter-500/20 blur-[80px]"></div>
+    <section class="section-soft section-plain py-20 border-t border-[rgba(144,55,73,0.12)]">
+        <div class="section-inner max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-center">
+                <div class="lg:col-span-5">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-[var(--tesyuk-berry)]">Dashboard Terhubung</p>
+                    <h2 class="mt-4 text-3xl font-black leading-tight text-winter-900 lg:text-5xl">
+                        Semua proses validasi berada dalam satu alur.
+                    </h2>
+                    <p class="mt-5 text-base font-medium leading-8 text-winter-700/70">
+                        Dari pendaftaran aplikasi, pengambilan misi, laporan harian, approval laporan akhir, sampai pencairan poin, semuanya dibuat ringkas agar tim tidak perlu lompat antar alat.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-7">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="accent-panel rounded-3xl p-6">
+                            <div class="mb-5 flex items-center justify-between">
+                                <img src="{{ asset(\App\Support\AppPalette::LOGO_ASSET) }}" class="h-14 w-14 object-contain" alt="Logo TesYuk">
+                                <span class="rounded-full bg-[var(--tesyuk-obsidian)] px-4 py-2 text-xs font-black text-white">Live</span>
+                            </div>
+                            <h3 class="text-xl font-black text-winter-900">Pantau misi aktif</h3>
+                            <p class="mt-3 text-sm font-medium leading-7 text-winter-700/70">Progress tester dan laporan terbaru bisa dibaca dari dashboard role masing-masing.</p>
+                        </div>
+
+                        <div class="accent-panel rounded-3xl p-6">
+                            <div class="mb-5 flex items-center justify-between">
+                                <img src="{{ asset('assets/logo-bantuan.png') }}" class="h-14 w-14 object-contain" alt="Logo Bantuan">
+                                <span class="rounded-full bg-[var(--tesyuk-coral)] px-4 py-2 text-xs font-black text-white">Support</span>
+                            </div>
+                            <h3 class="text-xl font-black text-winter-900">Bantuan cepat</h3>
+                            <p class="mt-3 text-sm font-medium leading-7 text-winter-700/70">Tester dan developer bisa menghubungi admin dari popup bantuan tanpa keluar halaman.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="relative overflow-hidden bg-[var(--tesyuk-obsidian)] text-white pt-20 pb-10">
+        <div class="absolute right-0 top-0 h-36 w-36 bg-[var(--tesyuk-maroon)] opacity-80"></div>
+        <div class="absolute bottom-0 left-0 h-28 w-28 bg-[var(--tesyuk-crimson)] opacity-70"></div>
 
         <div class="relative max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 gap-10 text-left md:grid-cols-2 lg:grid-cols-4">

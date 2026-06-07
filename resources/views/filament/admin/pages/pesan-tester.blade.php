@@ -101,6 +101,16 @@
             font-size: 14px;
             font-weight: 800;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .admin-ticket-avatar img,
+        .admin-chat-avatar img,
+        .admin-message-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .dark .admin-ticket-avatar {
@@ -222,6 +232,7 @@
             font-size: 20px;
             font-weight: 800;
             flex-shrink: 0;
+            overflow: hidden;
         }
 
         .admin-chat-name {
@@ -286,6 +297,7 @@
             font-size: 12px;
             font-weight: 800;
             flex-shrink: 0;
+            overflow: hidden;
         }
 
         .admin-message-row.mine .admin-message-avatar-small {
@@ -632,6 +644,11 @@
 
             <div class="admin-ticket-list">
                 @forelse ($this->tickets as $ticket)
+                    @php
+                        $ticketUser = $ticket->tester;
+                        $ticketAvatar = $ticketUser?->getFilamentAvatarUrl();
+                    @endphp
+
                     <button
                         type="button"
                         wire:click="selectTicket({{ $ticket->id }})"
@@ -639,13 +656,17 @@
                     >
                         <div class="admin-ticket-row">
                             <div class="admin-ticket-avatar">
-                                {{ strtoupper(substr($ticket->tester?->name ?? 'T', 0, 1)) }}
+                                @if ($ticketAvatar)
+                                    <img src="{{ $ticketAvatar }}" alt="{{ $ticketUser?->name ?? 'Tester' }}">
+                                @else
+                                    {{ strtoupper(substr($ticketUser?->name ?? 'T', 0, 1)) }}
+                                @endif
                             </div>
 
                             <div class="admin-ticket-content">
                                 <div class="admin-ticket-top">
                                     <div class="admin-ticket-name">
-                                        {{ $ticket->tester?->name ?? 'Tester' }}
+                                        {{ $ticketUser?->name ?? 'Tester' }}
                                     </div>
 
                                     @if ($ticket->unread_count > 0)
@@ -681,19 +702,28 @@
 
         <div class="admin-chat-card">
             @if ($this->selectedTicket)
+                @php
+                    $selectedUser = $this->selectedTicket->tester;
+                    $selectedAvatar = $selectedUser?->getFilamentAvatarUrl();
+                @endphp
+
                 <div class="admin-chat-header">
                     <div class="admin-chat-header-content">
                         <div class="admin-chat-user">
                             <div class="admin-chat-avatar">
-                                {{ strtoupper(substr($this->selectedTicket->tester?->name ?? 'T', 0, 1)) }}
+                                @if ($selectedAvatar)
+                                    <img src="{{ $selectedAvatar }}" alt="{{ $selectedUser?->name ?? 'Tester' }}">
+                                @else
+                                    {{ strtoupper(substr($selectedUser?->name ?? 'T', 0, 1)) }}
+                                @endif
                             </div>
 
                             <div>
                                 <h2 class="admin-chat-name">
-                                    {{ $this->selectedTicket->tester?->name ?? 'Tester' }}
+                                    {{ $selectedUser?->name ?? 'Tester' }}
                                 </h2>
                                 <p class="admin-chat-email">
-                                    {{ $this->selectedTicket->tester?->email ?? '-' }}
+                                    {{ $selectedUser?->email ?? '-' }}
                                 </p>
                             </div>
                         </div>
@@ -704,17 +734,23 @@
                     @foreach ($this->selectedTicket->messages as $chat)
                         @php
                             $isAdmin = $chat->sender_role === 'admin';
+                            $messageUser = $chat->sender;
+                            $messageAvatar = $isAdmin ? null : $messageUser?->getFilamentAvatarUrl();
                         @endphp
 
                         <div class="admin-message-row {{ $isAdmin ? 'mine' : 'tester' }}">
                             <div class="admin-message-content">
                                 <div class="admin-message-avatar-small">
-                                    {{ $isAdmin ? 'A' : strtoupper(substr($chat->sender?->name ?? 'T', 0, 1)) }}
+                                    @if ($messageAvatar)
+                                        <img src="{{ $messageAvatar }}" alt="{{ $messageUser?->name ?? 'Tester' }}">
+                                    @else
+                                        {{ $isAdmin ? 'A' : strtoupper(substr($messageUser?->name ?? 'T', 0, 1)) }}
+                                    @endif
                                 </div>
 
                                 <div>
                                     <div class="admin-message-meta">
-                                        {{ $isAdmin ? 'Admin' : ($chat->sender?->name ?? 'Tester') }}
+                                        {{ $isAdmin ? 'Admin' : ($messageUser?->name ?? 'Tester') }}
                                     </div>
 
                                     <div class="admin-message-bubble">

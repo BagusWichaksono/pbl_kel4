@@ -14,6 +14,22 @@ final class AppPalette
 
     public const SECONDARY = '#eeeeee';
 
+    public const OBSIDIAN = '#000000';
+
+    public const MAROON = '#3d0000';
+
+    public const CRIMSON = '#950101';
+
+    public const SIGNAL_RED = '#ff0000';
+
+    public const NAVY = '#2b2e4a';
+
+    public const CORAL = '#e84545';
+
+    public const BERRY = '#903749';
+
+    public const PLUM = '#53354a';
+
     public const LOGO_ASSET = 'assets/logo-new-transparent.png';
 
     public const BRAND_COLORS = [
@@ -21,6 +37,14 @@ final class AppPalette
         'primary' => self::PRIMARY,
         'accent' => self::ACCENT,
         'secondary' => self::SECONDARY,
+        'obsidian' => self::OBSIDIAN,
+        'maroon' => self::MAROON,
+        'crimson' => self::CRIMSON,
+        'signal_red' => self::SIGNAL_RED,
+        'navy' => self::NAVY,
+        'coral' => self::CORAL,
+        'berry' => self::BERRY,
+        'plum' => self::PLUM,
     ];
 
     public static function filamentColors(): array
@@ -72,10 +96,26 @@ final class AppPalette
             '--tesyuk-primary' => self::PRIMARY,
             '--tesyuk-accent' => self::ACCENT,
             '--tesyuk-secondary' => self::SECONDARY,
+            '--tesyuk-obsidian' => self::OBSIDIAN,
+            '--tesyuk-maroon' => self::MAROON,
+            '--tesyuk-crimson' => self::CRIMSON,
+            '--tesyuk-signal-red' => self::SIGNAL_RED,
+            '--tesyuk-navy' => self::NAVY,
+            '--tesyuk-coral' => self::CORAL,
+            '--tesyuk-berry' => self::BERRY,
+            '--tesyuk-plum' => self::PLUM,
             '--tesyuk-ink-rgb' => self::rgb(self::INK),
             '--tesyuk-primary-rgb' => self::rgb(self::PRIMARY),
             '--tesyuk-accent-rgb' => self::rgb(self::ACCENT),
             '--tesyuk-secondary-rgb' => self::rgb(self::SECONDARY),
+            '--tesyuk-obsidian-rgb' => self::rgb(self::OBSIDIAN),
+            '--tesyuk-maroon-rgb' => self::rgb(self::MAROON),
+            '--tesyuk-crimson-rgb' => self::rgb(self::CRIMSON),
+            '--tesyuk-signal-red-rgb' => self::rgb(self::SIGNAL_RED),
+            '--tesyuk-navy-rgb' => self::rgb(self::NAVY),
+            '--tesyuk-coral-rgb' => self::rgb(self::CORAL),
+            '--tesyuk-berry-rgb' => self::rgb(self::BERRY),
+            '--tesyuk-plum-rgb' => self::rgb(self::PLUM),
         ];
 
         return implode("\n", array_map(
@@ -332,8 +372,9 @@ final class AppPalette
                     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
                     box-shadow: 16px 0 42px -34px rgba(var(--tesyuk-ink-rgb), 0.9) !important;
                     transition:
-                        width 0.28s ease,
-                        transform 0.28s ease,
+                        width 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                        max-width 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
                         box-shadow 0.24s ease,
                         background-color 0.24s ease !important;
                 }
@@ -366,6 +407,7 @@ final class AppPalette
                 .fi-sidebar-nav {
                     gap: 0.9rem !important;
                     padding: 1rem 0.9rem 0.85rem !important;
+                    transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1), gap 0.3s ease !important;
                 }
 
                 .fi-sidebar-nav-groups {
@@ -407,6 +449,7 @@ final class AppPalette
                     font-weight: 650 !important;
                     line-height: 1.28 !important;
                     white-space: normal !important;
+                    transition: opacity 0.2s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), max-width 0.28s ease !important;
                 }
 
                 .fi-sidebar-item-button .fi-sidebar-item-icon {
@@ -600,6 +643,7 @@ final class AppPalette
                     align-items: center;
                     gap: 0.7rem;
                     color: #ffffff;
+                    transition: gap 0.28s ease, transform 0.28s ease, opacity 0.2s ease;
                 }
 
                 .tesyuk-brand-logo-image {
@@ -618,6 +662,7 @@ final class AppPalette
                     font-size: 1.08rem;
                     font-weight: 850;
                     letter-spacing: -0.02em;
+                    transition: opacity 0.18s ease, transform 0.22s ease;
                 }
 
                 .tesyuk-sidebar-profile {
@@ -638,6 +683,7 @@ final class AppPalette
                     transform: translateY(-1px) !important;
                 }
 
+                .tesyuk-sidebar-profile-summary,
                 .tesyuk-sidebar-profile-link {
                     display: grid !important;
                     grid-template-columns: 42px minmax(0, 1fr) !important;
@@ -645,6 +691,7 @@ final class AppPalette
                     align-items: center !important;
                     color: inherit !important;
                     text-decoration: none !important;
+                    cursor: default !important;
                 }
 
                 .tesyuk-sidebar-avatar,
@@ -664,8 +711,8 @@ final class AppPalette
                     transition: border-color 0.18s ease, transform 0.18s ease !important;
                 }
 
-                .tesyuk-sidebar-profile-link:hover .tesyuk-sidebar-avatar,
-                .tesyuk-sidebar-profile-link:hover .tesyuk-sidebar-avatar-fallback {
+                .tesyuk-sidebar-profile:hover .tesyuk-sidebar-avatar,
+                .tesyuk-sidebar-profile:hover .tesyuk-sidebar-avatar-fallback {
                     border-color: rgba(var(--tesyuk-accent-rgb), 0.85) !important;
                     transform: scale(1.04) !important;
                 }
@@ -680,6 +727,10 @@ final class AppPalette
                     white-space: nowrap !important;
                 }
 
+                .tesyuk-sidebar-profile-copy {
+                    transition: opacity 0.2s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), max-width 0.28s ease !important;
+                }
+
                 .tesyuk-sidebar-profile-meta {
                     margin-top: 0.1rem !important;
                     color: rgba(238, 238, 238, 0.58) !important;
@@ -692,8 +743,8 @@ final class AppPalette
 
                 .tesyuk-sidebar-profile-actions {
                     display: grid !important;
-                    grid-template-columns: 1fr 38px !important;
-                    gap: 0.4rem !important;
+                    grid-template-columns: minmax(0, 1fr) 46px !important;
+                    gap: 0.5rem !important;
                     margin-top: 0.68rem !important;
                 }
 
@@ -706,15 +757,17 @@ final class AppPalette
                 .tesyuk-sidebar-logout {
                     border-radius: 999px !important;
                     border: 1px solid rgba(255, 255, 255, 0.11) !important;
-                    background: rgba(255, 255, 255, 0.075) !important;
                     color: #ffffff !important;
-                    min-height: 36px !important;
+                    min-height: 40px !important;
                     box-shadow: none !important;
                     transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease !important;
                 }
 
-                .tesyuk-sidebar-profile-button:hover,
-                .tesyuk-sidebar-logout:hover {
+                .tesyuk-sidebar-profile-button {
+                    background: rgba(255, 255, 255, 0.075) !important;
+                }
+
+                .tesyuk-sidebar-profile-button:hover {
                     background: var(--tesyuk-secondary) !important;
                     border-color: rgba(255, 255, 255, 0.42) !important;
                     color: var(--tesyuk-ink) !important;
@@ -737,8 +790,20 @@ final class AppPalette
                     align-items: center !important;
                     justify-content: center !important;
                     width: 100% !important;
+                    min-width: 46px !important;
+                    height: 40px !important;
                     padding: 0 !important;
                     cursor: pointer !important;
+                    background: rgba(var(--tesyuk-accent-rgb), 0.20) !important;
+                    border-color: rgba(var(--tesyuk-accent-rgb), 0.38) !important;
+                    color: #ffffff !important;
+                }
+
+                .tesyuk-sidebar-logout:hover {
+                    background: var(--tesyuk-accent) !important;
+                    border-color: rgba(255, 255, 255, 0.38) !important;
+                    color: #ffffff !important;
+                    transform: translateY(-1px) !important;
                 }
 
                 .tesyuk-sidebar-logout-tooltip {
@@ -849,7 +914,25 @@ final class AppPalette
                 .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-group-label,
                 .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-item-label,
                 .fi-sidebar:not(.fi-sidebar-open) .tesyuk-brand-logo-text,
-                .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-profile-copy,
+                .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-profile-copy {
+                    max-width: 0 !important;
+                    opacity: 0 !important;
+                    overflow: hidden !important;
+                    pointer-events: none !important;
+                    transform: translateX(-10px) !important;
+                    white-space: nowrap !important;
+                }
+
+                .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-group-label {
+                    height: 0 !important;
+                    padding: 0 !important;
+                }
+
+                .fi-sidebar:not(.fi-sidebar-open) .tesyuk-brand-logo {
+                    gap: 0 !important;
+                    transform: translateX(1px) !important;
+                }
+
                 .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-profile-button {
                     display: none !important;
                 }
@@ -864,6 +947,7 @@ final class AppPalette
                     transform: none !important;
                 }
 
+                .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-profile-summary,
                 .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-profile-link {
                     display: flex !important;
                     justify-content: center !important;
@@ -877,7 +961,7 @@ final class AppPalette
                 }
 
                 .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-profile-actions form {
-                    width: 42px !important;
+                    width: 46px !important;
                 }
 
                 .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-logout-tooltip {
@@ -893,10 +977,11 @@ final class AppPalette
                 }
 
                 .fi-sidebar:not(.fi-sidebar-open) .tesyuk-sidebar-logout {
-                    width: 42px !important;
-                    height: 42px !important;
-                    min-height: 42px !important;
-                    background: rgba(255, 255, 255, 0.075) !important;
+                    width: 46px !important;
+                    height: 46px !important;
+                    min-height: 46px !important;
+                    background: rgba(var(--tesyuk-accent-rgb), 0.22) !important;
+                    border-color: rgba(var(--tesyuk-accent-rgb), 0.38) !important;
                 }
 
                 .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-nav {
@@ -1099,6 +1184,17 @@ final class AppPalette
                 .tesyuk-chat-close svg {
                     width: 1.1rem !important;
                     height: 1.1rem !important;
+                }
+
+                .tesyuk-chat-note {
+                    margin: 0 !important;
+                    padding: 0.78rem 1rem !important;
+                    background: rgba(var(--tesyuk-coral-rgb), 0.10) !important;
+                    border-bottom: 1px solid rgba(var(--tesyuk-coral-rgb), 0.22) !important;
+                    color: var(--tesyuk-primary) !important;
+                    font-size: 0.72rem !important;
+                    font-weight: 760 !important;
+                    line-height: 1.55 !important;
                 }
 
                 .tesyuk-chat-messages {
@@ -1455,21 +1551,21 @@ final class AppPalette
 
         return <<<HTML
             <div class="tesyuk-sidebar-profile">
-                <a href="{$escapedProfileUrl}" class="tesyuk-sidebar-profile-link">
+                <div class="tesyuk-sidebar-profile-summary" aria-label="Ringkasan profil">
                     {$avatar}
                     <div class="tesyuk-sidebar-profile-copy" style="min-width:0;">
                         <div class="tesyuk-sidebar-profile-name">{$escapedName}</div>
                         <div class="tesyuk-sidebar-profile-meta">{$escapedEmail}</div>
                         {$metaHtml}
                     </div>
-                </a>
+                </div>
 
                 <div class="tesyuk-sidebar-profile-actions">
                     <a href="{$escapedProfileUrl}" class="tesyuk-sidebar-profile-button">Edit Profil</a>
                     <form method="post" action="{$escapedLogoutUrl}" class="tesyuk-sidebar-logout-form">
                         <input type="hidden" name="_token" value="{$escapedCsrfToken}">
                         <button type="submit" class="tesyuk-sidebar-logout" aria-label="Log out" title="Log out">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.1" stroke="currentColor" style="width:1rem;height:1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.1" stroke="currentColor" style="width:1.12rem;height:1.12rem;">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
                             </svg>
                         </button>
