@@ -54,6 +54,13 @@ class AppResource extends Resource
                             ->label('Platform')
                             ->disabled(),
 
+                        Forms\Components\FileUpload::make('app_icon')
+                            ->label('Icon Aplikasi')
+                            ->disk('public')
+                            ->image()
+                            ->imagePreviewHeight('120')
+                            ->disabled(),
+
                         Forms\Components\Textarea::make('description')
                             ->label('Deskripsi')
                             ->disabled()
@@ -85,6 +92,13 @@ class AppResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->description(fn (App $record) => 'Platform: ' . ($record->platform ?? '-')),
+
+                Tables\Columns\ImageColumn::make('app_icon')
+                    ->label('Icon')
+                    ->disk('public')
+                    ->square()
+                    ->size(44)
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Aplikasi')

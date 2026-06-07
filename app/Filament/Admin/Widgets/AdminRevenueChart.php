@@ -3,12 +3,44 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\App;
-use App\Support\AppPalette;
 use Filament\Widgets\ChartWidget;
 
 class AdminRevenueChart extends ChartWidget
 {
-    protected static ?string $heading = 'Statistik Pendapatan (6 Bulan Terakhir)';
+    protected static ?string $heading = 'Pendapatan Valid';
+
+    protected static ?string $description = 'Estimasi pendapatan dari aplikasi yang pembayarannya sudah valid. 1 aplikasi = Rp300.000.';
+
+    protected static ?string $maxHeight = '290px';
+
+    protected static ?array $options = [
+        'maintainAspectRatio' => false,
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+                'labels' => [
+                    'usePointStyle' => true,
+                ],
+            ],
+            'tooltip' => [
+                'displayColors' => false,
+            ],
+        ],
+        'scales' => [
+            'x' => [
+                'grid' => [
+                    'display' => false,
+                ],
+            ],
+            'y' => [
+                'beginAtZero' => true,
+                'ticks' => [
+                    'precision' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected static ?int $sort = 2;
     
     protected function getData(): array
@@ -28,10 +60,14 @@ class AdminRevenueChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Pendapatan (Rp)',
+                    'label' => 'Pendapatan valid',
                     'data' => $data,
-                    'backgroundColor' => AppPalette::ACCENT,
-                    'borderColor' => AppPalette::ACCENT,
+                    'backgroundColor' => 'rgba(16, 185, 129, 0.16)',
+                    'borderColor' => '#10b981',
+                    'borderWidth' => 3,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
+                    'tension' => 0.35,
                     'fill' => 'start',
                 ],
             ],

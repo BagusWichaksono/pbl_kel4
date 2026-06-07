@@ -8,7 +8,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CreatePenukaranPoin extends CreateRecord
@@ -20,16 +19,7 @@ class CreatePenukaranPoin extends CreateRecord
         $user = Auth::user();
         $profile = $user?->testerProfile;
         $pointsWithdrawn = (int) ($data['points_withdrawn'] ?? 0);
-
-        if (! $profile) {
-            Notification::make()
-                ->title('Profil tester belum ditemukan.')
-                ->body('Silakan hubungi admin.')
-                ->danger()
-                ->send();
-
-            throw new Halt();
-        }
+        $availablePoints = (int) ($profile?->points ?? 0);
 
         if ($pointsWithdrawn < 1) {
             Notification::make()
@@ -40,10 +30,10 @@ class CreatePenukaranPoin extends CreateRecord
             throw new Halt();
         }
 
-        if ($profile->points < $pointsWithdrawn) {
+        if ($availablePoints < $pointsWithdrawn) {
             Notification::make()
-                ->title('Poin tidak cukup.')
-                ->body('Saldo poin kamu saat ini hanya ' . $profile->points . ' poin.')
+                ->title('Poin tidak mencukupi.')
+                ->body('Saldo poin kamu saat ini hanya ' . $availablePoints . ' poin.')
                 ->danger()
                 ->send();
 

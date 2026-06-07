@@ -15,6 +15,7 @@ class App extends Model
     protected $fillable = [
         'developer_id',
         'title',
+        'app_icon',
         'platform',
         'app_link',
         'description',

@@ -20,6 +20,11 @@ class ListMisiSayas extends Page
         return 'Misi Saya';
     }
 
+    public function getBreadcrumb(): ?string
+    {
+        return null;
+    }
+
     protected function getViewData(): array
     {
         $missions = ApplicationTester::with(['application.developer'])

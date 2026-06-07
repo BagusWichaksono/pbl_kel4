@@ -3,12 +3,44 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\App;
-use App\Support\AppPalette;
 use Filament\Widgets\ChartWidget;
 
 class AdminAppsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Statistik Aplikasi Terdaftar (6 Bulan Terakhir)';
+    protected static ?string $heading = 'Aplikasi Baru';
+
+    protected static ?string $description = 'Jumlah aplikasi yang didaftarkan developer setiap bulan.';
+
+    protected static ?string $maxHeight = '290px';
+
+    protected static ?array $options = [
+        'maintainAspectRatio' => false,
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+                'labels' => [
+                    'usePointStyle' => true,
+                ],
+            ],
+            'tooltip' => [
+                'displayColors' => false,
+            ],
+        ],
+        'scales' => [
+            'x' => [
+                'grid' => [
+                    'display' => false,
+                ],
+            ],
+            'y' => [
+                'beginAtZero' => true,
+                'ticks' => [
+                    'precision' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected static ?int $sort = 2;
     
     protected function getData(): array
@@ -29,8 +61,11 @@ class AdminAppsChart extends ChartWidget
                 [
                     'label' => 'Aplikasi Baru',
                     'data' => $data,
-                    'backgroundColor' => AppPalette::PRIMARY,
-                    'borderColor' => AppPalette::PRIMARY,
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.72)',
+                    'borderColor' => '#2563eb',
+                    'borderRadius' => 10,
+                    'borderSkipped' => false,
+                    'maxBarThickness' => 38,
                     'fill' => 'start',
                 ],
             ],

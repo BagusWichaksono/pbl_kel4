@@ -3,13 +3,45 @@
 namespace App\Filament\Tester\Widgets;
 
 use App\Models\ApplicationTester;
-use App\Support\AppPalette;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class TesterMissionsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Statistik Misi Diselesaikan (6 Bulan Terakhir)';
+    protected static ?string $heading = 'Misi Selesai';
+
+    protected static ?string $description = 'Misi yang sudah selesai dan divalidasi dalam 6 bulan terakhir.';
+
+    protected static ?string $maxHeight = '290px';
+
+    protected static ?array $options = [
+        'maintainAspectRatio' => false,
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+                'labels' => [
+                    'usePointStyle' => true,
+                ],
+            ],
+            'tooltip' => [
+                'displayColors' => false,
+            ],
+        ],
+        'scales' => [
+            'x' => [
+                'grid' => [
+                    'display' => false,
+                ],
+            ],
+            'y' => [
+                'beginAtZero' => true,
+                'ticks' => [
+                    'precision' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected static ?int $sort = 2;
     
     protected function getData(): array
@@ -32,10 +64,14 @@ class TesterMissionsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Misi Selesai',
+                    'label' => 'Misi selesai',
                     'data' => $data,
-                    'backgroundColor' => AppPalette::ACCENT,
-                    'borderColor' => AppPalette::ACCENT,
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.15)',
+                    'borderColor' => '#2563eb',
+                    'borderWidth' => 3,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
+                    'tension' => 0.35,
                     'fill' => 'start',
                 ],
             ],

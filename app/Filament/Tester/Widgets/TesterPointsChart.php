@@ -3,13 +3,45 @@
 namespace App\Filament\Tester\Widgets;
 
 use App\Models\PointHistory;
-use App\Support\AppPalette;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class TesterPointsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Statistik Poin Didapatkan (6 Bulan Terakhir)';
+    protected static ?string $heading = 'Poin Masuk';
+
+    protected static ?string $description = 'Poin reward yang kamu dapatkan dari misi testing.';
+
+    protected static ?string $maxHeight = '290px';
+
+    protected static ?array $options = [
+        'maintainAspectRatio' => false,
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+                'labels' => [
+                    'usePointStyle' => true,
+                ],
+            ],
+            'tooltip' => [
+                'displayColors' => false,
+            ],
+        ],
+        'scales' => [
+            'x' => [
+                'grid' => [
+                    'display' => false,
+                ],
+            ],
+            'y' => [
+                'beginAtZero' => true,
+                'ticks' => [
+                    'precision' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected static ?int $sort = 2;
     
     protected function getData(): array
@@ -32,10 +64,14 @@ class TesterPointsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Poin Masuk',
+                    'label' => 'Poin masuk',
                     'data' => $data,
-                    'backgroundColor' => AppPalette::ACCENT,
-                    'borderColor' => AppPalette::ACCENT,
+                    'backgroundColor' => 'rgba(16, 185, 129, 0.16)',
+                    'borderColor' => '#10b981',
+                    'borderWidth' => 3,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
+                    'tension' => 0.35,
                     'fill' => 'start',
                 ],
             ],

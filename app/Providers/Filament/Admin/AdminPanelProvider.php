@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         $chartWidgets = array_values(array_filter([
+            \App\Filament\Admin\Widgets\AdminDashboardStats::class,
             \App\Filament\Admin\Widgets\AdminRevenueChart::class,
             \App\Filament\Admin\Widgets\AdminAppsChart::class,
             \App\Filament\Admin\Widgets\AdminUsersChart::class,

@@ -3,13 +3,45 @@
 namespace App\Filament\Developer\Widgets;
 
 use App\Models\App;
-use App\Support\AppPalette;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class DeveloperAppsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Statistik Aplikasi Anda (6 Bulan Terakhir)';
+    protected static ?string $heading = 'Aplikasi Anda';
+
+    protected static ?string $description = 'Aplikasi baru yang kamu daftarkan dalam 6 bulan terakhir.';
+
+    protected static ?string $maxHeight = '290px';
+
+    protected static ?array $options = [
+        'maintainAspectRatio' => false,
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+                'labels' => [
+                    'usePointStyle' => true,
+                ],
+            ],
+            'tooltip' => [
+                'displayColors' => false,
+            ],
+        ],
+        'scales' => [
+            'x' => [
+                'grid' => [
+                    'display' => false,
+                ],
+            ],
+            'y' => [
+                'beginAtZero' => true,
+                'ticks' => [
+                    'precision' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected static ?int $sort = 2;
     
     protected function getData(): array
@@ -30,10 +62,14 @@ class DeveloperAppsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Aplikasi Terdaftar',
+                    'label' => 'Aplikasi baru',
                     'data' => $data,
-                    'backgroundColor' => AppPalette::PRIMARY,
-                    'borderColor' => AppPalette::PRIMARY,
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.15)',
+                    'borderColor' => '#2563eb',
+                    'borderWidth' => 3,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
+                    'tension' => 0.35,
                     'fill' => 'start',
                 ],
             ],

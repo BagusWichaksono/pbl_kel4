@@ -17,11 +17,6 @@ class PenukaranPoinStats extends BaseWidget
                 ->description('1 poin = Rp1.000')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('primary'),
-
-            Stat::make('Estimasi Saldo', 'Rp' . number_format($points * 1000, 0, ',', '.'))
-                ->description('Estimasi nilai reward yang bisa dicairkan')
-                ->descriptionIcon('heroicon-m-wallet')
-                ->color('success'),
         ];
     }
 }

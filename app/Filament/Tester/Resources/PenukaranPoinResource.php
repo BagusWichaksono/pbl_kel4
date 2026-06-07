@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\HtmlString;
 
 class PenukaranPoinResource extends Resource
 {
@@ -42,21 +43,44 @@ class PenukaranPoinResource extends Resource
         $points = (int) ($profile?->points ?? 0);
 
         $schema = [
+            Forms\Components\Placeholder::make('saldo_info')
+                ->label('Saldo Poin Kamu')
+                ->content(new HtmlString('
+                    <div style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:stretch;">
+                        <div style="flex:1;min-width:180px;border:1px solid #dbeafe;background:#eff6ff;border-radius:16px;padding:1rem;">
+                            <div style="font-size:.78rem;font-weight:800;color:#1d4ed8;text-transform:uppercase;letter-spacing:.04em;">Saldo Tersedia</div>
+                            <div style="margin-top:.3rem;font-size:1.45rem;font-weight:900;color:#0f172a;">' . number_format($points, 0, ',', '.') . ' poin</div>
+                        </div>
+                        <div style="flex:1;min-width:180px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:16px;padding:1rem;">
+                            <div style="font-size:.78rem;font-weight:800;color:#15803d;text-transform:uppercase;letter-spacing:.04em;">Estimasi Rupiah</div>
+                            <div style="margin-top:.3rem;font-size:1.45rem;font-weight:900;color:#0f172a;">Rp' . number_format($points * 1000, 0, ',', '.') . '</div>
+                        </div>
+                    </div>
+                '))
+                ->columnSpanFull(),
+
             Forms\Components\Section::make('Tujuan Pencairan')
-                ->description('Masukkan data e-wallet yang benar agar proses pencairan poin berjalan lancar.')
+                ->description('Pilih e-wallet tujuan seperti memilih metode top up, lalu masukkan nomor yang benar.')
                 ->icon('heroicon-o-wallet')
                 ->schema([
-                    Forms\Components\Select::make('e_wallet_provider')
-                        ->label('E-Wallet')
-                        ->options([
-                            'DANA' => 'DANA',
-                            'GoPay' => 'GoPay',
-                            'OVO' => 'OVO',
-                            'ShopeePay' => 'ShopeePay',
-                            'LinkAja' => 'LinkAja',
+                    Forms\Components\ToggleButtons::make('e_wallet_provider')
+                        ->label('Mau ditukar ke e-wallet apa?')
+                        ->options(self::walletOptions())
+                        ->colors([
+                            'DANA' => 'info',
+                            'GoPay' => 'success',
+                            'OVO' => 'primary',
+                            'ShopeePay' => 'warning',
+                            'LinkAja' => 'danger',
                         ])
-                        ->native(false)
-                        ->required(),
+                        ->columns([
+                            'default' => 2,
+                            'md' => 3,
+                            'xl' => 5,
+                        ])
+                        ->gridDirection('row')
+                        ->required()
+                        ->columnSpanFull(),
 
                     Forms\Components\TextInput::make('e_wallet_number')
                         ->label('Nomor E-Wallet')
@@ -87,9 +111,9 @@ class PenukaranPoinResource extends Resource
                         ->numeric()
                         ->required()
                         ->minValue(1)
-                        ->maxValue($points)
+                        ->suffix('poin')
                         ->live(onBlur: true)
-                        ->helperText("Saldo poin kamu saat ini: {$points} poin.")
+                        ->helperText("Saldo poin kamu saat ini: {$points} poin. Jika jumlah melebihi saldo, pengajuan akan ditolak saat ditukar.")
                         ->afterStateUpdated(function ($state, callable $set): void {
                             $set('amount_rp', (int) $state * 1000);
                         }),
@@ -98,6 +122,7 @@ class PenukaranPoinResource extends Resource
                         ->label('Estimasi Rupiah')
                         ->numeric()
                         ->readOnly()
+                        ->default(0)
                         ->prefix('Rp')
                         ->required(),
 
@@ -240,15 +265,29 @@ class PenukaranPoinResource extends Resource
             ->emptyStateIcon('heroicon-o-wallet')
             ->emptyStateHeading('Belum Ada Riwayat Penukaran Poin')
             ->emptyStateDescription('Setelah mendapatkan poin dari misi testing, kamu bisa menukarkannya ke e-wallet.')
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
-                    ->label('Tukar Poin Sekarang')
-                    ->icon('heroicon-o-plus')
-                    ->button()
-                    ->visible(fn (): bool => (int) (Auth::user()?->testerProfile?->points ?? 0) > 0),
-            ])
             ->defaultSort('created_at', 'desc')
             ->paginated([5, 10, 25]);
+    }
+
+    private static function walletOptions(): array
+    {
+        return [
+            'DANA' => self::walletBadge('DANA', 'DANA', '#118eea'),
+            'GoPay' => self::walletBadge('GPAY', 'GoPay', '#00aed6'),
+            'OVO' => self::walletBadge('OVO', 'OVO', '#4c1d95'),
+            'ShopeePay' => self::walletBadge('SPay', 'ShopeePay', '#ee4d2d'),
+            'LinkAja' => self::walletBadge('LA', 'LinkAja', '#e11d48'),
+        ];
+    }
+
+    private static function walletBadge(string $shortName, string $name, string $background): HtmlString
+    {
+        return new HtmlString(
+            '<span style="display:flex;align-items:center;justify-content:center;gap:.55rem;">' .
+                '<span style="width:46px;height:30px;border-radius:10px;background:' . e($background) . ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:900;letter-spacing:.02em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);">' . e($shortName) . '</span>' .
+                '<span style="font-weight:900;">' . e($name) . '</span>' .
+            '</span>'
+        );
     }
 
     public static function getPages(): array
@@ -261,8 +300,6 @@ class PenukaranPoinResource extends Resource
 
     public static function getWidgets(): array
     {
-        return [
-            \App\Filament\Tester\Widgets\PenukaranPoinStats::class,
-        ];
+        return [];
     }
 }

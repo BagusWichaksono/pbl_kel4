@@ -3,12 +3,44 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\User;
-use App\Support\AppPalette;
 use Filament\Widgets\ChartWidget;
 
 class AdminUsersChart extends ChartWidget
 {
-    protected static ?string $heading = 'Statistik Pendaftaran Pengguna Baru (6 Bulan Terakhir)';
+    protected static ?string $heading = 'Pengguna Baru';
+
+    protected static ?string $description = 'Jumlah akun baru yang mendaftar ke platform setiap bulan.';
+
+    protected static ?string $maxHeight = '290px';
+
+    protected static ?array $options = [
+        'maintainAspectRatio' => false,
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+                'labels' => [
+                    'usePointStyle' => true,
+                ],
+            ],
+            'tooltip' => [
+                'displayColors' => false,
+            ],
+        ],
+        'scales' => [
+            'x' => [
+                'grid' => [
+                    'display' => false,
+                ],
+            ],
+            'y' => [
+                'beginAtZero' => true,
+                'ticks' => [
+                    'precision' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected static ?int $sort = 2;
     
     protected function getData(): array
@@ -27,10 +59,14 @@ class AdminUsersChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Pengguna',
+                    'label' => 'Pengguna baru',
                     'data' => $data,
-                    'backgroundColor' => AppPalette::ACCENT,
-                    'borderColor' => AppPalette::ACCENT,
+                    'backgroundColor' => 'rgba(139, 92, 246, 0.15)',
+                    'borderColor' => '#8b5cf6',
+                    'borderWidth' => 3,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
+                    'tension' => 0.35,
                     'fill' => 'start',
                 ],
             ],

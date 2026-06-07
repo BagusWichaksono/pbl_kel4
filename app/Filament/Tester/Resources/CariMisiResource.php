@@ -5,9 +5,7 @@ namespace App\Filament\Tester\Resources;
 use App\Filament\Tester\Resources\CariMisiResource\Pages;
 use App\Models\App;
 use App\Models\ApplicationTester;
-use App\Support\AppNotifier;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
@@ -61,6 +59,7 @@ class CariMisiResource extends Resource
                 'md' => 2,
                 'xl' => 3,
             ])
+            ->recordUrl(fn (App $record): string => static::getUrl('view', ['record' => $record]))
             ->columns([
                 Tables\Columns\Layout\Stack::make([
                     Tables\Columns\TextColumn::make('mission_card')
@@ -153,33 +152,34 @@ class CariMisiResource extends Resource
                                         src='{$imageUrl}'
                                         alt='{$title}'
                                         style='
-                                            width:96px;
-                                            height:96px;
-                                            border-radius:26px;
+                                            width:88px;
+                                            height:88px;
+                                            max-width:88px;
+                                            max-height:88px;
+                                            border-radius:22px;
                                             object-fit:contain;
-                                            padding:10px;
-                                            border:1px solid rgba(255,255,255,.22);
-                                            box-shadow:0 18px 30px -18px rgba(0,0,0,.55);
+                                            padding:8px;
+                                            border:1px solid #e2e8f0;
+                                            box-shadow:0 16px 30px -22px rgba(15,23,42,.36);
                                             background:#ffffff;
                                         '
                                     >
                                 "
                                 : "
                                     <div style='
-                                        width:96px;
-                                        height:96px;
-                                        border-radius:26px;
-                                        background:rgba(255,255,255,.14);
-                                        border:1px solid rgba(255,255,255,.18);
-                                        color:#ffffff;
+                                        width:88px;
+                                        height:88px;
+                                        border-radius:22px;
+                                        background:#f8fafc;
+                                        border:1px solid #e2e8f0;
+                                        color:var(--tesyuk-primary);
                                         display:flex;
                                         align-items:center;
                                         justify-content:center;
-                                        font-size:2rem;
-                                        font-weight:800;
+                                        font-size:1.8rem;
+                                        font-weight:900;
                                         letter-spacing:.04em;
-                                        backdrop-filter:blur(10px);
-                                        box-shadow:0 18px 30px -18px rgba(0,0,0,.45);
+                                        box-shadow:0 16px 30px -22px rgba(15,23,42,.36);
                                     '>
                                         {$initials}
                                     </div>
@@ -198,15 +198,16 @@ class CariMisiResource extends Resource
                                     transition:all .2s ease;
                                 ">
                                     <div style="
-                                        background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);
-                                        min-height:170px;
+                                        background:#f8fafc;
+                                        min-height:134px;
                                         position:relative;
-                                        padding:1rem;
+                                        padding:1rem 1rem .85rem;
                                         display:flex;
-                                        flex-direction:column;
-                                        justify-content:space-between;
+                                        align-items:center;
+                                        justify-content:center;
+                                        border-bottom:1px solid #e2e8f0;
                                     ">
-                                        <div style="display:flex;align-items:flex-start;justify-content:flex-end;gap:.75rem;position:relative;z-index:2;">
+                                        <div style="position:absolute;right:1rem;top:1rem;z-index:2;">
                                             <span style="
                                                 font-size:.76rem;
                                                 font-weight:800;
@@ -218,20 +219,9 @@ class CariMisiResource extends Resource
                                             </span>
                                         </div>
 
-                                        <div style="margin-top:1rem;position:relative;z-index:2;">
+                                        <div style="position:relative;z-index:2;">
                                             {$appVisual}
                                         </div>
-
-                                        <div style="
-                                            position:absolute;
-                                            right:-18px;
-                                            top:-18px;
-                                            width:120px;
-                                            height:120px;
-                                            background:rgba(255,255,255,.08);
-                                            border-radius:999px;
-                                            filter:blur(8px);
-                                        "></div>
                                     </div>
 
                                     <div style="padding:1.15rem 1.15rem .85rem;display:flex;flex-direction:column;flex:1;">
@@ -350,16 +340,9 @@ class CariMisiResource extends Resource
                             ->where('tester_id', Auth::id())
                             ->exists();
 
-                        return $isRegistered ? 'Sudah Diambil' : 'Ambil Misi';
+                        return $isRegistered ? 'Detail Misi' : 'Lihat Detail';
                     })
-                    ->icon(function (App $record): string {
-                        $isRegistered = ApplicationTester::query()
-                            ->where('application_id', $record->id)
-                            ->where('tester_id', Auth::id())
-                            ->exists();
-
-                        return $isRegistered ? 'heroicon-o-check-circle' : 'heroicon-o-plus-circle';
-                    })
+                    ->icon('heroicon-o-arrow-right-circle')
                     ->color(function (App $record): string {
                         $isRegistered = ApplicationTester::query()
                             ->where('application_id', $record->id)
@@ -367,12 +350,6 @@ class CariMisiResource extends Resource
                             ->exists();
 
                         return $isRegistered ? 'gray' : 'success';
-                    })
-                    ->disabled(function (App $record): bool {
-                        return ApplicationTester::query()
-                            ->where('application_id', $record->id)
-                            ->where('tester_id', Auth::id())
-                            ->exists();
                     })
                     ->button()
                     ->extraAttributes([
@@ -390,90 +367,66 @@ class CariMisiResource extends Resource
                             box-shadow:none;
                         ',
                     ])
-                    ->requiresConfirmation()
-                    ->modalHeading('Ambil Misi Pengujian')
-                    ->modalDescription('Apakah kamu yakin ingin mengambil misi ini? Pastikan kamu siap menjalankan laporan harian sesuai ketentuan.')
-                    ->modalSubmitActionLabel('Ya, Ambil Misi')
-                    ->modalCancelActionLabel('Batal')
-                    ->action(function (App $record): void {
-                        $appId = $record->id;
-                        $userId = Auth::id();
-
-                        $isRegistered = ApplicationTester::query()
-                            ->where('application_id', $appId)
-                            ->where('tester_id', $userId)
-                            ->exists();
-
-                        if ($isRegistered) {
-                            Notification::make()
-                                ->title('Sudah Terdaftar')
-                                ->body("Kamu sudah mengambil misi aplikasi \"{$record->title}\".")
-                                ->warning()
-                                ->send();
-
-                            return;
-                        }
-
-                        $testerCount = ApplicationTester::query()
-                            ->where('application_id', $appId)
-                            ->count();
-
-                        $maxTester = (int) ($record->max_testers ?? 20);
-
-                        if ($testerCount >= $maxTester) {
-                            Notification::make()
-                                ->title('Slot Penuh')
-                                ->body("Maaf, slot tester untuk aplikasi \"{$record->title}\" sudah penuh.")
-                                ->danger()
-                                ->send();
-
-                            return;
-                        }
-
-                        if ($record->end_date && $record->end_date->isPast()) {
-                            Notification::make()
-                                ->title('Sesi Berakhir')
-                                ->body("Sesi testing untuk aplikasi \"{$record->title}\" sudah berakhir.")
-                                ->danger()
-                                ->send();
-
-                            return;
-                        }
-
-                        ApplicationTester::create([
-                            'application_id' => $appId,
-                            'tester_id' => $userId,
-                            'status' => 'active',
-                        ]);
-
-                        Notification::make()
-                            ->title('Misi Berhasil Diambil')
-                            ->body("Kamu berhasil mengambil misi aplikasi \"{$record->title}\".")
-                            ->success()
-                            ->send();
-
-                        if ($tester = Auth::user()) {
-                            AppNotifier::database(
-                                $tester,
-                                'Misi berhasil diambil',
-                                "Kamu berhasil mengambil misi aplikasi {$record->title}.",
-                                'success',
-                            );
-                        }
-
-                        if ($record->developer) {
-                            Notification::make()
-                                ->title('Tester Baru Bergabung')
-                                ->body((Auth::user()?->name ?? 'Tester') . ' telah bergabung sebagai tester pada aplikasi ' . $record->title)
-                                ->info()
-                                ->sendToDatabase($record->developer);
-                        }
-                    }),
+                    ->url(fn (App $record): string => static::getUrl('view', ['record' => $record])),
             ])
             ->emptyStateIcon('heroicon-o-magnifying-glass')
             ->emptyStateHeading('Belum ada misi tersedia')
             ->emptyStateDescription('Misi yang sudah divalidasi admin akan muncul di halaman ini.')
             ->paginated([6, 9, 18, 36]);
+    }
+
+    public static function canTakeMission(App $record): bool
+    {
+        return ! self::testerHasJoined($record)
+            && ! self::isMissionFull($record)
+            && ! self::isMissionExpired($record);
+    }
+
+    public static function testerHasJoined(App $record): bool
+    {
+        if (! Auth::id()) {
+            return false;
+        }
+
+        return ApplicationTester::query()
+            ->where('application_id', $record->id)
+            ->where('tester_id', Auth::id())
+            ->exists();
+    }
+
+    public static function isMissionFull(App $record): bool
+    {
+        return self::testerCount($record) >= self::maxTesters($record);
+    }
+
+    public static function isMissionExpired(App $record): bool
+    {
+        return (bool) ($record->end_date && $record->end_date->isPast());
+    }
+
+    public static function testerCount(App $record): int
+    {
+        return (int) ($record->testers_count ?? $record->testers()->count());
+    }
+
+    public static function maxTesters(App $record): int
+    {
+        return max((int) ($record->max_testers ?? 20), 1);
+    }
+
+    public static function getAppImageUrl(App $record): ?string
+    {
+        foreach (['app_icon', 'logo', 'app_logo', 'thumbnail'] as $column) {
+            if (Schema::hasColumn('applications', $column) && filled($record->{$column} ?? null)) {
+                $imagePath = (string) $record->{$column};
+
+                return str_starts_with($imagePath, 'http')
+                    ? $imagePath
+                    : asset('storage/' . $imagePath);
+            }
+        }
+
+        return null;
     }
 
     public static function getRelations(): array
@@ -485,6 +438,7 @@ class CariMisiResource extends Resource
     {
         return [
             'index' => Pages\ListCariMisis::route('/'),
+            'view' => Pages\ViewCariMisi::route('/{record}'),
         ];
     }
 }

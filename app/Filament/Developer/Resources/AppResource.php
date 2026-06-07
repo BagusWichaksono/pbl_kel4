@@ -53,6 +53,17 @@ class AppResource extends Resource
                             ->native(false)
                             ->placeholder('Pilih platform aplikasi'),
 
+                        Forms\Components\FileUpload::make('app_icon')
+                            ->label('Icon Aplikasi')
+                            ->disk('public')
+                            ->directory('app-icons')
+                            ->image()
+                            ->imagePreviewHeight('120')
+                            ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])
+                            ->maxSize(2048)
+                            ->required()
+                            ->helperText('Upload icon persegi agar tampil menarik di menu Cari Misi.'),
+
                         Forms\Components\Textarea::make('description')
                             ->label('Deskripsi Aplikasi')
                             ->required()

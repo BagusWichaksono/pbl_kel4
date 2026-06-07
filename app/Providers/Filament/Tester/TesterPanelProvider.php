@@ -28,6 +28,7 @@ class TesterPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         $chartWidgets = array_values(array_filter([
+            \App\Filament\Tester\Widgets\TesterDashboardStats::class,
             \App\Filament\Tester\Widgets\TesterPointsChart::class,
             \App\Filament\Tester\Widgets\TesterPointsOutChart::class,
             \App\Filament\Tester\Widgets\TesterMissionsChart::class,

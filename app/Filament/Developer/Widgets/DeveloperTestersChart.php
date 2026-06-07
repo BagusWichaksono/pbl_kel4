@@ -3,13 +3,45 @@
 namespace App\Filament\Developer\Widgets;
 
 use App\Models\ApplicationTester;
-use App\Support\AppPalette;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
 class DeveloperTestersChart extends ChartWidget
 {
-    protected static ?string $heading = 'Statistik Tester Terlibat (6 Bulan Terakhir)';
+    protected static ?string $heading = 'Tester Bergabung';
+
+    protected static ?string $description = 'Jumlah tester yang mengambil misi aplikasi kamu setiap bulan.';
+
+    protected static ?string $maxHeight = '290px';
+
+    protected static ?array $options = [
+        'maintainAspectRatio' => false,
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+                'labels' => [
+                    'usePointStyle' => true,
+                ],
+            ],
+            'tooltip' => [
+                'displayColors' => false,
+            ],
+        ],
+        'scales' => [
+            'x' => [
+                'grid' => [
+                    'display' => false,
+                ],
+            ],
+            'y' => [
+                'beginAtZero' => true,
+                'ticks' => [
+                    'precision' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected static ?int $sort = 2;
     
     protected function getData(): array
@@ -31,10 +63,13 @@ class DeveloperTestersChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Tester Baru',
+                    'label' => 'Tester baru',
                     'data' => $data,
-                    'backgroundColor' => AppPalette::ACCENT,
-                    'borderColor' => AppPalette::ACCENT,
+                    'backgroundColor' => 'rgba(16, 185, 129, 0.72)',
+                    'borderColor' => '#10b981',
+                    'borderRadius' => 10,
+                    'borderSkipped' => false,
+                    'maxBarThickness' => 38,
                     'fill' => 'start',
                 ],
             ],

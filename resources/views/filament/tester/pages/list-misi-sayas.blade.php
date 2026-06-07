@@ -1,13 +1,14 @@
 <x-filament-panels::page>
 <style>
     .misi-header {
-        background: linear-gradient(135deg, var(--tesyuk-ink), var(--tesyuk-primary), var(--tesyuk-accent));
+        background: #fff;
+        border: 1px solid #e2e8f0;
         border-radius: 18px;
         padding: 14px 20px;
         display: inline-flex;
         align-items: center;
         margin-bottom: 20px;
-        box-shadow: 0 18px 36px -28px rgba(var(--tesyuk-ink-rgb), 0.7);
+        box-shadow: 0 14px 34px -28px rgba(15, 23, 42, 0.34);
     }
     .misi-header-left {
         display: flex;
@@ -15,47 +16,81 @@
         gap: 10px;
     }
     .misi-header-badge {
-        background: rgba(255,255,255,0.20);
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
         border-radius: 999px;
         padding: 3px 14px;
         font-size: 12px;
-        font-weight: 500;
-        color: #fff;
+        font-weight: 800;
+        color: #047857;
     }
     .misi-card {
-        border-radius: 20px;
-        border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.14);
+        border-radius: 24px;
+        border: 1px solid #e2e8f0;
         background: #fff;
         overflow: hidden;
-        transition: transform .18s, box-shadow .18s;
+        transition: transform .18s, box-shadow .18s, border-color .18s;
         display: block;
         text-decoration: none;
+        box-shadow: 0 14px 34px -30px rgba(15, 23, 42, .34);
     }
     .misi-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 18px 36px -26px rgba(var(--tesyuk-ink-rgb), 0.65);
+        border-color: #cbd5e1;
+        box-shadow: 0 22px 46px -34px rgba(15, 23, 42, .44);
     }
     .misi-card-top {
-        background:
-            radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 145px),
-            linear-gradient(135deg, var(--tesyuk-ink), var(--tesyuk-primary) 58%, var(--tesyuk-accent));
-        padding: 16px 18px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 18px;
     }
     .misi-card-top-row {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
         gap: 12px;
     }
+    .misi-app-meta {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .misi-app-icon {
+        width: 70px;
+        height: 70px;
+        min-width: 70px;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 14px 28px -24px rgba(15, 23, 42, .45);
+    }
+    .misi-app-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 8px;
+        background: #fff;
+    }
+    .misi-app-icon-fallback {
+        color: #047857;
+        font-size: 1.45rem;
+        font-weight: 900;
+        letter-spacing: .04em;
+    }
     .misi-card-title {
-        font-size: 15px;
-        font-weight: 600;
-        color: #fff;
+        font-size: 16px;
+        font-weight: 850;
+        color: #0f172a;
         margin-bottom: 4px;
     }
     .misi-card-subtitle {
         font-size: 12px;
-        color: rgba(var(--tesyuk-secondary-rgb), 0.78);
+        color: #64748b;
     }
     .misi-badge {
         border-radius: 999px;
@@ -67,15 +102,16 @@
         white-space: nowrap;
     }
     .misi-badge-running {
-        background: var(--tesyuk-secondary);
-        color: var(--tesyuk-primary);
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #047857;
     }
     .misi-badge-done {
         background: #DCFCE7;
         color: #15803D;
     }
     .misi-card-body {
-        padding: 16px 18px;
+        padding: 18px;
         display: flex;
         flex-direction: column;
         gap: 14px;
@@ -91,8 +127,8 @@
     }
     .misi-progress-label .pct {
         font-size: 12px;
-        font-weight: 600;
-        color: var(--tesyuk-primary);
+        font-weight: 800;
+        color: #047857;
     }
     .misi-track {
         height: 8px;
@@ -103,7 +139,7 @@
     .misi-fill {
         height: 100%;
         border-radius: 999px;
-        background: linear-gradient(90deg, var(--tesyuk-accent), var(--tesyuk-primary));
+        background: #10b981;
     }
     .misi-date-row {
         display: flex;
@@ -113,7 +149,7 @@
         color: #7c6f6f;
     }
     .misi-footer {
-        border-top: 1px solid rgba(var(--tesyuk-primary-rgb), 0.10);
+        border-top: 1px solid #e2e8f0;
         padding-top: 12px;
         display: flex;
         align-items: center;
@@ -136,9 +172,9 @@
     .misi-day-chip.submitted {
         background: #22C55E;
     }
-    /* Hari sudah dilewati tapi tidak ada laporan = merah */
+    /* Hari sudah dilewati tapi tidak ada laporan = oranye lembut */
     .misi-day-chip.missed {
-        background: #FCA5A5;
+        background: #FED7AA;
     }
     /* Hari belum tiba = abu (default) */
     .misi-footer-link {
@@ -147,7 +183,7 @@
         gap: 4px;
         font-size: 12px;
         font-weight: 600;
-        color: var(--tesyuk-primary);
+        color: #047857;
         transition: gap .18s;
         white-space: nowrap;
         flex-shrink: 0;
@@ -174,7 +210,7 @@
     }
     .misi-empty {
         border-radius: 20px;
-        border: 1px solid rgba(var(--tesyuk-primary-rgb), 0.14);
+        border: 1px solid #e2e8f0;
         background: #fff;
         padding: 64px 24px;
         text-align: center;
@@ -184,7 +220,8 @@
         width: 56px;
         height: 56px;
         border-radius: 16px;
-        background: var(--tesyuk-secondary);
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -204,8 +241,8 @@
     @if($missions->isNotEmpty())
         <div class="misi-header">
             <div class="misi-header-left">
-                <x-heroicon-o-device-phone-mobile class="h-5 w-5 text-white" />
-                <h2 class="text-sm font-semibold text-white">Aplikasi Terdaftar</h2>
+                <x-heroicon-o-device-phone-mobile class="h-5 w-5" style="color:#047857;" />
+                <h2 class="text-sm font-bold" style="color:#0f172a;">Aplikasi Terdaftar</h2>
                 <span class="misi-header-badge">{{ $missions->count() }}</span>
             </div>
         </div>
@@ -215,7 +252,7 @@
     @if($missions->isEmpty())
         <div class="misi-empty">
             <div class="misi-empty-icon mx-auto">
-                <x-heroicon-o-clipboard-document-list class="h-7 w-7" style="color:var(--tesyuk-accent);" />
+                <x-heroicon-o-clipboard-document-list class="h-7 w-7" style="color:#047857;" />
             </div>
             <h2 class="text-lg font-bold" style="color:var(--tesyuk-ink);">Belum Ada Misi Testing</h2>
             <p class="mt-2 text-sm" style="color:#7c6f6f;">
@@ -226,13 +263,19 @@
     @else
 
         {{-- CARD GRID --}}
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
             @foreach($missions as $mission)
 
                 @php
                 $application       = $mission->application;
                 $dailyReportsCount = $mission->daily_reports_count_custom ?? 0;
+                $appIconPath = $application?->app_icon;
+                $appIconUrl = $appIconPath
+                    ? (str_starts_with($appIconPath, 'http') ? $appIconPath : asset('storage/' . $appIconPath))
+                    : null;
+                $appInitials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $application?->title ?? 'Aplikasi'), 0, 2));
+                $appInitials = $appInitials !== '' ? $appInitials : 'AP';
 
                 $detailUrl = \App\Filament\Tester\Resources\MisiSayaResource::getUrl(
                     'view',
@@ -305,12 +348,23 @@
                     {{-- TOP --}}
                     <div class="misi-card-top">
                         <div class="misi-card-top-row">
-                            <div class="min-w-0">
-                                <p class="misi-card-title truncate">
-                                    {{ $application?->title ?? 'Aplikasi Tidak Ditemukan' }}
-                                </p>
-                                <p class="misi-card-subtitle">{{ $statusText }}</p>
+                            <div class="misi-app-meta">
+                                <div class="misi-app-icon">
+                                    @if($appIconUrl)
+                                        <img src="{{ $appIconUrl }}" alt="{{ $application?->title ?? 'Icon aplikasi' }}">
+                                    @else
+                                        <span class="misi-app-icon-fallback">{{ $appInitials }}</span>
+                                    @endif
+                                </div>
+
+                                <div class="min-w-0">
+                                    <p class="misi-card-title truncate">
+                                        {{ $application?->title ?? 'Aplikasi Tidak Ditemukan' }}
+                                    </p>
+                                    <p class="misi-card-subtitle">{{ $statusText }}</p>
+                                </div>
                             </div>
+
                             {{-- Badge menunjukkan hari kalender yang sudah lewat --}}
                             <span class="misi-badge {{ $badgeClass }}">
                                 {{ $daysPassed }}/14 Hari
@@ -338,7 +392,7 @@
                             {{ $dailyReportsCount }} laporan dikumpulkan
                             @if($daysPassed > $dailyReportsCount)
                                 &nbsp;·&nbsp;
-                                <span style="color:#EF4444;">
+                                <span style="color:#9A3412;">
                                     {{ $daysPassed - $dailyReportsCount }} hari terlewat tanpa laporan
                                 </span>
                             @endif
@@ -381,7 +435,7 @@
                                         Laporan dikumpulkan
                                     </div>
                                     <div class="misi-legend-item">
-                                        <div class="misi-legend-dot" style="background:#FCA5A5;"></div>
+                                        <div class="misi-legend-dot" style="background:#FED7AA;"></div>
                                         Terlewat
                                     </div>
                                 </div>
