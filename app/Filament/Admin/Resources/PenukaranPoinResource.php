@@ -21,6 +21,8 @@ class PenukaranPoinResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pencairan Poin Tester';
     
+    protected static ?string $slug = 'penarikan-dana';
+
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     
     protected static ?string $navigationGroup = 'Keuangan';

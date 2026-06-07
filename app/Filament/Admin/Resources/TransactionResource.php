@@ -22,6 +22,8 @@ class TransactionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pembayaran Developer';
     
+    protected static ?string $slug = 'transaksi';
+
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     
     protected static ?string $navigationLabel = 'Pembayaran Developer';

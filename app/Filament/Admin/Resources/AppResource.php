@@ -25,6 +25,8 @@ class AppResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Verifikasi Aplikasi';
 
+    protected static ?string $slug = 'verifikasi-aplikasi';
+
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     protected static ?string $navigationLabel = 'Verifikasi Aplikasi';

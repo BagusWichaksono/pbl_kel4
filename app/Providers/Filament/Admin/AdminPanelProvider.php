@@ -410,8 +410,7 @@ class AdminPanelProvider extends PanelProvider
                                     <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(var(--tesyuk-accent-rgb),0.18);border-radius:50%;filter:blur(40px);z-index:1;"></div>
                                 </div>
 
-                                <h3 style="font-size:1.15rem;font-weight:800;margin:1.5rem 0 1rem;color:#0f172a;">Ringkasan Sistem</h3>
-                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem;">
+                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-top:1.5rem;margin-bottom:1.5rem;">
                                     <div class="custom-card-display" style="color:inherit;">
                                         <div class="icon-bg" style="background:#f1f5f9;color:#64748b;">{$icons['revenue']}</div>
                                         <div>
@@ -429,8 +428,7 @@ class AdminPanelProvider extends PanelProvider
                                     </div>
                                 </div>
 
-                                <h3 style="font-size:1.15rem;font-weight:800;margin:0 0 1rem;color:#0f172a;">Aksi Cepat</h3>
-                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;">
+                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:1.5rem;">
                                     <a href="{$urlPayment}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;position:relative;">
                                         <div class="icon-bg">{$icons['payment']}</div>
                                         <div>
@@ -475,7 +473,6 @@ class AdminPanelProvider extends PanelProvider
                                         </div>
                                     </a>
                                 </div>
-
                             <div class="fi-section" style="padding:1.5rem;">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
                                     <div>
