@@ -294,10 +294,16 @@
 
         @media (max-width: 767px) {
             .landing-nav-inner {
-                justify-content: flex-start;
+                justify-content: space-between;
+                flex-wrap: wrap;
             }
 
             .landing-brand {
+                position: static;
+                transform: none;
+            }
+
+            .landing-actions {
                 position: static;
                 transform: none;
             }
@@ -311,12 +317,12 @@
     </style>
 </head>
 
-<body id="page-content" class="bg-[#fbfbfb] text-winter-900 font-sans antialiased overflow-x-hidden bg-grid-pattern opacity-0 transition-opacity duration-500 ease-in-out" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 50)">
+<body id="page-content" class="bg-[#fbfbfb] text-winter-900 font-sans antialiased overflow-x-hidden bg-grid-pattern opacity-0 transition-opacity duration-500 ease-in-out" x-data="{ scrolled: false, mobileMenuOpen: false }" @scroll.window="scrolled = (window.pageYOffset > 50)">
 
     <nav
         class="fixed w-full top-0 z-[1000] transition-all duration-500"
         :class="scrolled ? 'bg-white/70 backdrop-blur-lg border-b border-winter-300/20 py-3 shadow-lg' : 'bg-transparent py-6'">
-        <div class="landing-nav-inner">
+        <div class="landing-nav-inner flex flex-wrap items-center justify-between md:justify-center">
             <a href="/" class="landing-brand flex items-center gap-3 group">
                 <img src="{{ asset(\App\Support\AppPalette::LOGO_ASSET) }}" class="w-10 h-10 transition-transform group-hover:rotate-6" alt="Logo TesYuk">
 
@@ -328,16 +334,32 @@
                 </span>
             </a>
 
-            <div class="hidden md:flex items-center p-1.5 bg-winter-100/50 backdrop-blur-md rounded-full border border-winter-300/20">
-                <a href="#tentang" class="px-6 py-2 text-xs font-black uppercase tracking-widest text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
+            <!-- Mobile Menu Button -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden block text-winter-900 focus:outline-none ml-auto">
+                <i class="ph-bold ph-list text-3xl" x-show="!mobileMenuOpen"></i>
+                <i class="ph-bold ph-x text-3xl" x-show="mobileMenuOpen" x-cloak></i>
+            </button>
+
+            <div :class="mobileMenuOpen ? 'flex flex-col w-full mt-4 bg-white/95 rounded-2xl shadow-xl p-4 gap-2' : 'hidden md:flex'" class="items-center p-1.5 md:bg-winter-100/50 md:backdrop-blur-md md:rounded-full md:border border-winter-300/20">
+                <a href="#tentang" @click="mobileMenuOpen = false" class="w-full text-center md:w-auto px-6 py-2 text-xs font-black uppercase tracking-widest text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
                     Tentang
                 </a>
-                <a href="#fitur" class="px-6 py-2 text-xs font-black uppercase tracking-widest text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
+                <a href="#fitur" @click="mobileMenuOpen = false" class="w-full text-center md:w-auto px-6 py-2 text-xs font-black uppercase tracking-widest text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
                     Fitur
                 </a>
-                <a href="#cara-kerja" class="px-6 py-2 text-xs font-black uppercase tracking-widest text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
+                <a href="#cara-kerja" @click="mobileMenuOpen = false" class="w-full text-center md:w-auto px-6 py-2 text-xs font-black uppercase tracking-widest text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
                     Cara Kerja
                 </a>
+
+                <!-- Action Buttons in Mobile Menu -->
+                <div class="md:hidden w-full flex flex-col gap-2 mt-4 pt-4 border-t border-winter-200">
+                    <a href="/login" class="w-full text-center px-10 py-3 text-sm font-bold text-winter-700 rounded-full transition-all duration-300 hover:bg-winter-500 hover:text-white hover:shadow-md active:scale-95">
+                        Masuk
+                    </a>
+                    <a href="/register" class="w-full text-center bg-winter-900 text-white text-sm font-bold px-7 py-3 rounded-full hover:bg-winter-700 transition-all shadow-xl shadow-winter-900/20 active:scale-95">
+                        Buat Akun
+                    </a>
+                </div>
             </div>
 
             <div class="landing-actions hidden md:flex items-center p-1.5 rounded-full border border-winter-300/30 bg-winter-100/30 backdrop-blur-md">
@@ -437,23 +459,23 @@
                                     <div class="h-2 w-20 bg-winter-300 rounded"></div>
                                 </div>
                             </div>
-                            <button class="w-full py-3 bg-winter-900 text-white rounded-xl text-xs font-bold mt-auto shadow-lg">Ambil Reward</button>
-                        </div>
-                    </div>
+                            <div class="w-full grid grid-cols-2 gap-2 mt-auto mb-2">
+                                <div class="rounded-xl bg-white p-2.5 text-left shadow-sm border border-winter-300/10">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-2 h-1 rounded-full bg-[var(--tesyuk-obsidian)]"></span>
+                                        <span class="w-2 h-1 rounded-full bg-[var(--tesyuk-crimson)]"></span>
+                                        <span class="w-2 h-1 rounded-full bg-[var(--tesyuk-coral)]"></span>
+                                    </div>
+                                    <p class="mt-1.5 text-[8px] font-black uppercase tracking-widest text-winter-900/60">Live Progress</p>
+                                </div>
 
-                    <div class="hidden w-full max-w-[300px] grid-cols-2 gap-3 lg:grid">
-                        <div class="rounded-2xl bg-white/90 p-3 text-left shadow-xl ring-1 ring-[rgba(144,55,73,0.12)]">
-                            <div class="flex items-center gap-2">
-                                <span class="palette-chip bg-[var(--tesyuk-obsidian)]"></span>
-                                <span class="palette-chip bg-[var(--tesyuk-crimson)]"></span>
-                                <span class="palette-chip bg-[var(--tesyuk-coral)]"></span>
+                                <div class="rounded-xl bg-[var(--tesyuk-navy)] px-2.5 py-2.5 text-left text-white shadow-sm">
+                                    <p class="text-[8px] font-black uppercase tracking-widest text-white/50">Report</p>
+                                    <p class="text-[9px] font-black leading-tight mt-0.5">3 laporan hari ini</p>
+                                </div>
                             </div>
-                            <p class="mt-2 text-[10px] font-black uppercase tracking-widest text-winter-900/60">Live Progress</p>
-                        </div>
-
-                        <div class="rounded-2xl bg-[var(--tesyuk-navy)] px-4 py-3 text-left text-white shadow-xl">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-white/50">Report</p>
-                            <p class="text-sm font-black leading-tight">3 laporan hari ini</p>
+                            
+                            <button class="w-full py-3 bg-winter-900 text-white rounded-xl text-xs font-bold shadow-lg">Ambil Reward</button>
                         </div>
                     </div>
                 </div>

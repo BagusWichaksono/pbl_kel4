@@ -93,7 +93,7 @@
         </a>
 
         <!-- SECTION KIRI (Form Register) -->
-        <div class="relative p-8 sm:p-10 lg:p-12 flex flex-col justify-center bg-white">
+        <div class="relative p-6 sm:p-10 lg:p-12 flex flex-col justify-center bg-white">
             <div class="w-full max-w-[380px] mx-auto">
 
                 <!-- Judul Form -->
@@ -168,7 +168,7 @@
                     </div>
 
                     <!-- Input Passwords Grid -->
-                    <div class="grid grid-cols-2 gap-4 pt-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                         <!-- Password -->
                         <div class="group relative">
                             <label class="block text-[11px] font-black text-winter-900/60 uppercase tracking-widest ml-1 mb-2 group-focus-within:text-winter-900 transition-colors">

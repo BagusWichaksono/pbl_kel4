@@ -39,7 +39,7 @@
     </script>
 </head>
 
-<body id="page-content" class="bg-winter-50 min-h-screen flex items-center justify-center p-6 overflow-hidden opacity-0 transition-opacity duration-500 ease-in-out">
+<body id="page-content" class="bg-winter-50 min-h-screen flex flex-col items-center justify-center p-6 py-12 md:py-6 overflow-y-auto overflow-x-hidden opacity-0 transition-opacity duration-500 ease-in-out">
     <div class="max-w-4xl w-full">
         <a href="/" class="inline-flex items-center gap-2 text-winter-500 hover:text-winter-900 font-bold mb-6 transition opacity-0 animate-[fade-in-up_0.8s_ease-out_forwards]">
             <i class="ph-bold ph-x text-3xl"></i>

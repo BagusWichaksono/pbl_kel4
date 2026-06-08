@@ -363,6 +363,24 @@ class TesterPanelProvider extends PanelProvider
                         font-weight: 900;
                         cursor: pointer;
                     }
+
+                    /* Responsive Utilities */
+                    @media (max-width: 1024px) {
+                        .tester-dashboard-main {
+                            grid-template-columns: 1fr !important;
+                        }
+                        .tester-payout-header {
+                            grid-template-columns: 1fr !important;
+                        }
+                        .tester-payout-steps {
+                            grid-template-columns: 1fr !important;
+                        }
+                    }
+                    @media (max-width: 640px) {
+                        .tester-dashboard-stats {
+                            grid-template-columns: 1fr !important;
+                        }
+                    }
                 </style>
                 "
             )
@@ -548,7 +566,7 @@ class TesterPanelProvider extends PanelProvider
                                 <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(var(--tesyuk-accent-rgb),0.2);border-radius:50%;filter:blur(40px);z-index:1;"></div>
                             </div>
 
-                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;">
+                            <div class="tester-dashboard-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;">
                                 <a href="{$urlPenukaran}" class="custom-card-stats" style="text-decoration:none;color:inherit;cursor:pointer;">
                                     <div class="icon-bg">{$icons['money']}</div>
                                     <div>
@@ -590,7 +608,7 @@ class TesterPanelProvider extends PanelProvider
                                 </a>
                             </div>
 
-                            <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;">
+                            <div class="tester-dashboard-main" style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;">
                                 <div class="fi-section" style="padding:1.5rem;">
                                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
                                         <div>
@@ -725,7 +743,7 @@ class TesterPanelProvider extends PanelProvider
         <div style="position:absolute;right:-60px;top:-60px;width:190px;height:190px;border-radius:999px;background:rgba(255,255,255,.08);filter:blur(10px);"></div>
         <div style="position:absolute;left:-50px;bottom:-70px;width:180px;height:180px;border-radius:999px;background:rgba(255,255,255,.06);filter:blur(12px);"></div>
 
-        <div style="position:relative;z-index:2;display:grid;grid-template-columns:1.3fr .7fr;gap:1.5rem;align-items:center;">
+        <div class="tester-payout-header" style="position:relative;z-index:2;display:grid;grid-template-columns:1.3fr .7fr;gap:1.5rem;align-items:center;">
             <div>
                 <div style="width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);margin-bottom:1rem;">
                     {$walletIcon}
@@ -756,7 +774,7 @@ class TesterPanelProvider extends PanelProvider
         </div>
     </div>
 
-    <div style="margin-top:1rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">
+    <div class="tester-payout-steps" style="margin-top:1rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">
         <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:20px;padding:1rem;display:flex;gap:.85rem;align-items:flex-start;box-shadow:0 12px 30px -24px rgba(15,23,42,.28);">
             <div style="width:42px;height:42px;border-radius:14px;background:var(--tesyuk-secondary);color:var(--tesyuk-accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 {$bankIcon}

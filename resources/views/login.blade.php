@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        <div class="relative p-10 sm:p-14 lg:p-16 flex flex-col justify-center bg-white">
+        <div class="relative p-6 sm:p-10 lg:p-16 flex flex-col justify-center bg-white">
             <div class="w-full max-w-[380px] mx-auto">
 
                 <div class="text-center mb-10 mt-4 lg:mt-0">
