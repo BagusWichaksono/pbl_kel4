@@ -4,6 +4,7 @@ namespace App\Filament\Developer\Resources;
 
 use App\Filament\Developer\Resources\TransactionResource\Pages\ListTransactions;
 use App\Filament\Developer\Resources\TransactionResource\Pages\RequestRefund;
+use App\Filament\Developer\Resources\TransactionResource\Pages\ViewTransaction;
 use App\Models\App; // Kita pakai model App karena bukti transfer nempel di tabel apps
 use App\Models\RefundRequest;
 use App\Support\AppNotifier;
@@ -52,6 +53,7 @@ class TransactionResource extends Resource
                     
                 Tables\Columns\ImageColumn::make('payment_proof')
                     ->label('Bukti Transfer')
+                    ->disk('public')
                     ->circular(), // Biar bentuknya bulat estetik
                     
                 Tables\Columns\TextColumn::make('payment_status')
@@ -110,7 +112,9 @@ class TransactionResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label('Detail'),
+                Tables\Actions\ViewAction::make()
+                    ->label('Detail')
+                    ->url(fn (App $record): string => self::getUrl('view', ['record' => $record])),
 
                 Tables\Actions\Action::make('ajukanRefund')
                     ->label('Ajukan Refund')
@@ -166,6 +170,7 @@ class TransactionResource extends Resource
                             
                         ImageEntry::make('payment_proof')
                             ->label('Bukti Transfer')
+                            ->disk('public')
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
@@ -178,6 +183,7 @@ class TransactionResource extends Resource
         return [
             // Pastikan kamu punya file ListTransactions di dalam folder Developer/Resources/TransactionResource/Pages/
             'index' => ListTransactions::route('/'),
+            'view' => ViewTransaction::route('/{record}'),
             'refund' => RequestRefund::route('/{record}/refund'),
         ];
     }

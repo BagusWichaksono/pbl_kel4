@@ -212,7 +212,7 @@
                 });
 
             $statusLabel = $isRefunded
-                ? 'Ditarik'
+                ? 'Tidak tersedia'
                 : ($isLockedDueMissedReport
                 ? 'Gugur'
                 : match ($mission->status) {
@@ -267,7 +267,7 @@
                                 @if($isRefunded)
                                     <span class="flex items-center gap-1.5">
                                         <x-heroicon-o-lock-closed class="h-3.5 w-3.5" />
-                                        Aplikasi ditarik dari peredaran
+                                        Mohon maaf aplikasi telah ditarik dari peredaran dan tidak tersedia saat ini
                                     </span>
                                 @elseif($application?->start_date)
                                     <span class="flex items-center gap-1.5">
@@ -294,7 +294,7 @@
                             <span class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold"
                                 style="border:1px solid #fecaca;color:#b91c1c;background:#fef2f2;">
                                 <x-heroicon-o-lock-closed class="h-4 w-4" />
-                                Misi Ditarik
+                                Tidak tersedia
                             </span>
                         @elseif($isLockedDueMissedReport)
                             <span class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold"
@@ -335,10 +335,7 @@
                         <x-heroicon-o-lock-closed class="h-5 w-5" />
                     </div>
                     <div>
-                        <p class="text-sm font-bold">Misi ditarik dari peredaran</p>
-                        <p class="mt-1 text-xs leading-relaxed">
-                            Pengajuan refund developer untuk aplikasi ini sudah disetujui admin. Tester tidak perlu melanjutkan laporan harian atau laporan akhir untuk misi ini.
-                        </p>
+                        <p class="text-sm font-bold">Mohon maaf aplikasi telah ditarik dari peredaran dan tidak tersedia saat ini</p>
                     </div>
                 </div>
             @elseif($isLockedDueMissedReport)

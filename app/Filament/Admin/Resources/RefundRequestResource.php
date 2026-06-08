@@ -152,7 +152,8 @@ class RefundRequestResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Detail')
-                    ->icon('heroicon-o-eye'),
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (RefundRequest $record): string => self::getUrl('view', ['record' => $record])),
 
                 Tables\Actions\Action::make('process')
                     ->label('Proses Refund')
@@ -242,6 +243,7 @@ class RefundRequestResource extends Resource
     {
         return [
             'index' => Pages\ListRefundRequests::route('/'),
+            'view' => Pages\ViewRefundRequest::route('/{record}'),
             'process' => Pages\ProcessRefund::route('/{record}/process'),
         ];
     }
@@ -278,8 +280,8 @@ class RefundRequestResource extends Resource
 
                 AppNotifier::database(
                     $affectedTesters,
-                    'Misi ditarik dari peredaran',
-                    "Misi testing aplikasi {$application->title} dihentikan karena refund developer disetujui admin.",
+                    'Mohon maaf aplikasi telah ditarik dari peredaran dan tidak tersedia saat ini',
+                    null,
                     'warning',
                 );
             }

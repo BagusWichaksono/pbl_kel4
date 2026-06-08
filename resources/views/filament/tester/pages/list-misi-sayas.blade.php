@@ -353,9 +353,9 @@
                 $isRefunded = ($application?->payment_status ?? null) === 'refunded';
 
                 if ($isRefunded) {
-                    $statusText = 'Misi ditarik';
+                    $statusText = 'Tidak tersedia';
                     $badgeClass = 'misi-badge-locked';
-                    $badgeLabel = 'Ditarik';
+                    $badgeLabel = 'Tidak tersedia';
                 } elseif ($isLockedDueMissedReport) {
                     $statusText = 'Misi gugur';
                     $badgeClass = 'misi-badge-locked';
@@ -428,7 +428,7 @@
                             <div class="misi-lock-notice">
                                 <x-heroicon-o-lock-closed class="h-4 w-4 shrink-0" />
                                 <span>
-                                    Misi ini ditarik dari peredaran karena pengajuan refund developer sudah disetujui admin.
+                                    Mohon maaf aplikasi telah ditarik dari peredaran dan tidak tersedia saat ini
                                 </span>
                             </div>
                         @elseif($isLockedDueMissedReport)
@@ -456,7 +456,7 @@
                         <div class="misi-date-row">
                             <x-heroicon-o-calendar-days class="h-4 w-4 shrink-0" />
                             @if($isRefunded)
-                                Aplikasi ditarik dari peredaran
+                                Mohon maaf aplikasi telah ditarik dari peredaran dan tidak tersedia saat ini
                             @elseif($startDate)
                                 {{ $startDate->translatedFormat('d M Y') }}
                                 –
