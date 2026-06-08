@@ -62,7 +62,10 @@
         .daily-detail-app-icon {
             width: 76px;
             height: 76px;
+            max-width: 76px;
+            max-height: 76px;
             min-width: 76px;
+            flex: 0 0 76px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -74,9 +77,13 @@
         }
 
         .daily-detail-app-icon img {
+            display: block;
             width: 100%;
             height: 100%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
+            box-sizing: border-box;
             padding: 9px;
             background: #ffffff;
         }
@@ -86,6 +93,26 @@
             font-size: 1.55rem;
             font-weight: 900;
             letter-spacing: .04em;
+        }
+
+        .daily-detail-back svg,
+        .daily-detail-chip svg,
+        .daily-detail-panel-header svg,
+        .daily-detail-panel-body a svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        .daily-detail-chip svg {
+            width: .875rem;
+            height: .875rem;
+        }
+
+        .daily-detail-empty svg {
+            width: 2rem;
+            height: 2rem;
+            flex-shrink: 0;
         }
 
         .daily-detail-meta {
@@ -192,7 +219,10 @@
             .daily-detail-app-icon {
                 width: 64px;
                 height: 64px;
+                max-width: 64px;
+                max-height: 64px;
                 min-width: 64px;
+                flex-basis: 64px;
                 border-radius: 18px;
             }
         }
@@ -208,9 +238,9 @@
             <div class="daily-detail-hero">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div class="flex min-w-0 items-start gap-4">
-                        <div class="daily-detail-app-icon">
+                        <div class="daily-detail-app-icon" style="width:76px;height:76px;max-width:76px;max-height:76px;flex:0 0 76px;">
                             @if($appIconUrl)
-                                <img src="{{ $appIconUrl }}" alt="{{ $application?->title ?? 'Logo aplikasi' }}">
+                                <img src="{{ $appIconUrl }}" alt="{{ $application?->title ?? 'Logo aplikasi' }}" style="display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;box-sizing:border-box;padding:9px;background:#ffffff;">
                             @else
                                 <span class="daily-detail-app-icon-fallback">{{ $appInitials }}</span>
                             @endif
