@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\RefundRequestResource\Pages;
+use App\Models\ApplicationTester;
 use App\Models\RefundRequest;
 use App\Support\AppNotifier;
 use Filament\Forms\Form;
@@ -257,10 +258,30 @@ class RefundRequestResource extends Resource
             ]);
 
             if ($record->application) {
-                $record->application->update([
+                $application = $record->application;
+                $affectedTesters = $application->testerUsers()
+                    ->wherePivot('status', ApplicationTester::STATUS_ACTIVE)
+                    ->get();
+
+                $application->update([
                     'payment_status' => 'refunded',
                     'testing_status' => 'rejected',
+                    'start_date' => null,
+                    'end_date' => null,
+                    'app_link' => null,
                 ]);
+
+                ApplicationTester::query()
+                    ->where('application_id', $application->id)
+                    ->where('status', ApplicationTester::STATUS_ACTIVE)
+                    ->update(['status' => ApplicationTester::STATUS_DROPPED]);
+
+                AppNotifier::database(
+                    $affectedTesters,
+                    'Misi ditarik dari peredaran',
+                    "Misi testing aplikasi {$application->title} dihentikan karena refund developer disetujui admin.",
+                    'warning',
+                );
             }
         });
 

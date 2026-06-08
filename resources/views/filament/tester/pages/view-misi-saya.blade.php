@@ -198,17 +198,22 @@
             $dailyMissions = $mission->daily_missions_custom ?? [];
             $missedReportsCount = (int) ($mission->missed_daily_reports_count_custom ?? 0);
             $isLockedDueMissedReport = (bool) ($mission->is_locked_due_missed_report ?? false);
+            $isRefunded = ($application?->payment_status ?? null) === 'refunded';
 
-            $statusStyle = $isLockedDueMissedReport
+            $statusStyle = $isRefunded
+                ? 'background:#FEE2E2;color:#B91C1C;border:1px solid #FECACA;'
+                : ($isLockedDueMissedReport
                 ? 'background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA;'
                 : match ($mission->status) {
                     'active' => 'background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;',
                     'completed' => 'background:#DCFCE7;color:#15803D;',
                     'failed', 'dropped' => 'background:#FFF7ED;color:#9A3412;',
                     default => 'background:#E2E8F0;color:#7c6f6f;',
-                };
+                });
 
-            $statusLabel = $isLockedDueMissedReport
+            $statusLabel = $isRefunded
+                ? 'Ditarik'
+                : ($isLockedDueMissedReport
                 ? 'Gugur'
                 : match ($mission->status) {
                     'active' => 'Aktif',
@@ -216,7 +221,7 @@
                     'failed' => 'Gagal',
                     'dropped' => 'Gugur',
                     default => $mission->status,
-                };
+                });
         @endphp
 
         {{-- BACK LINK --}}
@@ -259,7 +264,12 @@
                                     {{ $application?->developer?->name ?? '-' }}
                                 </span>
 
-                                @if($application?->start_date)
+                                @if($isRefunded)
+                                    <span class="flex items-center gap-1.5">
+                                        <x-heroicon-o-lock-closed class="h-3.5 w-3.5" />
+                                        Aplikasi ditarik dari peredaran
+                                    </span>
+                                @elseif($application?->start_date)
                                     <span class="flex items-center gap-1.5">
                                         <x-heroicon-o-calendar-days class="h-3.5 w-3.5" />
                                         {{ \Carbon\Carbon::parse($application->start_date)->translatedFormat('d M Y') }}
@@ -280,7 +290,13 @@
                     </div>
 
                     <div class="shrink-0 ml-auto flex justify-end">
-                        @if($isLockedDueMissedReport)
+                        @if($isRefunded)
+                            <span class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold"
+                                style="border:1px solid #fecaca;color:#b91c1c;background:#fef2f2;">
+                                <x-heroicon-o-lock-closed class="h-4 w-4" />
+                                Misi Ditarik
+                            </span>
+                        @elseif($isLockedDueMissedReport)
                             <span class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold"
                                 style="border:1px solid #fed7aa;color:#9a3412;background:#fff7ed;">
                                 <x-heroicon-o-lock-closed class="h-4 w-4" />
@@ -306,14 +322,26 @@
 
             {{-- PROGRESS BAR STRIP --}}
             <div class="misi-progress-strip">
-                <span class="text-xs font-semibold uppercase tracking-wide" style="color:{{ $isLockedDueMissedReport ? '#9a3412' : '#047857' }};">Progress</span>
+                <span class="text-xs font-semibold uppercase tracking-wide" style="color:{{ ($isLockedDueMissedReport || $isRefunded) ? '#9a3412' : '#047857' }};">Progress</span>
                 <div class="h-2 flex-1 overflow-hidden rounded-full" style="background:#e2e8f0;">
-                    <div class="h-2 rounded-full transition-all" style="width:{{ $progressPercentage }}%; background:{{ $isLockedDueMissedReport ? '#f97316' : '#10b981' }};"></div>
+                    <div class="h-2 rounded-full transition-all" style="width:{{ $progressPercentage }}%; background:{{ ($isLockedDueMissedReport || $isRefunded) ? '#f97316' : '#10b981' }};"></div>
                 </div>
                 <span class="text-sm font-bold" style="color:var(--tesyuk-ink);">{{ $dailyReportsCount }}/{{ $dailyTestingDays }}</span>
             </div>
 
-            @if($isLockedDueMissedReport)
+            @if($isRefunded)
+                <div class="misi-lock-banner">
+                    <div class="misi-lock-banner-icon">
+                        <x-heroicon-o-lock-closed class="h-5 w-5" />
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold">Misi ditarik dari peredaran</p>
+                        <p class="mt-1 text-xs leading-relaxed">
+                            Pengajuan refund developer untuk aplikasi ini sudah disetujui admin. Tester tidak perlu melanjutkan laporan harian atau laporan akhir untuk misi ini.
+                        </p>
+                    </div>
+                </div>
+            @elseif($isLockedDueMissedReport)
                 <div class="misi-lock-banner">
                     <div class="misi-lock-banner-icon">
                         <x-heroicon-o-lock-closed class="h-5 w-5" />
