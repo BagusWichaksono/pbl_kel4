@@ -6,7 +6,10 @@ use App\Filament\Tester\Resources\PenukaranPoinResource\Pages;
 use App\Models\Withdrawal;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -136,6 +139,91 @@ class PenukaranPoinResource extends Resource
         ];
 
         return $form->schema($schema);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Detail Request Penukaran')
+                    ->description('Ringkasan pengajuan penukaran poin yang dikirim ke admin.')
+                    ->schema([
+                        TextEntry::make('invoice_code')
+                            ->label('Kode Invoice')
+                            ->copyable()
+                            ->weight('bold')
+                            ->color('primary')
+                            ->placeholder('-')
+                            ->visible(fn (): bool => Schema::hasColumn('withdrawals', 'invoice_code')),
+
+                        TextEntry::make('created_at')
+                            ->label('Waktu Pengajuan')
+                            ->dateTime('d M Y, H:i'),
+
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->badge()
+                            ->color(fn (?string $state): string => match ($state) {
+                                'pending' => 'warning',
+                                'approved', 'completed' => 'success',
+                                'rejected' => 'danger',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                'pending' => 'Menunggu Pembayaran',
+                                'approved', 'completed' => 'Selesai',
+                                'rejected' => 'Ditolak',
+                                default => '-',
+                            }),
+
+                        TextEntry::make('points_withdrawn')
+                            ->label('Poin Ditukar')
+                            ->formatStateUsing(fn (?int $state): string => number_format((int) $state, 0, ',', '.') . ' poin'),
+
+                        TextEntry::make('amount_rp')
+                            ->label('Nominal Rupiah')
+                            ->money('IDR', locale: 'id')
+                            ->weight('bold')
+                            ->color('success'),
+                    ])
+                    ->columns(2),
+
+                Section::make('Tujuan Pencairan')
+                    ->schema([
+                        TextEntry::make('e_wallet_provider')
+                            ->label('E-Wallet')
+                            ->badge()
+                            ->color('info')
+                            ->placeholder('-'),
+
+                        TextEntry::make('e_wallet_number')
+                            ->label('Nomor E-Wallet')
+                            ->copyable()
+                            ->placeholder('-'),
+
+                        TextEntry::make('account_name')
+                            ->label('Atas Nama')
+                            ->placeholder('-')
+                            ->visible(fn (): bool => Schema::hasColumn('withdrawals', 'account_name')),
+
+                        TextEntry::make('notes')
+                            ->label('Catatan Admin')
+                            ->placeholder('Belum ada catatan.')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+
+                Section::make('Bukti Pembayaran')
+                    ->description('Bukti transfer dari admin akan tampil setelah penukaran selesai diproses.')
+                    ->schema([
+                        ImageEntry::make('payment_proof')
+                            ->label('Bukti Pembayaran')
+                            ->disk('public')
+                            ->height(280)
+                            ->columnSpanFull(),
+                    ])
+                    ->visible(fn (Withdrawal $record): bool => Schema::hasColumn('withdrawals', 'payment_proof') && filled($record->payment_proof)),
+            ]);
     }
 
     public static function table(Table $table): Table

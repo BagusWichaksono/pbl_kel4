@@ -139,8 +139,8 @@ class ViewAppTesters extends Page
                     Forms\Components\DatePicker::make('start_date')
                         ->label('Tanggal Mulai Testing')
                         ->required()
-                        ->default(now())
-                        ->minDate(now())
+                        ->default(Carbon::today())
+                        ->minDate(Carbon::today())
                         ->helperText('Tanggal selesai akan otomatis dihitung 14 hari setelah tanggal mulai.'),
 
                     Forms\Components\TextInput::make('app_link')
@@ -194,6 +194,43 @@ class ViewAppTesters extends Page
                 ->color('success')
                 ->disabled()
                 ->visible(fn (): bool => filled($this->getRecord()->start_date)),
+
+            Action::make('cancel_testing')
+                ->label('Batalkan Sesi Testing')
+                ->icon('heroicon-o-x-circle')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Batalkan Sesi Testing?')
+                ->modalDescription('Tanggal mulai dan selesai testing akan dikosongkan. Tester yang sudah terdaftar tetap tersimpan, dan developer bisa memulai sesi testing lagi setelah ini.')
+                ->modalSubmitActionLabel('Ya, Batalkan Sesi')
+                ->visible(function (): bool {
+                    $app = $this->getRecord();
+
+                    return filled($app->start_date)
+                        && $app->testing_status !== 'completed';
+                })
+                ->action(function (): void {
+                    $app = App::with('testerUsers')->findOrFail($this->recordId);
+
+                    $app->update([
+                        'start_date' => null,
+                        'end_date' => null,
+                        'testing_status' => 'open',
+                    ]);
+
+                    AppNotifier::database(
+                        $app->testerUsers,
+                        'Sesi testing dibatalkan sementara',
+                        "Sesi testing aplikasi {$app->title} dibatalkan sementara oleh developer. Tunggu developer memulai ulang sesi testing.",
+                        'warning',
+                    );
+
+                    Notification::make()
+                        ->title('Sesi testing berhasil dibatalkan.')
+                        ->body('Developer bisa memulai sesi testing lagi dari halaman ini.')
+                        ->warning()
+                        ->send();
+                }),
         ];
     }
 
