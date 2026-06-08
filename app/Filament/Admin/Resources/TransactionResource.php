@@ -3,20 +3,24 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\TransactionResource\Pages;
-use App\Models\Transaction; // <-- SESUAIKAN DENGAN NAMA MODEL KAMU
-use Filament\Forms;
+use App\Models\App;
+use App\Support\AppNotifier;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 
 
 class TransactionResource extends Resource
 {
-    protected static ?string $model = Transaction::class;
+    protected static ?string $model = App::class;
+
+    private const DEVELOPER_PAYMENT_AMOUNT = 300000;
 
     protected static ?string $modelLabel = 'Pembayaran Developer';
 
@@ -46,12 +50,16 @@ class TransactionResource extends Resource
         return false;
     }
 
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // Kita kosongkan saja karena validasi akan dilakukan langsung dari tabel
-                // tanpa perlu masuk ke halaman Edit
+                // Validasi dilakukan langsung dari tabel, tidak lewat halaman edit.
             ]);
     }
 
@@ -66,60 +74,66 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->weight('bold'),
 
-                // Kolom Nama Aplikasi (Asumsi relasi ke aplikasi)
-                Tables\Columns\TextColumn::make('application.title')
+                Tables\Columns\TextColumn::make('title')
                     ->label('Aplikasi')
-                    ->searchable(),
+                    ->searchable()
+                    ->description(fn (App $record): string => 'Platform: ' . ($record->platform ?? '-')),
 
-                // Nominal Pembayaran
-                Tables\Columns\TextColumn::make('amount')
+                Tables\Columns\TextColumn::make('payment_amount')
                     ->label('Nominal')
-                    ->money('IDR', locale: 'id') // Otomatis format Rp
-                    ->sortable()
+                    ->getStateUsing(fn (App $record): int => self::DEVELOPER_PAYMENT_AMOUNT)
+                    ->money('IDR', locale: 'id')
                     ->weight('bold')
-                    ->color('primary')
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        $num = preg_replace('/[^0-9]/', '', $search);
-                        if ($num !== '') {
-                            return $query->where('amount', 'like', "%{$num}%");
-                        }
-                        return $query->where('amount', 'like', "%{$search}%");
-                    }),
+                    ->color('primary'),
 
-                // Preview Bukti Transfer
                 Tables\Columns\ImageColumn::make('payment_proof')
                     ->label('Bukti Transfer')
+                    ->disk('public')
                     ->square()
                     ->extraImgAttributes(['loading' => 'lazy'])
-                    ->defaultImageUrl(url('/images/no-image.png')), // Fallback jika kosong
+                    ->defaultImageUrl(url('/images/no-image.png')),
 
-                // Status Pembayaran dengan Badge Warna-Warni
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('payment_status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'valid' => 'success',
-                        'invalid' => 'danger',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'pending' => 'Menunggu Validasi',
-                        'valid' => 'Lunas',
-                        'invalid' => 'Ditolak',
-                        default => 'Unknown',
-                    })
+                    ->color(fn (?string $state): string => self::paymentStatusColor($state))
+                    ->formatStateUsing(fn (?string $state): string => self::paymentStatusLabel($state))
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         $search = strtolower($search);
                         $matched = [];
-                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) $matched[] = 'pending';
-                        if (str_contains('lunas', $search) || str_contains('valid', $search)) $matched[] = 'valid';
-                        if (str_contains('ditolak', $search) || str_contains('invalid', $search)) $matched[] = 'invalid';
+
+                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) {
+                            $matched[] = 'pending';
+                        } elseif (str_contains('ditolak', $search) || str_contains('invalid', $search) || str_contains('tidak', $search)) {
+                            $matched[] = 'invalid';
+                        } elseif (str_contains('lunas', $search) || str_contains('valid', $search) || str_contains('approved', $search) || str_contains('disetujui', $search)) {
+                            $matched = ['valid', 'approved'];
+                        }
                         
                         if (count($matched) > 0) {
-                            return $query->whereIn('status', $matched);
+                            return $query->whereIn('payment_status', $matched);
                         }
-                        return $query->where('status', 'like', "%{$search}%");
+                        return $query->where('payment_status', 'like', "%{$search}%");
+                    }),
+
+                Tables\Columns\TextColumn::make('testing_status')
+                    ->label('Status Testing')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'pending_approval' => 'warning',
+                        'open' => 'gray',
+                        'active', 'in_progress' => 'info',
+                        'completed' => 'success',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'pending_approval' => 'Menunggu Admin',
+                        'open' => 'Mencari Tester',
+                        'active', 'in_progress' => 'Sedang Testing',
+                        'completed' => 'Selesai',
+                        'rejected' => 'Ditolak',
+                        default => '-',
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -130,28 +144,27 @@ class TransactionResource extends Resource
                         return $query->whereRaw("DATE_FORMAT(created_at, '%d %e %M %b %Y %m') LIKE ?", ["%{$search}%"]);
                     }),
             ])
-            ->defaultSort('created_at', 'desc') // Yang paling baru di atas
+            ->defaultSort('created_at', 'desc')
             ->filters([
-                // Tambahkan filter bawaan
-                Tables\Filters\SelectFilter::make('status')
+                Tables\Filters\SelectFilter::make('payment_status')
+                    ->label('Status Pembayaran')
                     ->options([
                         'pending' => 'Menunggu Validasi',
-                        'valid' => 'Pembayaran Valid',
-                        'invalid' => 'Tidak Sah',
+                        'valid' => 'Lunas / Valid',
+                        'approved' => 'Approved',
+                        'invalid' => 'Ditolak',
                     ]),
             ])
             ->actions([
-                // TOMBOL: LIHAT BUKTI FULL SCREEN
                 Action::make('lihatBukti')
                     ->label('Cek Bukti')
                     ->icon('heroicon-m-eye')
                     ->color('info')
-                    ->modalHeading('Bukti Transfer')
-                    ->modalContent(fn ($record) => view('filament.admin.components.image-preview', ['image' => $record->payment_proof]))
-                    ->modalSubmitAction(false) // Hilangkan tombol submit
+                    ->modalHeading(fn (App $record): string => 'Bukti Pembayaran - ' . $record->title)
+                    ->modalContent(fn (App $record): HtmlString => self::renderPaymentProofModal($record))
+                    ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Tutup'),
 
-                // TOMBOL: TERIMA PEMBAYARAN
                 Action::make('terima')
                     ->label('Terima')
                     ->icon('heroicon-m-check-circle')
@@ -159,23 +172,28 @@ class TransactionResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading('Validasi Pembayaran')
                     ->modalDescription('Apakah bukti transfer ini sudah valid dan dana sudah masuk ke rekening? Status aplikasi akan dilanjutkan.')
-                    ->action(function ($record) {
-                        // 1. Ubah status transaksi
-                        $record->update(['status' => 'approved']);
+                    ->action(function (App $record) {
+                        $record->update([
+                            'payment_status' => 'valid',
+                            'testing_status' => 'open',
+                        ]);
+
+                        Notification::make()
+                            ->title('Pembayaran Developer Disetujui')
+                            ->success()
+                            ->send();
                         
-                        // Notify Developer
-                        $developer = $record->developer ?? $record->application->developer ?? null;
-                        if ($developer) {
-                            \Filament\Notifications\Notification::make()
-                                ->title('Pembayaran Diterima')
-                                ->body('Pembayaran untuk aplikasi Anda telah divalidasi oleh Admin. Aplikasi Anda sekarang siap untuk diproses!')
-                                ->success()
-                                ->sendToDatabase($developer);
+                        if ($record->developer) {
+                            AppNotifier::database(
+                                $record->developer,
+                                'Pembayaran diterima',
+                                "Pembayaran Rp300.000 untuk aplikasi {$record->title} sudah divalidasi admin.",
+                                'success',
+                            );
                         }
                     })
-                    ->visible(fn ($record) => $record->status === 'pending'), // Hanya muncul jika masih pending
+                    ->visible(fn (App $record): bool => ! in_array($record->payment_status, ['valid', 'approved'], true)),
 
-                // TOMBOL: TOLAK PEMBAYARAN
                 Action::make('tolak')
                     ->label('Tolak')
                     ->icon('heroicon-m-x-circle')
@@ -183,24 +201,36 @@ class TransactionResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading('Tolak Pembayaran')
                     ->modalDescription('Apakah Anda yakin ingin menolak pembayaran ini? Developer harus mengunggah ulang bukti transfer.')
-                    ->action(function ($record) {
-                        $record->update(['status' => 'rejected']);
+                    ->action(function (App $record) {
+                        $record->update([
+                            'payment_status' => 'invalid',
+                            'testing_status' => 'rejected',
+                        ]);
+
+                        Notification::make()
+                            ->title('Pembayaran Developer Ditolak')
+                            ->danger()
+                            ->send();
                         
-                        // Notify Developer
-                        $developer = $record->developer ?? $record->application->developer ?? null;
-                        if ($developer) {
-                            \Filament\Notifications\Notification::make()
-                                ->title('Pembayaran Ditolak')
-                                ->body('Pembayaran untuk aplikasi Anda ditolak. Silakan periksa kembali bukti transfer Anda.')
-                                ->danger()
-                                ->sendToDatabase($developer);
+                        if ($record->developer) {
+                            AppNotifier::database(
+                                $record->developer,
+                                'Pembayaran ditolak',
+                                "Pembayaran untuk aplikasi {$record->title} ditolak. Silakan unggah ulang bukti yang benar.",
+                                'danger',
+                            );
                         }
                     })
-                    ->visible(fn ($record) => $record->status === 'pending'),
+                    ->visible(fn (App $record): bool => $record->payment_status !== 'invalid'),
             ])
-            ->emptyStateHeading('Belum Ada Transaksi')
-            ->emptyStateDescription('Tidak ada pembayaran dari developer yang perlu divalidasi saat ini.')
+            ->emptyStateHeading('Belum Ada Pembayaran Developer')
+            ->emptyStateDescription('Data pembayaran akan muncul dari aplikasi yang diajukan developer.')
             ->emptyStateIcon('heroicon-o-banknotes');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('developer');
     }
 
     public static function getRelations(): array
@@ -211,8 +241,47 @@ class TransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            // Kita cuma butuh halaman List (Tabel) saja
             'index' => Pages\ListTransactions::route('/'),
         ];
+    }
+
+    private static function paymentStatusColor(?string $state): string
+    {
+        return match ($state) {
+            'pending' => 'warning',
+            'valid', 'approved' => 'success',
+            'invalid' => 'danger',
+            default => 'gray',
+        };
+    }
+
+    private static function paymentStatusLabel(?string $state): string
+    {
+        return match ($state) {
+            'pending' => 'Menunggu Validasi',
+            'valid', 'approved' => 'Lunas',
+            'invalid' => 'Ditolak',
+            default => '-',
+        };
+    }
+
+    private static function renderPaymentProofModal(App $record): HtmlString
+    {
+        if (blank($record->payment_proof)) {
+            return new HtmlString('
+                <div style="text-align:center;color:#64748b;padding:2rem 1rem;">
+                    Bukti pembayaran belum diunggah untuk aplikasi ini.
+                </div>
+            ');
+        }
+
+        $imageUrl = e(asset('storage/' . $record->payment_proof));
+        $title = e($record->title);
+
+        return new HtmlString('
+            <div style="text-align:center;">
+                <img src="' . $imageUrl . '" alt="Bukti pembayaran ' . $title . '" style="max-width:100%;max-height:70vh;object-fit:contain;border-radius:12px;border:1px solid #e2e8f0;margin:0 auto;">
+            </div>
+        ');
     }
 }
