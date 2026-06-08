@@ -2,14 +2,28 @@
     <div style="display:flex; flex-direction:column; gap:1.5rem;">
 
         @forelse ($this->groupedReports as $appName => $reportsByDate)
+            @php
+                $appReport = $reportsByDate->flatMap(fn ($reports) => $reports)->first();
+                $application = $appReport?->application;
+                $appIconPath = $application?->app_icon;
+                $appIconUrl = $appIconPath
+                    ? (str_starts_with($appIconPath, 'http') ? $appIconPath : asset('storage/' . $appIconPath))
+                    : null;
+                $appInitials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $application?->title ?? $appName), 0, 2));
+                $appInitials = $appInitials !== '' ? $appInitials : 'AP';
+            @endphp
             <div class="overflow-hidden border shadow-sm" style="border-radius:29px; border-color:rgba(var(--tesyuk-accent-rgb),0.18); background:#FFFFFF;">
 
                 {{-- HEADER APLIKASI --}}
                 <div class="px-6 py-5" style="background: linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                            style="background:rgba(255,255,255,0.15);">
-                            <x-heroicon-o-clipboard-document-list class="h-5 w-5" style="color:#FFFFFF;" />
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl"
+                            style="background:#FFFFFF; border:1px solid rgba(255,255,255,0.28); box-shadow:0 14px 26px -22px rgba(0,0,0,.45);">
+                            @if($appIconUrl)
+                                <img src="{{ $appIconUrl }}" alt="{{ $appName }}" style="width:100%;height:100%;object-fit:contain;padding:6px;background:#FFFFFF;">
+                            @else
+                                <span class="text-sm font-black" style="color:var(--tesyuk-primary);">{{ $appInitials }}</span>
+                            @endif
                         </div>
                         <div>
                             <p class="text-base font-bold tracking-tight" style="color:#FFFFFF;">{{ $appName }}</p>
@@ -43,6 +57,22 @@
                             {{-- LIST TESTER --}}
                             <div style="background:#FFFFFF;">
                                 @foreach ($reports as $report)
+                                    @php
+                                        $detailUrl = \App\Filament\Developer\Resources\DailyReportResource::getUrl('view', [
+                                            'record' => $report->id,
+                                        ]);
+                                        $reportStatus = $report->status ?? \App\Models\DailyReport::STATUS_PENDING;
+                                        $reportStatusLabel = match ($reportStatus) {
+                                            \App\Models\DailyReport::STATUS_APPROVED => 'Disetujui',
+                                            \App\Models\DailyReport::STATUS_REJECTED => 'Ditolak',
+                                            default => 'Menunggu Review',
+                                        };
+                                        $reportStatusStyle = match ($reportStatus) {
+                                            \App\Models\DailyReport::STATUS_APPROVED => 'background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;',
+                                            \App\Models\DailyReport::STATUS_REJECTED => 'background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;',
+                                            default => 'background:#fffbeb;color:#92400e;border:1px solid #fde68a;',
+                                        };
+                                    @endphp
                                     <div x-data="{ open: false }"
                                         class="flex items-center justify-between px-4 py-4"
                                         style="border-bottom:1px solid #EDF2F7;"
@@ -60,6 +90,10 @@
                                                     <p class="text-sm font-semibold" style="color:var(--tesyuk-ink);">
                                                         {{ $report->tester?->name ?? 'Tester Tidak Diketahui' }}
                                                     </p>
+                                                    <span class="rounded-full px-2.5 py-0.5 text-[11px] font-bold"
+                                                        style="{{ $reportStatusStyle }}">
+                                                        {{ $reportStatusLabel }}
+                                                    </span>
                                                 </div>
                                                 <div class="flex items-center gap-1 mt-0.5">
                                                     <x-heroicon-o-clock class="h-3 w-3" style="color:#64748b;" />
@@ -71,17 +105,17 @@
                                         </div>
 
                                         {{-- TOMBOL LIHAT LAPORAN --}}
-                                        <button type="button"
-                                            x-on:click="open = true"
+                                        <a href="{{ $detailUrl }}"
                                             class="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold"
                                             style="background:var(--tesyuk-secondary); color:var(--tesyuk-primary); border:1px solid rgba(var(--tesyuk-accent-rgb),0.18);"
                                             x-on:mouseover="$el.style.background='rgba(var(--tesyuk-accent-rgb),0.18)'"
                                             x-on:mouseleave="$el.style.background='var(--tesyuk-secondary)'">
                                             <x-heroicon-o-eye class="h-3.5 w-3.5" />
                                             Lihat Laporan
-                                        </button>
+                                        </a>
 
-                                        {{-- MODAL --}}
+                                        {{-- MODAL lama dinonaktifkan: detail sekarang memakai halaman penuh. --}}
+                                        @if(false)
                                         <div x-show="open"
                                             x-on:click.self="open = false"
                                             x-transition:enter="transition ease-out duration-200"
@@ -209,6 +243,7 @@
                                             </div>
                                         </div>
                                         {{-- akhir modal --}}
+                                        @endif
 
                                     </div>
                                     {{-- akhir tester row --}}

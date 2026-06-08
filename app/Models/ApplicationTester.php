@@ -69,6 +69,39 @@ class ApplicationTester extends Model
             ->where('tester_id', $this->tester_id)
             ->where('app_id', $this->application_id)
             ->whereNotNull('screenshot')
+            ->where(function ($query) {
+                $query
+                    ->whereNull('status')
+                    ->orWhereIn('status', [
+                        DailyReport::STATUS_PENDING,
+                        DailyReport::STATUS_APPROVED,
+                    ]);
+            })
+            ->pluck('report_date')
+            ->filter()
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
+            ->filter(function (string $date) use ($startDate, $lastTestingDate): bool {
+                if (! $startDate || ! $lastTestingDate) {
+                    return true;
+                }
+
+                $reportDate = Carbon::parse($date)->startOfDay();
+
+                return $reportDate->betweenIncluded($startDate, $lastTestingDate);
+            })
+            ->unique()
+            ->values();
+    }
+
+    public function attemptedDailyReportDates(): Collection
+    {
+        $startDate = $this->testingStartDate();
+        $lastTestingDate = $startDate?->copy()->addDays(self::DAILY_TESTING_DAYS - 1);
+
+        return DailyReport::query()
+            ->where('tester_id', $this->tester_id)
+            ->where('app_id', $this->application_id)
+            ->whereNotNull('screenshot')
             ->pluck('report_date')
             ->filter()
             ->map(fn ($date) => Carbon::parse($date)->toDateString())
@@ -109,7 +142,7 @@ class ApplicationTester extends Model
             return collect();
         }
 
-        $submittedDates = $this->submittedDailyReportDates()->flip();
+        $submittedDates = $this->attemptedDailyReportDates()->flip();
         $missedDates = collect();
 
         for ($date = $startDate->copy(); $date->lessThanOrEqualTo($checkUntil); $date->addDay()) {

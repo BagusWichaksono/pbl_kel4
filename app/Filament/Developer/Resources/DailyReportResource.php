@@ -4,7 +4,10 @@ namespace App\Filament\Developer\Resources;
 
 use App\Filament\Developer\Resources\DailyReportResource\Pages;
 use App\Models\DailyReport;
+use App\Support\AppNotifier;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -88,6 +91,40 @@ class DailyReportResource extends Resource
                     ->placeholder('—')
                     ->color(fn ($state) => $state ? 'danger' : null),
 
+                TextColumn::make('status')
+                    ->label('Status Review')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        DailyReport::STATUS_APPROVED => 'Disetujui',
+                        DailyReport::STATUS_REJECTED => 'Ditolak',
+                        default => 'Menunggu Review',
+                    })
+                    ->color(fn (?string $state): string => match ($state) {
+                        DailyReport::STATUS_APPROVED => 'success',
+                        DailyReport::STATUS_REJECTED => 'danger',
+                        default => 'warning',
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $search = strtolower($search);
+                        $matched = [];
+
+                        if (str_contains('menunggu', $search) || str_contains('pending', $search)) {
+                            $matched[] = DailyReport::STATUS_PENDING;
+                        }
+
+                        if (str_contains('disetujui', $search) || str_contains('approve', $search)) {
+                            $matched[] = DailyReport::STATUS_APPROVED;
+                        }
+
+                        if (str_contains('ditolak', $search) || str_contains('reject', $search)) {
+                            $matched[] = DailyReport::STATUS_REJECTED;
+                        }
+
+                        return filled($matched)
+                            ? $query->whereIn('status', $matched)
+                            : $query->where('status', 'like', "%{$search}%");
+                    }),
+
                 TextColumn::make('created_at')
                     ->label('Dikirim Pada')
                     ->dateTime('d M Y H:i')
@@ -110,12 +147,47 @@ class DailyReportResource extends Resource
                     ->relationship('application', 'title', fn (Builder $query) =>
                         $query->where('developer_id', Auth::id())
                     ),
+
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status Review')
+                    ->options([
+                        DailyReport::STATUS_PENDING => 'Menunggu Review',
+                        DailyReport::STATUS_APPROVED => 'Disetujui',
+                        DailyReport::STATUS_REJECTED => 'Ditolak',
+                    ]),
             ])
             ->actions([
                 // Gunakan url() agar redirect ke halaman view, bukan modal
                 Tables\Actions\ViewAction::make()
                     ->label('Lihat Detail')
+                    ->icon('heroicon-o-eye')
                     ->url(fn (DailyReport $record) => static::getUrl('view', ['record' => $record->id])),
+
+                Tables\Actions\Action::make('approve')
+                    ->label('Approve')
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Approve Laporan Harian')
+                    ->modalDescription('Laporan harian ini akan ditandai valid.')
+                    ->visible(fn (DailyReport $record): bool => ($record->status ?? DailyReport::STATUS_PENDING) === DailyReport::STATUS_PENDING)
+                    ->action(fn (DailyReport $record) => static::approveReport($record)),
+
+                Tables\Actions\Action::make('reject')
+                    ->label('Reject')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Reject Laporan Harian')
+                    ->modalDescription('Berikan alasan agar tester dapat memperbaiki dan mengirim ulang laporan.')
+                    ->form([
+                        Textarea::make('rejection_reason')
+                            ->label('Alasan Reject')
+                            ->required()
+                            ->rows(3),
+                    ])
+                    ->visible(fn (DailyReport $record): bool => ($record->status ?? DailyReport::STATUS_PENDING) === DailyReport::STATUS_PENDING)
+                    ->action(fn (DailyReport $record, array $data) => static::rejectReport($record, $data['rejection_reason'])),
             ])
             ->bulkActions([])
             ->defaultSort('report_date', 'desc');
@@ -133,11 +205,31 @@ class DailyReportResource extends Resource
                         TextEntry::make('application.title')
                             ->label('Aplikasi'),
 
+                        ImageEntry::make('application.app_icon')
+                            ->label('Logo Aplikasi')
+                            ->disk('public')
+                            ->height(72)
+                            ->width(72),
+
                         TextEntry::make('report_date')
                             ->label('Tanggal Laporan')
                             ->date('d M Y'),
+
+                        TextEntry::make('status')
+                            ->label('Status Review')
+                            ->badge()
+                            ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                DailyReport::STATUS_APPROVED => 'Disetujui',
+                                DailyReport::STATUS_REJECTED => 'Ditolak',
+                                default => 'Menunggu Review',
+                            })
+                            ->color(fn (?string $state): string => match ($state) {
+                                DailyReport::STATUS_APPROVED => 'success',
+                                DailyReport::STATUS_REJECTED => 'danger',
+                                default => 'warning',
+                            }),
                     ])
-                    ->columns(3),
+                    ->columns(4),
 
                 Section::make('Bukti Testing')
                     ->schema([
@@ -162,6 +254,25 @@ class DailyReportResource extends Resource
                             ->placeholder('Tidak ada laporan bug pada hari ini.'),
                     ])
                     ->visible(fn ($record) => !empty($record?->bug_report)),
+
+                Section::make('Catatan Review')
+                    ->schema([
+                        TextEntry::make('rejection_reason')
+                            ->label('Alasan Reject')
+                            ->columnSpanFull()
+                            ->placeholder('-'),
+
+                        TextEntry::make('reviewer.name')
+                            ->label('Direview Oleh')
+                            ->placeholder('-'),
+
+                        TextEntry::make('reviewed_at')
+                            ->label('Direview Pada')
+                            ->dateTime('d M Y H:i')
+                            ->placeholder('-'),
+                    ])
+                    ->columns(2)
+                    ->visible(fn ($record) => filled($record?->reviewed_at) || filled($record?->rejection_reason)),
             ]);
     }
 
@@ -171,6 +282,51 @@ class DailyReportResource extends Resource
             'index' => Pages\ListDailyReports::route('/'),
             'view'  => Pages\ViewDailyReport::route('/{record}'),
         ];
+    }
+
+    public static function approveReport(DailyReport $record): void
+    {
+        $record->update([
+            'status' => DailyReport::STATUS_APPROVED,
+            'rejection_reason' => null,
+            'reviewed_at' => now(),
+            'reviewed_by' => Auth::id(),
+        ]);
+
+        Notification::make()
+            ->title('Laporan harian disetujui')
+            ->success()
+            ->send();
+
+        AppNotifier::database(
+            $record->tester,
+            'Laporan harian disetujui',
+            'Laporan harian untuk '.($record->application?->title ?? 'aplikasi').' pada '.($record->report_date?->translatedFormat('d M Y') ?? '-').' sudah disetujui developer.',
+            'success',
+        );
+    }
+
+    public static function rejectReport(DailyReport $record, string $reason): void
+    {
+        $record->update([
+            'status' => DailyReport::STATUS_REJECTED,
+            'rejection_reason' => $reason,
+            'reviewed_at' => now(),
+            'reviewed_by' => Auth::id(),
+        ]);
+
+        Notification::make()
+            ->title('Laporan harian ditolak')
+            ->body('Tester dapat mengirim ulang laporan untuk tanggal tersebut.')
+            ->danger()
+            ->send();
+
+        AppNotifier::database(
+            $record->tester,
+            'Laporan harian ditolak',
+            'Laporan harian untuk '.($record->application?->title ?? 'aplikasi').' pada '.($record->report_date?->translatedFormat('d M Y') ?? '-').' ditolak. Alasan: '.$reason,
+            'danger',
+        );
     }
 
     public static function canCreate(): bool { return false; }

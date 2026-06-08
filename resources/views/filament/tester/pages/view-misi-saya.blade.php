@@ -432,21 +432,27 @@
 
                                     $iconStyle = match ($missionStatus) {
                                         'done' => 'background:#DCFCE7; color:#15803D;',
+                                        'pending_review' => 'background:#FEF3C7; color:#92400E;',
                                         'today' => 'background:#047857; color:#FFFFFF;',
+                                        'rejected' => 'background:#FEE2E2; color:#B91C1C;',
                                         'missed', 'failed' => 'background:#FFF7ED; color:#9A3412;',
                                         default => 'background:#E2E8F0; color:#7c6f6f;',
                                     };
 
                                     $badgeStyle = match ($missionStatus) {
                                         'done' => 'background:#DCFCE7; color:#15803D;',
+                                        'pending_review' => 'background:#FEF3C7; color:#92400E;',
                                         'today' => 'background:#047857; color:#FFFFFF;',
+                                        'rejected' => 'background:#FEE2E2; color:#B91C1C;',
                                         'missed', 'failed' => 'background:#FFF7ED; color:#9A3412;',
                                         default => 'background:#E2E8F0; color:#7c6f6f;',
                                     };
 
                                     $statusText = match ($missionStatus) {
                                         'done' => 'Selesai',
+                                        'pending_review' => 'Menunggu Review',
                                         'today' => 'Hari Ini',
+                                        'rejected' => 'Ditolak',
                                         'missed' => 'Terlewat',
                                         'failed' => 'Gugur',
                                         default => 'Terkunci',
@@ -459,8 +465,12 @@
                                             style="{{ $iconStyle }}">
                                             @if($missionStatus === 'done')
                                                 <x-heroicon-o-check-circle class="h-4 w-4" />
+                                            @elseif($missionStatus === 'pending_review')
+                                                <x-heroicon-o-clock class="h-4 w-4" />
                                             @elseif($missionStatus === 'today')
                                                 <x-heroicon-o-play-circle class="h-4 w-4" />
+                                            @elseif($missionStatus === 'rejected')
+                                                <x-heroicon-o-x-circle class="h-4 w-4" />
                                             @elseif($missionStatus === 'missed')
                                                 <x-heroicon-o-x-circle class="h-4 w-4" />
                                             @elseif($missionStatus === 'failed')
@@ -472,12 +482,19 @@
                                         <div>
                                             <p class="text-sm font-medium" style="color:var(--tesyuk-ink);">Hari {{ $dailyMission['day'] }}</p>
                                             <p class="text-xs" style="color:#7c6f6f;">{{ $dailyMission['date'] }}</p>
+                                            @if($missionStatus === 'rejected' && !empty($dailyMission['rejection_reason']))
+                                                <p class="mt-1 max-w-md text-xs leading-relaxed" style="color:#B91C1C;">
+                                                    {{ $dailyMission['rejection_reason'] }}
+                                                </p>
+                                            @endif
                                         </div>
                                     </div>
 
                                     <div class="misi-day-action">
                                         @if($missionStatus === 'today' && $mission->status === 'active')
-                                            {{ ($this->laporHarianAction)(['record' => $mission->id]) }}
+                                            {{ ($this->laporHarianAction)(['record' => $mission->id, 'report_date' => $dailyMission['date_raw']]) }}
+                                        @elseif($missionStatus === 'rejected' && $mission->status === 'active')
+                                            {{ ($this->laporHarianAction)(['record' => $mission->id, 'report_date' => $dailyMission['date_raw'], 'retry' => true]) }}
                                         @else
                                             <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
                                                 style="{{ $badgeStyle }}">

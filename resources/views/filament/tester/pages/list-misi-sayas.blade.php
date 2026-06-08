@@ -199,6 +199,10 @@
     .misi-day-chip.missed {
         background: #FED7AA;
     }
+    .misi-day-chip.rejected {
+        background: #FEE2E2;
+        border: 1px solid #FCA5A5;
+    }
     /* Hari belum tiba = abu (default) */
     .misi-footer-link {
         display: flex;
@@ -310,6 +314,7 @@
                 $application       = $mission->application;
                 $dailyReportsCount = $mission->daily_reports_count_custom ?? 0;
                 $submittedDates = collect($mission->daily_report_dates_custom ?? []);
+                $rejectedDates = collect($mission->rejected_daily_report_dates_custom ?? []);
                 $missedDates = collect($mission->missed_daily_report_dates_custom ?? []);
                 $missedReportsCount = (int) ($mission->missed_daily_reports_count_custom ?? 0);
                 $isLockedDueMissedReport = (bool) ($mission->is_locked_due_missed_report ?? false);
@@ -458,6 +463,8 @@
 
                                         if ($chipDate && $submittedDates->contains($chipDate)) {
                                             $chipClass = 'submitted';
+                                        } elseif ($chipDate && $rejectedDates->contains($chipDate)) {
+                                            $chipClass = 'rejected';
                                         } elseif ($chipDate && $missedDates->contains($chipDate)) {
                                             $chipClass = 'missed';
                                         } else {
@@ -476,6 +483,10 @@
                                     <div class="misi-legend-item">
                                         <div class="misi-legend-dot" style="background:#FED7AA;"></div>
                                         Terlewat
+                                    </div>
+                                    <div class="misi-legend-item">
+                                        <div class="misi-legend-dot" style="background:#FEE2E2;border:1px solid #FCA5A5;"></div>
+                                        Ditolak
                                     </div>
                                 </div>
                             </div>

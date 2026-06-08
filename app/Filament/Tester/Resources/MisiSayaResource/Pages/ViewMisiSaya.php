@@ -78,6 +78,15 @@ class ViewMisiSaya extends Page
         $reportDates = $mission->submittedDailyReportDates();
         $missedReportDates = $mission->missedDailyReportDates();
         $isLockedDueMissedReport = $mission->shouldBeDroppedBecauseMissedDailyReport();
+        $latestReportsByDate = DailyReport::query()
+            ->where('tester_id', Auth::id())
+            ->where('app_id', $mission->application_id)
+            ->orderByDesc('created_at')
+            ->get()
+            ->unique(fn (DailyReport $report) => Carbon::parse($report->report_date)->toDateString())
+            ->mapWithKeys(fn (DailyReport $report) => [
+                Carbon::parse($report->report_date)->toDateString() => $report,
+            ]);
 
         $dailyReportsCount = $reportDates->count();
 
@@ -87,8 +96,13 @@ class ViewMisiSaya extends Page
             for ($i = 0; $i < $testingDays; $i++) {
                 $date = $startDate->copy()->addDays($i);
                 $dateString = $date->toDateString();
+                $latestReport = $latestReportsByDate->get($dateString);
 
-                if ($reportDates->contains($dateString)) {
+                if (($latestReport?->status ?? null) === DailyReport::STATUS_REJECTED) {
+                    $status = 'rejected';
+                } elseif (($latestReport?->status ?? null) === DailyReport::STATUS_PENDING || ($latestReport && blank($latestReport->status))) {
+                    $status = 'pending_review';
+                } elseif (($latestReport?->status ?? null) === DailyReport::STATUS_APPROVED || $reportDates->contains($dateString)) {
                     $status = 'done';
                 } elseif ($missedReportDates->contains($dateString)) {
                     $status = 'missed';
@@ -107,6 +121,7 @@ class ViewMisiSaya extends Page
                     'date' => $date->translatedFormat('d F Y'),
                     'date_raw' => $dateString,
                     'status' => $status,
+                    'rejection_reason' => $latestReport?->rejection_reason,
                 ];
             }
         }
@@ -139,7 +154,7 @@ class ViewMisiSaya extends Page
     public function laporHarianAction(): Action
     {
         return Action::make('laporHarian')
-            ->label('Kerjakan Misi')
+            ->label(fn (array $arguments): string => ($arguments['retry'] ?? false) ? 'Kirim Ulang' : 'Kerjakan Misi')
             ->icon('heroicon-o-camera')
             ->color('success')
             ->button()
@@ -163,7 +178,7 @@ class ViewMisiSaya extends Page
                     ->helperText('Isi jika kamu menemukan bug atau masalah pada aplikasi hari ini.')
                     ->rows(3),
             ])
-            ->action(function (array $data): void {
+            ->action(function (array $data, array $arguments): void {
                 $record = $this->getMission();
 
                 if (! $record) {
@@ -171,6 +186,10 @@ class ViewMisiSaya extends Page
 
                     return;
                 }
+
+                $targetDate = filled($arguments['report_date'] ?? null)
+                    ? Carbon::parse($arguments['report_date'])->startOfDay()
+                    : Carbon::today();
 
                 if ($record->markDroppedIfMissedDailyReport()) {
                     Notification::make()
@@ -198,9 +217,15 @@ class ViewMisiSaya extends Page
 
                 $startDate = Carbon::parse($record->application->start_date)->startOfDay();
                 $today = Carbon::today();
-                $todayIndex = $startDate->diffInDays($today, false);
+                $targetIndex = $startDate->diffInDays($targetDate, false);
+                $isRetryingRejectedReport = DailyReport::query()
+                    ->where('tester_id', Auth::id())
+                    ->where('app_id', $record->application_id)
+                    ->whereDate('report_date', $targetDate->toDateString())
+                    ->where('status', DailyReport::STATUS_REJECTED)
+                    ->exists();
 
-                if ($todayIndex < 0) {
+                if ($targetIndex < 0) {
                     Notification::make()
                         ->title('Sesi testing belum dimulai.')
                         ->body('Tunggu sampai tanggal mulai testing tiba.')
@@ -209,10 +234,19 @@ class ViewMisiSaya extends Page
                     return;
                 }
 
-                if ($todayIndex >= ApplicationTester::DAILY_TESTING_DAYS) {
+                if ($targetIndex >= ApplicationTester::DAILY_TESTING_DAYS) {
                     Notification::make()
                         ->title('Masa laporan harian sudah selesai.')
                         ->body('Laporan harian hanya bisa dikirim selama 14 hari sesi testing.')
+                        ->warning()->send();
+
+                    return;
+                }
+
+                if (! $targetDate->isSameDay($today) && ! $isRetryingRejectedReport) {
+                    Notification::make()
+                        ->title('Laporan hanya bisa dikirim untuk hari ini.')
+                        ->body('Kirim ulang untuk tanggal lama hanya tersedia jika laporan tersebut ditolak developer.')
                         ->warning()->send();
 
                     return;
@@ -230,11 +264,19 @@ class ViewMisiSaya extends Page
                 $alreadyReported = DailyReport::query()
                     ->where('tester_id', Auth::id())
                     ->where('app_id', $record->application_id)
-                    ->whereDate('report_date', Carbon::today()->toDateString())
+                    ->whereDate('report_date', $targetDate->toDateString())
+                    ->where(function ($query) {
+                        $query
+                            ->whereNull('status')
+                            ->orWhereIn('status', [
+                                DailyReport::STATUS_PENDING,
+                                DailyReport::STATUS_APPROVED,
+                            ]);
+                    })
                     ->exists();
 
                 if ($alreadyReported) {
-                    Notification::make()->title('Kamu sudah mengerjakan misi hari ini.')->warning()->send();
+                    Notification::make()->title('Laporan untuk tanggal ini sudah dikirim.')->warning()->send();
 
                     return;
                 }
@@ -242,15 +284,19 @@ class ViewMisiSaya extends Page
                 DailyReport::create([
                     'tester_id' => Auth::id(),
                     'app_id' => $record->application_id,
-                    'report_date' => Carbon::today()->toDateString(),
+                    'report_date' => $targetDate->toDateString(),
                     'screenshot' => $data['screenshot'],
                     'notes' => $data['notes'] ?? null,
                     'bug_report' => $data['bug_report'] ?? null,
+                    'status' => DailyReport::STATUS_PENDING,
+                    'rejection_reason' => null,
+                    'reviewed_at' => null,
+                    'reviewed_by' => null,
                 ]);
 
                 Notification::make()
-                    ->title('Misi harian berhasil dikirim!')
-                    ->body('Terima kasih. Kembali lagi besok untuk melanjutkan misi berikutnya.')
+                    ->title($isRetryingRejectedReport ? 'Laporan ulang berhasil dikirim!' : 'Misi harian berhasil dikirim!')
+                    ->body('Laporanmu menunggu review developer.')
                     ->success()->send();
 
                 $appTitle = $record->application?->title ?? 'aplikasi';

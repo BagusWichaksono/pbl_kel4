@@ -5,6 +5,7 @@ namespace App\Filament\Developer\Resources;
 use App\Filament\Developer\Resources\LaporanHarianAppResource\Pages;
 use App\Models\App;
 use Filament\Forms\Form;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -42,6 +43,25 @@ class LaporanHarianAppResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([]);
+    }
+
+    public static function getNavigationItems(): array
+    {
+        return [
+            NavigationItem::make(static::getNavigationLabel())
+                ->group(static::getNavigationGroup())
+                ->parentItem(static::getNavigationParentItem())
+                ->icon(static::getNavigationIcon())
+                ->activeIcon(static::getActiveNavigationIcon())
+                ->isActiveWhen(fn (): bool =>
+                    request()->routeIs(static::getRouteBaseName() . '.*') ||
+                    request()->routeIs(DailyReportResource::getRouteBaseName() . '.*')
+                )
+                ->badge(static::getNavigationBadge(), color: static::getNavigationBadgeColor())
+                ->badgeTooltip(static::getNavigationBadgeTooltip())
+                ->sort(static::getNavigationSort())
+                ->url(static::getNavigationUrl()),
+        ];
     }
 
     public static function table(Table $table): Table
