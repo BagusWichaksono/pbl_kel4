@@ -52,6 +52,28 @@
             padding: 16px 28px;
         }
 
+        .misi-lock-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-bottom: 1px solid #fed7aa;
+            background: #fff7ed;
+            padding: 16px 28px;
+            color: #9a3412;
+        }
+
+        .misi-lock-banner-icon {
+            display: flex;
+            height: 36px;
+            width: 36px;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
         .misi-detail-grid {
             display: grid;
             gap: 24px;
@@ -129,7 +151,8 @@
 
         @media (max-width: 640px) {
             .misi-detail-hero,
-            .misi-progress-strip {
+            .misi-progress-strip,
+            .misi-lock-banner {
                 padding-left: 18px;
                 padding-right: 18px;
             }
@@ -162,6 +185,7 @@
         </div>
     @else
         @php
+            $dailyTestingDays = \App\Models\ApplicationTester::DAILY_TESTING_DAYS;
             $application = $mission->application;
             $appIconPath = $application?->app_icon;
             $appIconUrl = $appIconPath
@@ -172,21 +196,27 @@
             $dailyReportsCount = $mission->daily_reports_count_custom ?? 0;
             $progressPercentage = $mission->progress_percentage ?? 0;
             $dailyMissions = $mission->daily_missions_custom ?? [];
+            $missedReportsCount = (int) ($mission->missed_daily_reports_count_custom ?? 0);
+            $isLockedDueMissedReport = (bool) ($mission->is_locked_due_missed_report ?? false);
 
-            $statusStyle = match ($mission->status) {
-                'active' => 'background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;',
-                'completed' => 'background:#DCFCE7;color:#15803D;',
-                'failed', 'dropped' => 'background:#FFF7ED;color:#9A3412;',
-                default => 'background:#E2E8F0;color:#7c6f6f;',
-            };
+            $statusStyle = $isLockedDueMissedReport
+                ? 'background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA;'
+                : match ($mission->status) {
+                    'active' => 'background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;',
+                    'completed' => 'background:#DCFCE7;color:#15803D;',
+                    'failed', 'dropped' => 'background:#FFF7ED;color:#9A3412;',
+                    default => 'background:#E2E8F0;color:#7c6f6f;',
+                };
 
-            $statusLabel = match ($mission->status) {
-                'active' => 'Aktif',
-                'completed' => 'Selesai',
-                'failed' => 'Gagal',
-                'dropped' => 'Berhenti',
-                default => $mission->status,
-            };
+            $statusLabel = $isLockedDueMissedReport
+                ? 'Gugur'
+                : match ($mission->status) {
+                    'active' => 'Aktif',
+                    'completed' => 'Selesai',
+                    'failed' => 'Gagal',
+                    'dropped' => 'Gugur',
+                    default => $mission->status,
+                };
         @endphp
 
         {{-- BACK LINK --}}
@@ -236,7 +266,7 @@
                                         &mdash;
                                         {{ $application?->end_date
                                             ? \Carbon\Carbon::parse($application->end_date)->translatedFormat('d M Y')
-                                            : \Carbon\Carbon::parse($application->start_date)->addDays(14)->translatedFormat('d M Y')
+                                            : \Carbon\Carbon::parse($application->start_date)->addDays($dailyTestingDays - 1)->translatedFormat('d M Y')
                                         }}
                                     </span>
                                 @else
@@ -250,7 +280,13 @@
                     </div>
 
                     <div class="shrink-0 ml-auto flex justify-end">
-                        @if($application?->app_link)
+                        @if($isLockedDueMissedReport)
+                            <span class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold"
+                                style="border:1px solid #fed7aa;color:#9a3412;background:#fff7ed;">
+                                <x-heroicon-o-lock-closed class="h-4 w-4" />
+                                Misi Dikunci
+                            </span>
+                        @elseif($application?->app_link)
                             <a href="{{ $application->app_link }}" target="_blank"
                                 class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition hover:opacity-90"
                                 style="background:#f8fafc;border:1px solid #e2e8f0;color:#047857;">
@@ -270,12 +306,26 @@
 
             {{-- PROGRESS BAR STRIP --}}
             <div class="misi-progress-strip">
-                <span class="text-xs font-semibold uppercase tracking-wide" style="color:#047857;">Progress</span>
+                <span class="text-xs font-semibold uppercase tracking-wide" style="color:{{ $isLockedDueMissedReport ? '#9a3412' : '#047857' }};">Progress</span>
                 <div class="h-2 flex-1 overflow-hidden rounded-full" style="background:#e2e8f0;">
-                    <div class="h-2 rounded-full transition-all" style="width:{{ $progressPercentage }}%; background:#10b981;"></div>
+                    <div class="h-2 rounded-full transition-all" style="width:{{ $progressPercentage }}%; background:{{ $isLockedDueMissedReport ? '#f97316' : '#10b981' }};"></div>
                 </div>
-                <span class="text-sm font-bold" style="color:var(--tesyuk-ink);">{{ $dailyReportsCount }}/14</span>
+                <span class="text-sm font-bold" style="color:var(--tesyuk-ink);">{{ $dailyReportsCount }}/{{ $dailyTestingDays }}</span>
             </div>
+
+            @if($isLockedDueMissedReport)
+                <div class="misi-lock-banner">
+                    <div class="misi-lock-banner-icon">
+                        <x-heroicon-o-lock-closed class="h-5 w-5" />
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold">Tidak bisa melanjutkan sesi testing</p>
+                        <p class="mt-1 text-xs leading-relaxed">
+                            Misi ini gugur karena ada {{ $missedReportsCount }} laporan harian yang terlewat tanpa bukti. Tester tidak bisa mengirim laporan harian atau laporan akhir untuk misi ini.
+                        </p>
+                    </div>
+                </div>
+            @endif
 
             {{-- CONTENT --}}
             <div class="misi-detail-grid">
@@ -299,7 +349,16 @@
                             <h3 class="text-sm font-semibold" style="color:var(--tesyuk-ink);">Laporan Akhir</h3>
                         </div>
                         
-                        @if(isset($testingReport) && $testingReport->status === 'pending')
+                        @if($isLockedDueMissedReport)
+                            <div class="rounded-2xl p-4" style="background:#FFF7ED; border: 1px solid #FED7AA;">
+                                <p class="text-sm font-medium" style="color:#9A3412;">
+                                    <x-heroicon-o-lock-closed class="inline h-4 w-4 mr-1"/> Misi Gugur
+                                </p>
+                                <p class="mt-1 text-xs leading-relaxed" style="color:#9A3412;">
+                                    Kamu tidak bisa mengirim laporan akhir karena ada laporan harian yang terlewat.
+                                </p>
+                            </div>
+                        @elseif(isset($testingReport) && $testingReport->status === 'pending')
                             <div class="rounded-2xl p-4" style="background:#FFFBEB; border: 1px solid #FDE68A;">
                                 <p class="text-sm font-medium" style="color:#92400E;">
                                     <x-heroicon-o-clock class="inline h-4 w-4 mr-1"/> Menunggu Validasi Developer
@@ -323,7 +382,7 @@
                                 </div>
                             @else
                                 <p class="mb-2 text-xs leading-relaxed" style="color:#7c6f6f;">
-                                    Kirim setelah 14 hari testing & 14 laporan harian selesai.
+                                    Kirim setelah {{ $dailyTestingDays }} hari testing & {{ $dailyTestingDays }} laporan harian selesai.
                                 </p>
                             @endif
 
@@ -352,7 +411,7 @@
                             <x-heroicon-o-list-bullet class="h-4 w-4" style="color:#047857;" />
                             <h3 class="text-sm font-semibold" style="color:var(--tesyuk-ink);">Timeline Misi Harian</h3>
                         </div>
-                        <span class="text-xs" style="color:#7c6f6f;">14 hari</span>
+                        <span class="text-xs" style="color:#7c6f6f;">{{ $dailyTestingDays }} hari</span>
                     </div>
 
                     @if(!$application?->start_date)
@@ -374,14 +433,14 @@
                                     $iconStyle = match ($missionStatus) {
                                         'done' => 'background:#DCFCE7; color:#15803D;',
                                         'today' => 'background:#047857; color:#FFFFFF;',
-                                        'missed' => 'background:#FFF7ED; color:#9A3412;',
+                                        'missed', 'failed' => 'background:#FFF7ED; color:#9A3412;',
                                         default => 'background:#E2E8F0; color:#7c6f6f;',
                                     };
 
                                     $badgeStyle = match ($missionStatus) {
                                         'done' => 'background:#DCFCE7; color:#15803D;',
                                         'today' => 'background:#047857; color:#FFFFFF;',
-                                        'missed' => 'background:#FFF7ED; color:#9A3412;',
+                                        'missed', 'failed' => 'background:#FFF7ED; color:#9A3412;',
                                         default => 'background:#E2E8F0; color:#7c6f6f;',
                                     };
 
@@ -389,6 +448,7 @@
                                         'done' => 'Selesai',
                                         'today' => 'Hari Ini',
                                         'missed' => 'Terlewat',
+                                        'failed' => 'Gugur',
                                         default => 'Terkunci',
                                     };
                                 @endphp
@@ -403,6 +463,8 @@
                                                 <x-heroicon-o-play-circle class="h-4 w-4" />
                                             @elseif($missionStatus === 'missed')
                                                 <x-heroicon-o-x-circle class="h-4 w-4" />
+                                            @elseif($missionStatus === 'failed')
+                                                <x-heroicon-o-lock-closed class="h-4 w-4" />
                                             @else
                                                 <x-heroicon-o-lock-closed class="h-4 w-4" />
                                             @endif

@@ -39,10 +39,25 @@
         border-color: #cbd5e1;
         box-shadow: 0 22px 46px -34px rgba(15, 23, 42, .44);
     }
+    .misi-card.is-locked {
+        cursor: pointer;
+        border-color: #fed7aa;
+        background: #fffaf5;
+        opacity: .86;
+    }
+    .misi-card.is-locked:hover {
+        transform: none;
+        border-color: #fed7aa;
+        box-shadow: 0 14px 34px -30px rgba(15, 23, 42, .34);
+    }
     .misi-card-top {
         background: #f8fafc;
         border-bottom: 1px solid #e2e8f0;
         padding: 18px;
+    }
+    .misi-card.is-locked .misi-card-top {
+        background: #fff7ed;
+        border-bottom-color: #fed7aa;
     }
     .misi-card-top-row {
         display: flex;
@@ -110,6 +125,11 @@
         background: #DCFCE7;
         color: #15803D;
     }
+    .misi-badge-locked {
+        background: #FFF7ED;
+        border: 1px solid #FED7AA;
+        color: #9A3412;
+    }
     .misi-card-body {
         padding: 18px;
         display: flex;
@@ -140,6 +160,9 @@
         height: 100%;
         border-radius: 999px;
         background: #10b981;
+    }
+    .misi-fill.locked {
+        background: #f97316;
     }
     .misi-date-row {
         display: flex;
@@ -188,6 +211,9 @@
         white-space: nowrap;
         flex-shrink: 0;
     }
+    .misi-footer-link.is-locked {
+        color: #9A3412;
+    }
     .misi-card:hover .misi-footer-link {
         gap: 8px;
     }
@@ -233,6 +259,18 @@
         align-items: center;
         gap: 4px;
     }
+    .misi-lock-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        border-radius: 16px;
+        border: 1px solid #fed7aa;
+        background: #fff7ed;
+        padding: 10px 12px;
+        font-size: 12px;
+        line-height: 1.45;
+        color: #9a3412;
+    }
 </style>
 
 <div class="space-y-5">
@@ -268,8 +306,13 @@
             @foreach($missions as $mission)
 
                 @php
+                $dailyTestingDays = \App\Models\ApplicationTester::DAILY_TESTING_DAYS;
                 $application       = $mission->application;
                 $dailyReportsCount = $mission->daily_reports_count_custom ?? 0;
+                $submittedDates = collect($mission->daily_report_dates_custom ?? []);
+                $missedDates = collect($mission->missed_daily_report_dates_custom ?? []);
+                $missedReportsCount = (int) ($mission->missed_daily_reports_count_custom ?? 0);
+                $isLockedDueMissedReport = (bool) ($mission->is_locked_due_missed_report ?? false);
                 $appIconPath = $application?->app_icon;
                 $appIconUrl = $appIconPath
                     ? (str_starts_with($appIconPath, 'http') ? $appIconPath : asset('storage/' . $appIconPath))
@@ -285,65 +328,50 @@
                 $today = \Carbon\Carbon::today();
 
                 $startDate = $application?->start_date
-                    ? \Carbon\Carbon::parse($application->start_date)
+                    ? \Carbon\Carbon::parse($application->start_date)->startOfDay()
                     : null;
 
                 $endDate = $application?->end_date
-                    ? \Carbon\Carbon::parse($application->end_date)
-                    : ($startDate ? $startDate->copy()->addDays(13) : null);
-
-                // Ambil semua laporan tester
-                $reports = $mission->dailyReports ?? collect();
-
-                // Simpan hari-hari yang ada laporan
-                $submittedDays = [];
-
-                if ($startDate) {
-
-                    foreach ($reports as $report) {
-
-                        if (!$report->report_date) {
-                            continue;
-                        }
-
-                        $reportDate = \Carbon\Carbon::parse($report->report_date);
-
-                        // Hitung hari keberapa sejak start mission
-                        $dayIndex = $startDate->diffInDays($reportDate, false);
-
-                        if ($dayIndex >= 0 && $dayIndex < 14) {
-                            $submittedDays[] = $dayIndex;
-                        }
-                    }
-                }
+                    ? \Carbon\Carbon::parse($application->end_date)->startOfDay()
+                    : ($startDate ? $startDate->copy()->addDays($dailyTestingDays - 1) : null);
 
                 // Berapa hari kalender yang sudah dilewati
                 $daysPassed = 0;
 
                 if ($startDate) {
                     $diff = $startDate->diffInDays($today, false);
-                    $daysPassed = (int) min(max($diff + 1, 0), 14);
+                    $daysPassed = (int) min(max($diff + 1, 0), $dailyTestingDays);
                 }
 
                 // Status misi
-                $isFinished = $daysPassed >= 14 || $mission->status === 'completed';
+                $isFinished = $daysPassed >= $dailyTestingDays || $mission->status === \App\Models\ApplicationTester::STATUS_COMPLETED;
 
-                $statusText = $isFinished
-                    ? 'Misi selesai'
-                    : 'Masih berjalan';
-
-                $badgeClass = $isFinished
-                    ? 'misi-badge-done'
-                    : 'misi-badge-running';
+                if ($isLockedDueMissedReport) {
+                    $statusText = 'Misi gugur';
+                    $badgeClass = 'misi-badge-locked';
+                    $badgeLabel = 'Gugur';
+                } elseif ($isFinished) {
+                    $statusText = 'Misi selesai';
+                    $badgeClass = 'misi-badge-done';
+                    $badgeLabel = "{$daysPassed}/{$dailyTestingDays} Hari";
+                } elseif ($mission->status === \App\Models\ApplicationTester::STATUS_DROPPED) {
+                    $statusText = 'Misi tidak aktif';
+                    $badgeClass = 'misi-badge-locked';
+                    $badgeLabel = 'Dikunci';
+                } else {
+                    $statusText = 'Masih berjalan';
+                    $badgeClass = 'misi-badge-running';
+                    $badgeLabel = "{$daysPassed}/{$dailyTestingDays} Hari";
+                }
 
                 // Progress laporan
                 $progressPct = min(
-                    round(($dailyReportsCount / 14) * 100),
+                    round(($dailyReportsCount / $dailyTestingDays) * 100),
                     100
                 );
             @endphp
 
-                <a href="{{ $detailUrl }}" class="misi-card group">
+                <a href="{{ $detailUrl }}" class="misi-card {{ $isLockedDueMissedReport ? 'is-locked' : '' }} group">
 
                     {{-- TOP --}}
                     <div class="misi-card-top">
@@ -367,7 +395,7 @@
 
                             {{-- Badge menunjukkan hari kalender yang sudah lewat --}}
                             <span class="misi-badge {{ $badgeClass }}">
-                                {{ $daysPassed }}/14 Hari
+                                {{ $badgeLabel }}
                             </span>
                         </div>
                     </div>
@@ -382,18 +410,27 @@
                                 <span class="pct">{{ $progressPct }}%</span>
                             </div>
                             <div class="misi-track">
-                                <div class="misi-fill" style="width:{{ $progressPct }}%;"></div>
+                                <div class="misi-fill {{ $isLockedDueMissedReport ? 'locked' : '' }}" style="width:{{ $progressPct }}%;"></div>
                             </div>
                         </div>
+
+                        @if($isLockedDueMissedReport)
+                            <div class="misi-lock-notice">
+                                <x-heroicon-o-lock-closed class="h-4 w-4 shrink-0" />
+                                <span>
+                                    Tester tidak bisa mengikuti sesi testing karena misi harian sudah terlewat tanpa bukti laporan. Misi ini gugur.
+                                </span>
+                            </div>
+                        @endif
 
                         {{-- Keterangan laporan vs hari --}}
                         <div class="misi-report-count">
                             <x-heroicon-o-document-check class="h-4 w-4 shrink-0" />
                             {{ $dailyReportsCount }} laporan dikumpulkan
-                            @if($daysPassed > $dailyReportsCount)
+                            @if($missedReportsCount > 0)
                                 &nbsp;·&nbsp;
                                 <span style="color:#9A3412;">
-                                    {{ $daysPassed - $dailyReportsCount }} hari terlewat tanpa laporan
+                                    {{ $missedReportsCount }} hari terlewat tanpa laporan
                                 </span>
                             @endif
                         </div>
@@ -415,11 +452,13 @@
                             <div>
                                 {{-- Day chips --}}
                                 <div class="misi-day-chips" style="margin-bottom:6px;">
-                                    @for($d = 0; $d < 14; $d++)
+                                    @for($d = 0; $d < $dailyTestingDays; $d++)
                                         @php
-                                        if (in_array($d, $submittedDays)) {
+                                        $chipDate = $startDate ? $startDate->copy()->addDays($d)->toDateString() : null;
+
+                                        if ($chipDate && $submittedDates->contains($chipDate)) {
                                             $chipClass = 'submitted';
-                                        } elseif ($d < $daysPassed) {
+                                        } elseif ($chipDate && $missedDates->contains($chipDate)) {
                                             $chipClass = 'missed';
                                         } else {
                                             $chipClass = '';
@@ -441,10 +480,17 @@
                                 </div>
                             </div>
 
-                            <span class="misi-footer-link">
-                                Lihat detail
-                                <x-heroicon-o-arrow-right class="h-4 w-4" />
-                            </span>
+                            @if($isLockedDueMissedReport)
+                                <span class="misi-footer-link is-locked">
+                                    Lihat preview
+                                    <x-heroicon-o-arrow-right class="h-4 w-4" />
+                                </span>
+                            @else
+                                <span class="misi-footer-link">
+                                    Lihat detail
+                                    <x-heroicon-o-arrow-right class="h-4 w-4" />
+                                </span>
+                            @endif
                         </div>
 
                     </div>

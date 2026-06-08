@@ -7,12 +7,11 @@ use App\Models\ApplicationTester;
 use App\Models\DailyReport;
 use App\Models\EvaluationAnswer;
 use App\Models\EvaluationQuestion;
-use App\Models\TesterProfile;
+use App\Models\TestingReport;
 use App\Support\AppNotifier;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
@@ -44,6 +43,7 @@ class ViewMisiSaya extends Page
     public function getTitle(): string
     {
         $mission = $this->getMission();
+
         return $mission?->application?->title ?? 'Detail Misi';
     }
 
@@ -64,6 +64,8 @@ class ViewMisiSaya extends Page
         }
 
         $application = $mission->application;
+        $mission->markDroppedIfMissedDailyReport();
+        $testingDays = ApplicationTester::DAILY_TESTING_DAYS;
 
         $startDate = $application?->start_date
             ? Carbon::parse($application->start_date)->startOfDay()
@@ -71,27 +73,27 @@ class ViewMisiSaya extends Page
 
         $endDate = $application?->end_date
             ? Carbon::parse($application->end_date)->startOfDay()
-            : ($startDate ? $startDate->copy()->addDays(14) : null);
+            : ($startDate ? $startDate->copy()->addDays($testingDays - 1) : null);
 
-        $reportDates = DailyReport::query()->where('tester_id', Auth::id())
-            ->where('app_id', $mission->application_id)
-            ->pluck('report_date')
-            ->map(fn ($date) => Carbon::parse($date)->toDateString())
-            ->unique()
-            ->values()
-            ->toArray();
+        $reportDates = $mission->submittedDailyReportDates();
+        $missedReportDates = $mission->missedDailyReportDates();
+        $isLockedDueMissedReport = $mission->shouldBeDroppedBecauseMissedDailyReport();
 
-        $dailyReportsCount = count($reportDates);
+        $dailyReportsCount = $reportDates->count();
 
         $dailyMissions = [];
 
         if ($startDate) {
-            for ($i = 0; $i < 14; $i++) {
-                $date       = $startDate->copy()->addDays($i);
+            for ($i = 0; $i < $testingDays; $i++) {
+                $date = $startDate->copy()->addDays($i);
                 $dateString = $date->toDateString();
 
-                if (in_array($dateString, $reportDates)) {
+                if ($reportDates->contains($dateString)) {
                     $status = 'done';
+                } elseif ($missedReportDates->contains($dateString)) {
+                    $status = 'missed';
+                } elseif ($isLockedDueMissedReport) {
+                    $status = 'failed';
                 } elseif ($date->isToday()) {
                     $status = 'today';
                 } elseif ($date->isPast()) {
@@ -101,10 +103,10 @@ class ViewMisiSaya extends Page
                 }
 
                 $dailyMissions[] = [
-                    'day'      => $i + 1,
-                    'date'     => $date->translatedFormat('d F Y'),
+                    'day' => $i + 1,
+                    'date' => $date->translatedFormat('d F Y'),
                     'date_raw' => $dateString,
-                    'status'   => $status,
+                    'status' => $status,
                 ];
             }
         }
@@ -113,15 +115,19 @@ class ViewMisiSaya extends Page
         $mission->setAttribute('testing_end_date', $endDate);
         $mission->setAttribute('daily_reports_count_custom', $dailyReportsCount);
         $mission->setAttribute('daily_missions_custom', $dailyMissions);
-        $mission->setAttribute('progress_percentage', min(100, ($dailyReportsCount / 14) * 100));
+        $mission->setAttribute('daily_report_dates_custom', $reportDates);
+        $mission->setAttribute('missed_daily_report_dates_custom', $missedReportDates);
+        $mission->setAttribute('missed_daily_reports_count_custom', $missedReportDates->count());
+        $mission->setAttribute('is_locked_due_missed_report', $isLockedDueMissedReport);
+        $mission->setAttribute('progress_percentage', min(100, ($dailyReportsCount / $testingDays) * 100));
 
-        $testingReport = \App\Models\TestingReport::query()
+        $testingReport = TestingReport::query()
             ->where('application_tester_id', $mission->id)
             ->latest()
             ->first();
 
         return [
-            'mission'       => $mission,
+            'mission' => $mission,
             'testingReport' => $testingReport,
         ];
     }
@@ -162,11 +168,22 @@ class ViewMisiSaya extends Page
 
                 if (! $record) {
                     Notification::make()->title('Misi tidak ditemukan.')->danger()->send();
+
                     return;
                 }
 
-                if ($record->status !== 'active') {
+                if ($record->markDroppedIfMissedDailyReport()) {
+                    Notification::make()
+                        ->title('Misi gugur.')
+                        ->body('Kamu tidak bisa mengikuti sesi testing karena ada misi harian yang terlewat tanpa bukti laporan.')
+                        ->danger()->send();
+
+                    return;
+                }
+
+                if ($record->status !== ApplicationTester::STATUS_ACTIVE) {
                     Notification::make()->title('Misi ini sudah tidak aktif.')->danger()->send();
+
                     return;
                 }
 
@@ -175,6 +192,29 @@ class ViewMisiSaya extends Page
                         ->title('Sesi testing belum dimulai.')
                         ->body('Tunggu developer memulai sesi testing terlebih dahulu.')
                         ->warning()->send();
+
+                    return;
+                }
+
+                $startDate = Carbon::parse($record->application->start_date)->startOfDay();
+                $today = Carbon::today();
+                $todayIndex = $startDate->diffInDays($today, false);
+
+                if ($todayIndex < 0) {
+                    Notification::make()
+                        ->title('Sesi testing belum dimulai.')
+                        ->body('Tunggu sampai tanggal mulai testing tiba.')
+                        ->warning()->send();
+
+                    return;
+                }
+
+                if ($todayIndex >= ApplicationTester::DAILY_TESTING_DAYS) {
+                    Notification::make()
+                        ->title('Masa laporan harian sudah selesai.')
+                        ->body('Laporan harian hanya bisa dikirim selama 14 hari sesi testing.')
+                        ->warning()->send();
+
                     return;
                 }
 
@@ -183,6 +223,7 @@ class ViewMisiSaya extends Page
                         ->title('Link testing belum tersedia.')
                         ->body('Tunggu developer mengisi link closed testing terlebih dahulu.')
                         ->warning()->send();
+
                     return;
                 }
 
@@ -194,16 +235,17 @@ class ViewMisiSaya extends Page
 
                 if ($alreadyReported) {
                     Notification::make()->title('Kamu sudah mengerjakan misi hari ini.')->warning()->send();
+
                     return;
                 }
 
                 DailyReport::create([
-                    'tester_id'   => Auth::id(),
-                    'app_id'      => $record->application_id,
+                    'tester_id' => Auth::id(),
+                    'app_id' => $record->application_id,
                     'report_date' => Carbon::today()->toDateString(),
-                    'screenshot'  => $data['screenshot'],
-                    'notes'       => $data['notes'] ?? null,
-                    'bug_report'  => $data['bug_report'] ?? null,
+                    'screenshot' => $data['screenshot'],
+                    'notes' => $data['notes'] ?? null,
+                    'bug_report' => $data['bug_report'] ?? null,
                 ]);
 
                 Notification::make()
@@ -226,7 +268,7 @@ class ViewMisiSaya extends Page
                     AppNotifier::database(
                         $record->application->developer,
                         'Laporan harian baru',
-                        (Auth::user()?->name ?? 'Tester') . " mengirim laporan harian untuk {$appTitle}.",
+                        (Auth::user()?->name ?? 'Tester')." mengirim laporan harian untuk {$appTitle}.",
                     );
                 }
             });
@@ -301,7 +343,7 @@ class ViewMisiSaya extends Page
             ->button()
             ->modalHeading('Form Laporan Akhir & Evaluasi')
             ->modalDescription(
-                'Setelah 14 hari pengujian, isi form ini untuk menyelesaikan misimu. ' .
+                'Setelah 14 hari pengujian, isi form ini untuk menyelesaikan misimu. '.
                 'Jawab seluruh pertanyaan evaluasi dengan jujur — feedback kamu sangat berarti bagi developer!'
             )
             ->modalWidth('4xl')
@@ -311,6 +353,7 @@ class ViewMisiSaya extends Page
 
                 if (! $record) {
                     Notification::make()->title('Misi tidak ditemukan.')->danger()->send();
+
                     return;
                 }
 
@@ -319,11 +362,12 @@ class ViewMisiSaya extends Page
                         ->title('Laporan akhir belum bisa dikirim.')
                         ->body($this->finalReportTooltip($record))
                         ->warning()->send();
+
                     return;
                 }
 
                 // Cek apakah sudah pernah kirim laporan akhir + evaluasi
-                $existingReport = \App\Models\TestingReport::query()
+                $existingReport = TestingReport::query()
                     ->where('application_tester_id', $record->id)
                     ->whereHas('evaluationAnswers')
                     ->first();
@@ -333,6 +377,7 @@ class ViewMisiSaya extends Page
                         ->title('Laporan akhir sudah pernah dikirim.')
                         ->body('Kamu sudah mengisi form evaluasi untuk misi ini.')
                         ->warning()->send();
+
                     return;
                 }
 
@@ -340,22 +385,22 @@ class ViewMisiSaya extends Page
                     // 1. Simpan / update ApplicationTester dengan bukti
                     $record->update([
                         'proof_image' => $data['proof_image'],
-                        'feedback'    => $data['feedback'],
+                        'feedback' => $data['feedback'],
                     ]);
 
                     // 2. Buat TestingReport dengan status pending
-                    $testingReport = \App\Models\TestingReport::updateOrCreate(
+                    $testingReport = TestingReport::updateOrCreate(
                         ['application_tester_id' => $record->id],
                         [
-                            'file_bukti'        => $data['proof_image'],
-                            'catatan'           => $data['feedback'],
-                            'status'            => 'pending',
-                            'alasan_penolakan'  => null,
+                            'file_bukti' => $data['proof_image'],
+                            'catatan' => $data['feedback'],
+                            'status' => 'pending',
+                            'alasan_penolakan' => null,
                         ]
                     );
 
                     // 3. Simpan jawaban evaluasi dari form dinamis
-                    $ratings  = $data['ratings'] ?? [];
+                    $ratings = $data['ratings'] ?? [];
                     $comments = $data['comments'] ?? [];
 
                     foreach ($ratings as $questionId => $ratingValue) {
@@ -367,11 +412,11 @@ class ViewMisiSaya extends Page
 
                         EvaluationAnswer::updateOrCreate(
                             [
-                                'testing_report_id'       => $testingReport->id,
-                                'evaluation_question_id'  => $questionId,
+                                'testing_report_id' => $testingReport->id,
+                                'evaluation_question_id' => $questionId,
                             ],
                             [
-                                'rating'  => (int) $ratingValue,
+                                'rating' => (int) $ratingValue,
                                 'comment' => $comments[$questionId] ?? null,
                             ]
                         );
@@ -398,7 +443,7 @@ class ViewMisiSaya extends Page
                     AppNotifier::database(
                         $record->application->developer,
                         'Laporan akhir menunggu validasi',
-                        (Auth::user()?->name ?? 'Tester') . " mengirim laporan akhir untuk {$appTitle}.",
+                        (Auth::user()?->name ?? 'Tester')." mengirim laporan akhir untuk {$appTitle}.",
                         'warning',
                     );
                 }
@@ -411,17 +456,16 @@ class ViewMisiSaya extends Page
 
     public function dailyReportCount(ApplicationTester $record): int
     {
-        return DailyReport::query()
-            ->where('tester_id', Auth::id())
-            ->where('app_id', $record->application_id)
-            ->pluck('report_date')
-            ->unique()
-            ->count();
+        return $record->submittedDailyReportDates()->count();
     }
 
     public function canSubmitFinalReport(ApplicationTester $record): bool
     {
-        if ($record->status !== 'active') {
+        if ($record->markDroppedIfMissedDailyReport()) {
+            return false;
+        }
+
+        if ($record->status !== ApplicationTester::STATUS_ACTIVE) {
             return false;
         }
 
@@ -431,7 +475,7 @@ class ViewMisiSaya extends Page
 
         $startDate = Carbon::parse($record->application->start_date)->startOfDay();
 
-        $hasRunFor14Days   = $startDate->diffInDays(Carbon::today()) >= 14;
+        $hasRunFor14Days = $startDate->diffInDays(Carbon::today()) >= 14;
         $has14DailyReports = $this->dailyReportCount($record) >= 14;
 
         return $hasRunFor14Days && $has14DailyReports;
@@ -439,20 +483,28 @@ class ViewMisiSaya extends Page
 
     public function finalReportTooltip(ApplicationTester $record): string
     {
+        if ($record->shouldBeDroppedBecauseMissedDailyReport()) {
+            return 'Misi ini gugur karena ada laporan harian yang terlewat tanpa bukti. Kamu tidak bisa melanjutkan sesi testing.';
+        }
+
+        if ($record->status !== ApplicationTester::STATUS_ACTIVE) {
+            return 'Misi ini sudah tidak aktif.';
+        }
+
         if (! $record->application?->start_date) {
             return 'Sesi testing belum dimulai.';
         }
 
         $startDate = Carbon::parse($record->application->start_date)->startOfDay();
-        $days      = $startDate->diffInDays(Carbon::today());
-        $reports   = $this->dailyReportCount($record);
+        $days = $startDate->diffInDays(Carbon::today());
+        $reports = $this->dailyReportCount($record);
 
         if ($days < 14) {
-            return 'Laporan akhir hanya bisa dikirim setelah 14 hari masa testing. Saat ini baru ' . $days . ' hari.';
+            return 'Laporan akhir hanya bisa dikirim setelah 14 hari masa testing. Saat ini baru '.$days.' hari.';
         }
 
         if ($reports < 14) {
-            return 'Kamu perlu mengirim 14 laporan harian. Saat ini baru ' . $reports . '/14 laporan.';
+            return 'Kamu perlu mengirim 14 laporan harian. Saat ini baru '.$reports.'/14 laporan.';
         }
 
         return 'Klik untuk mengirim laporan akhir dan mendapatkan reward 10 poin.';
