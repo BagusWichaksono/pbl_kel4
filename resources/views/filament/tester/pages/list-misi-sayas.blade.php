@@ -350,8 +350,13 @@
 
                 // Status misi
                 $isFinished = $daysPassed >= $dailyTestingDays || $mission->status === \App\Models\ApplicationTester::STATUS_COMPLETED;
+                $isRefunded = ($application?->payment_status ?? null) === 'refunded';
 
-                if ($isLockedDueMissedReport) {
+                if ($isRefunded) {
+                    $statusText = 'Tidak tersedia';
+                    $badgeClass = 'misi-badge-locked';
+                    $badgeLabel = 'Tidak tersedia';
+                } elseif ($isLockedDueMissedReport) {
                     $statusText = 'Misi gugur';
                     $badgeClass = 'misi-badge-locked';
                     $badgeLabel = 'Gugur';
@@ -376,7 +381,7 @@
                 );
             @endphp
 
-                <a href="{{ $detailUrl }}" class="misi-card {{ $isLockedDueMissedReport ? 'is-locked' : '' }} group">
+                <a href="{{ $detailUrl }}" class="misi-card {{ ($isLockedDueMissedReport || $isRefunded) ? 'is-locked' : '' }} group">
 
                     {{-- TOP --}}
                     <div class="misi-card-top">
@@ -415,11 +420,18 @@
                                 <span class="pct">{{ $progressPct }}%</span>
                             </div>
                             <div class="misi-track">
-                                <div class="misi-fill {{ $isLockedDueMissedReport ? 'locked' : '' }}" style="width:{{ $progressPct }}%;"></div>
+                                <div class="misi-fill {{ ($isLockedDueMissedReport || $isRefunded) ? 'locked' : '' }}" style="width:{{ $progressPct }}%;"></div>
                             </div>
                         </div>
 
-                        @if($isLockedDueMissedReport)
+                        @if($isRefunded)
+                            <div class="misi-lock-notice">
+                                <x-heroicon-o-lock-closed class="h-4 w-4 shrink-0" />
+                                <span>
+                                    Mohon maaf aplikasi telah ditarik dari peredaran dan tidak tersedia saat ini
+                                </span>
+                            </div>
+                        @elseif($isLockedDueMissedReport)
                             <div class="misi-lock-notice">
                                 <x-heroicon-o-lock-closed class="h-4 w-4 shrink-0" />
                                 <span>
@@ -443,7 +455,9 @@
                         {{-- Tanggal --}}
                         <div class="misi-date-row">
                             <x-heroicon-o-calendar-days class="h-4 w-4 shrink-0" />
-                            @if($startDate)
+                            @if($isRefunded)
+                                Mohon maaf aplikasi telah ditarik dari peredaran dan tidak tersedia saat ini
+                            @elseif($startDate)
                                 {{ $startDate->translatedFormat('d M Y') }}
                                 –
                                 {{ $endDate->translatedFormat('d M Y') }}

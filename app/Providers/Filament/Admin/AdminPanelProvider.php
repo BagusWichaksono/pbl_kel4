@@ -340,7 +340,23 @@ class AdminPanelProvider extends PanelProvider
                     $pendingWithdrawals = $countTable('withdrawals', 'status', 'pending');
                     $activeTesters = $countTable('users', 'role', 'tester');
 
-                    $totalRevenue = $totalValidApps * 300000;
+                    $totalPaidApps = 0;
+
+                    if (Schema::hasTable('applications') && Schema::hasColumn('applications', 'payment_status')) {
+                        $totalPaidApps = DB::table('applications')
+                            ->whereIn('payment_status', ['valid', 'approved', 'refunded'])
+                            ->count();
+                    }
+
+                    $approvedRefundTotal = 0;
+
+                    if (Schema::hasTable('refund_requests') && Schema::hasColumn('refund_requests', 'amount')) {
+                        $approvedRefundTotal = (int) DB::table('refund_requests')
+                            ->where('status', 'approved')
+                            ->sum('amount');
+                    }
+
+                    $totalRevenue = max(0, ($totalPaidApps * 300000) - $approvedRefundTotal);
                     $totalRevenueFormatted = number_format($totalRevenue, 0, ',', '.');
 
                     $appResource = \App\Filament\Admin\Resources\AppResource::class;
@@ -368,7 +384,7 @@ class AdminPanelProvider extends PanelProvider
                         if (in_array($status, ['valid', 'approved', 'completed', 'diterima'])) {
                             $badgeBg = '#dcfce7';
                             $badgeColor = '#166534';
-                        } elseif (in_array($status, ['invalid', 'rejected', 'ditolak'])) {
+                        } elseif (in_array($status, ['invalid', 'rejected', 'ditolak', 'refunded'])) {
                             $badgeBg = '#fee2e2';
                             $badgeColor = '#991b1b';
                         } elseif (in_array($status, ['pending', 'menunggu'])) {

@@ -108,6 +108,8 @@ class TransactionResource extends Resource
                             $matched[] = 'invalid';
                         } elseif (str_contains('lunas', $search) || str_contains('valid', $search) || str_contains('approved', $search) || str_contains('disetujui', $search)) {
                             $matched = ['valid', 'approved'];
+                        } elseif (str_contains('refund', $search)) {
+                            $matched[] = 'refunded';
                         }
                         
                         if (count($matched) > 0) {
@@ -153,6 +155,7 @@ class TransactionResource extends Resource
                         'valid' => 'Lunas / Valid',
                         'approved' => 'Approved',
                         'invalid' => 'Ditolak',
+                        'refunded' => 'Refunded',
                     ]),
             ])
             ->actions([
@@ -192,7 +195,7 @@ class TransactionResource extends Resource
                             );
                         }
                     })
-                    ->visible(fn (App $record): bool => ! in_array($record->payment_status, ['valid', 'approved'], true)),
+                    ->visible(fn (App $record): bool => ! in_array($record->payment_status, ['valid', 'approved', 'refunded'], true)),
 
                 Action::make('tolak')
                     ->label('Tolak')
@@ -221,7 +224,7 @@ class TransactionResource extends Resource
                             );
                         }
                     })
-                    ->visible(fn (App $record): bool => $record->payment_status !== 'invalid'),
+                    ->visible(fn (App $record): bool => ! in_array($record->payment_status, ['invalid', 'refunded'], true)),
             ])
             ->emptyStateHeading('Belum Ada Pembayaran Developer')
             ->emptyStateDescription('Data pembayaran akan muncul dari aplikasi yang diajukan developer.')
@@ -250,7 +253,7 @@ class TransactionResource extends Resource
         return match ($state) {
             'pending' => 'warning',
             'valid', 'approved' => 'success',
-            'invalid' => 'danger',
+            'invalid', 'refunded' => 'danger',
             default => 'gray',
         };
     }
@@ -261,6 +264,7 @@ class TransactionResource extends Resource
             'pending' => 'Menunggu Validasi',
             'valid', 'approved' => 'Lunas',
             'invalid' => 'Ditolak',
+            'refunded' => 'Refunded',
             default => '-',
         };
     }
