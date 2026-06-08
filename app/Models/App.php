@@ -10,6 +10,8 @@ class App extends Model
 {
     use HasFactory;
 
+    public const MIN_TESTERS_TO_START = 12;
+
     protected $table = 'applications';
 
     protected $fillable = [
@@ -66,6 +68,29 @@ class App extends Model
     public function isFull(): bool
     {
         return $this->testers()->count() >= $this->max_testers;
+    }
+
+    public function activeTesterCount(): int
+    {
+        if ($this->relationLoaded('testers')) {
+            return $this->testers
+                ->whereIn('status', [ApplicationTester::STATUS_ACTIVE, ApplicationTester::STATUS_COMPLETED])
+                ->count();
+        }
+
+        return $this->testers()
+            ->whereIn('status', [ApplicationTester::STATUS_ACTIVE, ApplicationTester::STATUS_COMPLETED])
+            ->count();
+    }
+
+    public function hasMinimumTestersToStart(): bool
+    {
+        return $this->activeTesterCount() >= self::MIN_TESTERS_TO_START;
+    }
+
+    public function remainingTestersToStart(): int
+    {
+        return max(0, self::MIN_TESTERS_TO_START - $this->activeTesterCount());
     }
 
     public function isTestingActive(): bool

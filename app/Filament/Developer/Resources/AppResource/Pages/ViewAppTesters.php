@@ -72,7 +72,7 @@ class ViewAppTesters extends Page
                 ->color('primary')
                 ->visible(fn (): bool => blank($this->getRecord()->app_link))
                 ->disabled(fn (): bool =>
-                    $this->activeTesterCount() < 12
+                    $this->activeTesterCount() < App::MIN_TESTERS_TO_START
                     || filled($this->getRecord()->start_date)
                 )
                 ->tooltip(function (): string {
@@ -82,8 +82,8 @@ class ViewAppTesters extends Page
                         return 'Link tidak bisa diubah karena sesi testing sudah dimulai.';
                     }
 
-                    if ($this->activeTesterCount() < 12) {
-                        return 'Minimal harus ada 12 tester aktif terlebih dahulu.';
+                    if ($this->activeTesterCount() < App::MIN_TESTERS_TO_START) {
+                        return 'Minimal harus ada ' . App::MIN_TESTERS_TO_START . ' tester aktif terlebih dahulu.';
                     }
 
                     return 'Input link closed testing dari Google Play Console.';
@@ -115,8 +115,7 @@ class ViewAppTesters extends Page
                 ->color('success')
                 ->visible(fn (): bool => blank($this->getRecord()->start_date))
                 ->disabled(fn (): bool =>
-                    $this->activeTesterCount() < 12
-                    || blank($this->getRecord()->app_link)
+                    $this->activeTesterCount() < App::MIN_TESTERS_TO_START
                     || filled($this->getRecord()->start_date)
                 )
                 ->tooltip(function (): string {
@@ -126,12 +125,12 @@ class ViewAppTesters extends Page
                         return 'Sesi testing sudah dimulai.';
                     }
 
-                    if ($this->activeTesterCount() < 12) {
-                        return 'Minimal harus ada 12 tester aktif terlebih dahulu.';
+                    if ($this->activeTesterCount() < App::MIN_TESTERS_TO_START) {
+                        return 'Minimal harus ada ' . App::MIN_TESTERS_TO_START . ' tester aktif terlebih dahulu.';
                     }
 
                     if (blank($app->app_link)) {
-                        return 'Input link closed testing terlebih dahulu.';
+                        return 'Mulai sesi testing dan isi link closed testing di modal ini.';
                     }
 
                     return 'Mulai sesi testing.';
@@ -143,10 +142,19 @@ class ViewAppTesters extends Page
                         ->default(now())
                         ->minDate(now())
                         ->helperText('Tanggal selesai akan otomatis dihitung 14 hari setelah tanggal mulai.'),
+
+                    Forms\Components\TextInput::make('app_link')
+                        ->label('Link Closed Testing')
+                        ->url()
+                        ->maxLength(255)
+                        ->required(fn (): bool => blank($this->getRecord()->app_link))
+                        ->visible(fn (): bool => blank($this->getRecord()->app_link))
+                        ->placeholder('Contoh: https://play.google.com/apps/testing/...')
+                        ->helperText('Isi link ini agar tester bisa membuka aplikasi saat sesi dimulai.'),
                 ])
                 ->requiresConfirmation()
                 ->modalHeading('Mulai Sesi Testing?')
-                ->modalDescription('Tanggal selesai testing akan otomatis dibuat 14 hari setelah tanggal mulai.')
+                ->modalDescription('Sesi bisa dimulai setelah minimal ' . App::MIN_TESTERS_TO_START . ' tester aktif. Jika link closed testing belum ada, isi link di form ini.')
                 ->modalSubmitActionLabel('Ya, Mulai Sesi')
                 ->action(function (array $data): void {
                     $startDate = Carbon::parse($data['start_date']);
@@ -154,11 +162,17 @@ class ViewAppTesters extends Page
 
                     $app = App::with('testerUsers')->findOrFail($this->recordId);
 
-                    $app->update([
+                    $updates = [
                         'start_date' => $startDate,
                         'end_date' => $endDate,
                         'testing_status' => 'in_progress',
-                    ]);
+                    ];
+
+                    if (blank($app->app_link) && filled($data['app_link'] ?? null)) {
+                        $updates['app_link'] = $data['app_link'];
+                    }
+
+                    $app->update($updates);
 
                     AppNotifier::database(
                         $app->testerUsers,
@@ -185,10 +199,7 @@ class ViewAppTesters extends Page
 
     protected function activeTesterCount(): int
     {
-        return App::findOrFail($this->recordId)
-            ->testers()
-            ->whereIn('status', ['active', 'completed'])
-            ->count();
+        return App::findOrFail($this->recordId)->activeTesterCount();
     }
 
     protected function testerEmailsText(): string

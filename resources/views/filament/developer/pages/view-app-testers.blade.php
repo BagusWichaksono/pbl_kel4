@@ -1,5 +1,6 @@
 <x-filament-panels::page>
     @php
+        $minimumTestersToStart = \App\Models\App::MIN_TESTERS_TO_START;
         $activeTesterCount = $record->testers->whereIn('status', ['active', 'completed'])->count();
         $testerCount = $record->testers->count();
     @endphp
@@ -67,7 +68,7 @@
                 </div>
 
                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1 py-1">
-                    Tester aktif: {{ $activeTesterCount }} / 12 minimum
+                    Tester aktif: {{ $activeTesterCount }} / {{ $minimumTestersToStart }} minimum
                 </p>
             </div>
         </div>
@@ -94,17 +95,13 @@
                         Belum dimulai
                     </p>
 
-                    @if($activeTesterCount < 12)
+                    @if($activeTesterCount < $minimumTestersToStart)
                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 px-3 py-2">
-                            Sesi bisa dimulai setelah minimal 12 tester aktif terkumpul.
-                        </p>
-                    @elseif(!$record->app_link)
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 px-3 py-2">
-                            Input link closed testing terlebih dahulu.
+                            Sesi bisa dimulai setelah minimal {{ $minimumTestersToStart }} tester aktif terkumpul.
                         </p>
                     @else
                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 px-3 py-2">
-                            Klik "Mulai Sesi Testing" di atas untuk memulai.
+                            Klik "Mulai Sesi Testing" di atas untuk memulai. Link closed testing bisa diisi di modal jika belum tersedia.
                         </p>
                     @endif
                 @endif
@@ -120,14 +117,14 @@
                 Link Closed Testing
             </h2>
 
-            @if($activeTesterCount < 12)
+            @if($activeTesterCount < $minimumTestersToStart)
                 <div class="rounded-lg bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4">
                     <p class="text-sm font-semibold text-yellow-700 dark:text-yellow-300">
                         Link testing belum bisa diinput.
                     </p>
                     <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                        Minimal harus ada 12 tester aktif terlebih dahulu.
-                        Saat ini: {{ $activeTesterCount }} / 12 tester.
+                        Minimal harus ada {{ $minimumTestersToStart }} tester aktif terlebih dahulu.
+                        Saat ini: {{ $activeTesterCount }} / {{ $minimumTestersToStart }} tester.
                     </p>
                 </div>
             @elseif(!$record->app_link)
@@ -137,7 +134,7 @@
                     </p>
                     <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
                         Silakan copy daftar email tester, masukkan ke Google Play Console,
-                        lalu input link closed testing melalui tombol "Input Link Closed Testing".
+                        lalu input link closed testing melalui tombol "Input Link Closed Testing" atau langsung saat memulai sesi testing.
                     </p>
                 </div>
             @else
