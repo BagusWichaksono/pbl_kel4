@@ -205,13 +205,14 @@ class AppResource extends Resource
                     ->color(fn(?string $state): string => match ($state) {
                         'pending' => 'warning',
                         'valid' => 'success',
-                        'invalid' => 'danger',
+                        'invalid', 'refunded' => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn(?string $state): string => match ($state) {
                         'pending' => 'Menunggu',
                         'valid' => 'Valid',
                         'invalid' => 'Tidak Valid',
+                        'refunded' => 'Refunded',
                         default => '-',
                     })
                     ->searchable(query: function (Builder $query, string $search): Builder {
@@ -220,6 +221,7 @@ class AppResource extends Resource
                         if (str_contains('menunggu', $search) || str_contains('pending', $search)) $matched[] = 'pending';
                         if (str_contains('valid', $search)) $matched[] = 'valid';
                         if (str_contains('tidak valid', $search) || str_contains('invalid', $search)) $matched[] = 'invalid';
+                        if (str_contains('refund', $search)) $matched[] = 'refunded';
                         
                         if (count($matched) > 0) {
                             return $query->whereIn('payment_status', $matched);
@@ -277,10 +279,10 @@ class AppResource extends Resource
                     ->url(fn(App $record): string => AppResource::getUrl('view-testers', ['record' => $record])),
 
                 Tables\Actions\EditAction::make()
-                    ->visible(fn(App $record): bool => in_array($record->testing_status, ['pending_approval', 'rejected'])),
+                    ->visible(fn(App $record): bool => $record->payment_status !== 'refunded' && in_array($record->testing_status, ['pending_approval', 'rejected'])),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn(App $record): bool => in_array($record->testing_status, ['pending_approval', 'rejected'])),
+                    ->visible(fn(App $record): bool => $record->payment_status !== 'refunded' && in_array($record->testing_status, ['pending_approval', 'rejected'])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

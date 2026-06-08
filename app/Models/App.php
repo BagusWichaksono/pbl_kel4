@@ -55,6 +55,16 @@ class App extends Model
         return $this->hasMany(Transaction::class, 'application_id');
     }
 
+    public function refundRequests()
+    {
+        return $this->hasMany(RefundRequest::class, 'application_id');
+    }
+
+    public function latestRefundRequest()
+    {
+        return $this->hasOne(RefundRequest::class, 'application_id')->latestOfMany();
+    }
+
     public function dailyReports()
     {
         return $this->hasMany(DailyReport::class, 'app_id');

@@ -134,13 +134,14 @@ class AppResource extends Resource
                     ->color(fn (?string $state): string => match ($state) {
                         'pending' => 'warning',
                         'valid' => 'success',
-                        'invalid' => 'danger',
+                        'invalid', 'refunded' => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'pending' => 'Pending',
                         'valid' => 'Valid',
                         'invalid' => 'Tidak Valid',
+                        'refunded' => 'Refunded',
                         default => '-',
                     })
                     ->searchable(query: function (Builder $query, string $search): Builder {
@@ -149,6 +150,7 @@ class AppResource extends Resource
                         if (str_contains('pending', $search) || str_contains('menunggu', $search)) $matched[] = 'pending';
                         if (str_contains('valid', $search)) $matched[] = 'valid';
                         if (str_contains('tidak valid', $search) || str_contains('invalid', $search)) $matched[] = 'invalid';
+                        if (str_contains('refund', $search)) $matched[] = 'refunded';
                         
                         if (count($matched) > 0) {
                             return $query->whereIn('payment_status', $matched);
@@ -202,6 +204,7 @@ class AppResource extends Resource
                         'pending' => 'Pending',
                         'valid' => 'Valid',
                         'invalid' => 'Tidak Valid',
+                        'refunded' => 'Refunded',
                     ]),
 
                 Tables\Filters\SelectFilter::make('testing_status')
@@ -225,6 +228,7 @@ class AppResource extends Resource
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
+                        ->visible(fn (App $record): bool => $record->payment_status !== 'refunded')
                         ->action(function (App $record) {
                             $record->update([
                                 'payment_status' => 'valid',
@@ -251,6 +255,7 @@ class AppResource extends Resource
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
                         ->requiresConfirmation()
+                        ->visible(fn (App $record): bool => $record->payment_status !== 'refunded')
                         ->action(function (App $record) {
                             $record->update([
                                 'payment_status' => 'invalid',
@@ -271,7 +276,9 @@ class AppResource extends Resource
                                 );
                             }
                         }),
-                ])->icon('heroicon-m-ellipsis-vertical'),
+                ])
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->visible(fn (App $record): bool => $record->payment_status !== 'refunded'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
