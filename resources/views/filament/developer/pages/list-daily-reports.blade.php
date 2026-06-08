@@ -18,9 +18,9 @@
                 <div class="px-6 py-5" style="background: linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);">
                     <div class="flex items-center gap-3">
                         <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl"
-                            style="background:#FFFFFF; border:1px solid rgba(255,255,255,0.28); box-shadow:0 14px 26px -22px rgba(0,0,0,.45);">
+                            style="width:48px;height:48px;min-width:48px;max-width:48px;min-height:48px;max-height:48px;flex:0 0 48px;background:#FFFFFF; border:1px solid rgba(255,255,255,0.28); box-shadow:0 14px 26px -22px rgba(0,0,0,.45);">
                             @if($appIconUrl)
-                                <img src="{{ $appIconUrl }}" alt="{{ $appName }}" style="width:100%;height:100%;object-fit:contain;padding:6px;background:#FFFFFF;">
+                                <img src="{{ $appIconUrl }}" alt="{{ $appName }}" style="display:block;width:100%;height:100%;max-width:48px;max-height:48px;object-fit:contain;padding:6px;background:#FFFFFF;box-sizing:border-box;">
                             @else
                                 <span class="text-sm font-black" style="color:var(--tesyuk-primary);">{{ $appInitials }}</span>
                             @endif

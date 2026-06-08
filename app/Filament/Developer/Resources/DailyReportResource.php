@@ -208,8 +208,11 @@ class DailyReportResource extends Resource
                         ImageEntry::make('application.app_icon')
                             ->label('Logo Aplikasi')
                             ->disk('public')
-                            ->height(72)
-                            ->width(72),
+                            ->height(48)
+                            ->width(48)
+                            ->extraImgAttributes([
+                                'style' => 'width:48px;height:48px;max-width:48px;max-height:48px;object-fit:contain;border-radius:12px;padding:4px;background:#fff;',
+                            ]),
 
                         TextEntry::make('report_date')
                             ->label('Tanggal Laporan')

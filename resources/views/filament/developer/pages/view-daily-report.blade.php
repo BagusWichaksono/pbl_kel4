@@ -60,12 +60,13 @@
         }
 
         .daily-detail-app-icon {
-            width: 76px;
-            height: 76px;
-            max-width: 76px;
-            max-height: 76px;
-            min-width: 76px;
-            flex: 0 0 76px;
+            width: 56px !important;
+            height: 56px !important;
+            max-width: 56px !important;
+            max-height: 56px !important;
+            min-width: 56px !important;
+            min-height: 56px !important;
+            flex: 0 0 56px !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -78,13 +79,13 @@
 
         .daily-detail-app-icon img {
             display: block;
-            width: 100%;
-            height: 100%;
-            max-width: 100%;
-            max-height: 100%;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 56px !important;
+            max-height: 56px !important;
             object-fit: contain;
             box-sizing: border-box;
-            padding: 9px;
+            padding: 7px;
             background: #ffffff;
         }
 
@@ -217,13 +218,14 @@
             }
 
             .daily-detail-app-icon {
-                width: 64px;
-                height: 64px;
-                max-width: 64px;
-                max-height: 64px;
-                min-width: 64px;
-                flex-basis: 64px;
-                border-radius: 18px;
+                width: 52px !important;
+                height: 52px !important;
+                max-width: 52px !important;
+                max-height: 52px !important;
+                min-width: 52px !important;
+                min-height: 52px !important;
+                flex-basis: 52px !important;
+                border-radius: 16px;
             }
         }
     </style>
@@ -238,9 +240,9 @@
             <div class="daily-detail-hero">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div class="flex min-w-0 items-start gap-4">
-                        <div class="daily-detail-app-icon" style="width:76px;height:76px;max-width:76px;max-height:76px;flex:0 0 76px;">
+                        <div class="daily-detail-app-icon" style="width:56px !important;height:56px !important;min-width:56px !important;max-width:56px !important;min-height:56px !important;max-height:56px !important;flex:0 0 56px !important;">
                             @if($appIconUrl)
-                                <img src="{{ $appIconUrl }}" alt="{{ $application?->title ?? 'Logo aplikasi' }}" style="display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;box-sizing:border-box;padding:9px;background:#ffffff;">
+                                <img src="{{ $appIconUrl }}" alt="{{ $application?->title ?? 'Logo aplikasi' }}" style="display:block;width:100% !important;height:100% !important;max-width:56px !important;max-height:56px !important;object-fit:contain;box-sizing:border-box;padding:7px;background:#ffffff;">
                             @else
                                 <span class="daily-detail-app-icon-fallback">{{ $appInitials }}</span>
                             @endif
