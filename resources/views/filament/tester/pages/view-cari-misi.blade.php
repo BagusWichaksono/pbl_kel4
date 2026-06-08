@@ -1,4 +1,55 @@
 <x-filament-panels::page>
+    <style>
+        .tester-detail-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+        .tester-detail-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+            gap: 1rem;
+        }
+        .tester-detail-app-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            min-width: 0;
+            flex: 1 1 100%;
+        }
+        @media (max-width: 768px) {
+            .tester-detail-main {
+                grid-template-columns: 1fr;
+            }
+            .tester-detail-header {
+                flex-direction: column;
+            }
+            .tester-detail-app-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                width: 100%;
+            }
+            .tester-detail-app-info h2 {
+                font-size: 1.35rem !important;
+            }
+            .tester-detail-tags {
+                justify-content: center;
+            }
+            .tester-detail-actions {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: stretch;
+            }
+            .tester-detail-actions button, .tester-detail-actions a {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
     @if(!$app)
         <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:18px;padding:2rem;text-align:center;">
             <p style="margin:0;color:#b91c1c;font-weight:800;">Misi tidak ditemukan.</p>
@@ -44,8 +95,8 @@
 
         <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 18px 42px -32px rgba(15,23,42,.35);overflow:hidden;">
             <div style="padding:1.5rem;border-bottom:1px solid #e2e8f0;background:#ffffff;">
-                <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1.25rem;">
-                    <div style="display:flex;align-items:flex-start;gap:1rem;min-width:0;flex:1;">
+                <div class="tester-detail-header">
+                    <div class="tester-detail-app-info">
                         <div style="width:112px;height:112px;min-width:112px;border-radius:24px;border:1px solid #e2e8f0;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 18px 36px -28px rgba(15,23,42,.45);">
                             @if($imageUrl)
                                 <img src="{{ $imageUrl }}" alt="{{ $app->title }}"
@@ -55,8 +106,8 @@
                             @endif
                         </div>
 
-                        <div style="min-width:0;flex:1;">
-                            <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem;">
+                        <div style="min-width:0;flex:1;width:100%;">
+                            <div class="tester-detail-tags" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem;">
                                 <span style="display:inline-flex;border-radius:999px;background:var(--tesyuk-secondary);color:var(--tesyuk-primary);border:1px solid rgba(var(--tesyuk-primary-rgb),.22);padding:.38rem .7rem;font-size:.76rem;font-weight:900;">
                                     {{ $app->platform ?? 'Platform' }}
                                 </span>
@@ -74,7 +125,7 @@
                         </div>
                     </div>
 
-                    <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.6rem;">
+                    <div class="tester-detail-actions" style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.6rem;">
                         @if($app->app_link)
                             <a href="{{ $app->app_link }}" target="_blank" rel="noopener noreferrer"
                                 style="display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:999px;background:#f8fafc;border:1px solid #e2e8f0;color:#0f172a;font-size:.9rem;font-weight:900;padding:.78rem 1.05rem;text-decoration:none;">
@@ -95,7 +146,7 @@
                 </div>
             </div>
 
-            <div style="padding:1.5rem;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:1rem;">
+            <div class="tester-detail-main" style="padding:1.5rem;">
                 <div style="display:flex;flex-direction:column;gap:1rem;min-width:0;">
                     <div style="{{ $statusStyle }}border-width:1px;border-style:solid;border-radius:18px;padding:1rem;">
                         <div style="font-weight:900;">{{ $statusLabel }}</div>
@@ -104,7 +155,7 @@
 
                     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:18px;padding:1.1rem;">
                         <div style="color:#64748b;font-size:.78rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;">Deskripsi Aplikasi</div>
-                        <p style="margin:.75rem 0 0;color:#475569;font-size:.95rem;line-height:1.8;white-space:pre-line;">{{ $description }}</p>
+                        <p style="margin:.75rem 0 0;color:#475569;font-size:.95rem;line-height:1.8;white-space:pre-line;word-break:break-word;">{{ $description }}</p>
                     </div>
                 </div>
 

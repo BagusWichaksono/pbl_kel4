@@ -376,7 +376,22 @@ class TesterPanelProvider extends PanelProvider
                             grid-template-columns: 1fr !important;
                         }
                     }
-                    @media (max-width: 640px) {
+                    @media (max-width: 768px) {
+                        .tester-welcome-box {
+                            padding: 1.5rem !important;
+                        }
+                        .tester-welcome-title {
+                            font-size: 1.5rem !important;
+                        }
+                        .tester-welcome-desc {
+                            font-size: 0.95rem !important;
+                        }
+                        .tester-welcome-img {
+                            height: 120px !important;
+                            right: 0 !important;
+                            bottom: 0 !important;
+                            opacity: 0.25 !important;
+                        }
                         .tester-dashboard-stats {
                             grid-template-columns: 1fr !important;
                         }
@@ -553,15 +568,15 @@ class TesterPanelProvider extends PanelProvider
 
                     return new HtmlString(<<<HTML
                         <div style="margin-bottom:2rem;display:flex;flex-direction:column;gap:1.5rem;">
-                            <div style="background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);">
+                            <div class="tester-welcome-box" style="background:linear-gradient(135deg, var(--tesyuk-ink) 0%, var(--tesyuk-ink) 68%, var(--tesyuk-primary) 88%, var(--tesyuk-accent) 100%);border-radius:24px;padding:3rem;color:white;position:relative;overflow:hidden;box-shadow:0 20px 40px -15px rgba(var(--tesyuk-ink-rgb),0.4);">
                                 <div style="position:relative;z-index:10;max-width:620px;">
-                                    <h2 style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
-                                    <p style="margin-top:0.75rem;color:rgba(var(--tesyuk-secondary-rgb), 0.78);max-width:560px;font-size:1.125rem;line-height:1.6;">
+                                    <h2 class="tester-welcome-title" style="font-size:2.25rem;font-weight:800;margin:0;letter-spacing:-0.02em;">{$greeting}, {$userName}!</h2>
+                                    <p class="tester-welcome-desc" style="margin-top:0.75rem;color:rgba(var(--tesyuk-secondary-rgb), 0.78);max-width:560px;font-size:1.125rem;line-height:1.6;">
                                         Jalankan misi harian, upload screenshot sebagai absensi, dan kumpulkan reward poin setelah testing selesai.
                                     </p>
                                 </div>
 
-                                <img src="{$logoTesterUrl}" alt="Tester Logo" style="position:absolute;right:2rem;bottom:-1.5rem;height:110%;z-index:5;object-fit:contain;pointer-events:none;">
+                                <img src="{$logoTesterUrl}" alt="Tester Logo" class="tester-welcome-img" style="position:absolute;right:2rem;bottom:-1.5rem;height:110%;z-index:5;object-fit:contain;pointer-events:none;">
                                 <div style="position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;filter:blur(40px);z-index:1;"></div>
                                 <div style="position:absolute;right:120px;bottom:-50px;width:150px;height:150px;background:rgba(var(--tesyuk-accent-rgb),0.2);border-radius:50%;filter:blur(40px);z-index:1;"></div>
                             </div>
