@@ -23,6 +23,7 @@ class RefundRequest extends Model
         'account_number',
         'status',
         'admin_note',
+        'refund_proof',
         'processed_by',
         'processed_at',
     ];

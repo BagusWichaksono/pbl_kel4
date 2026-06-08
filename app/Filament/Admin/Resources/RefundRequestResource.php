@@ -5,7 +5,6 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\RefundRequestResource\Pages;
 use App\Models\RefundRequest;
 use App\Support\AppNotifier;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
@@ -132,6 +131,12 @@ class RefundRequestResource extends Resource
                             ? $query->whereIn('status', $matched)
                             : $query->where('status', 'like', "%{$search}%");
                     }),
+
+                Tables\Columns\ImageColumn::make('refund_proof')
+                    ->label('Bukti Refund')
+                    ->disk('public')
+                    ->square()
+                    ->toggleable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
@@ -148,35 +153,11 @@ class RefundRequestResource extends Resource
                     ->label('Detail')
                     ->icon('heroicon-o-eye'),
 
-                Tables\Actions\Action::make('approve')
-                    ->label('Setujui')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->modalHeading('Setujui Refund')
-                    ->modalDescription('Pengajuan akan ditandai selesai. Pastikan proses pengembalian dana sudah dilakukan.')
-                    ->form([
-                        Forms\Components\Textarea::make('admin_note')
-                            ->label('Catatan Admin')
-                            ->rows(3)
-                            ->placeholder('Contoh: Refund sudah ditransfer via BCA.'),
-                    ])
-                    ->action(fn (RefundRequest $record, array $data) => self::approveRefund($record, $data['admin_note'] ?? null))
-                    ->visible(fn (RefundRequest $record): bool => $record->status === RefundRequest::STATUS_PENDING),
-
-                Tables\Actions\Action::make('reject')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->modalHeading('Tolak Refund')
-                    ->form([
-                        Forms\Components\Textarea::make('admin_note')
-                            ->label('Alasan Penolakan')
-                            ->required()
-                            ->rows(3),
-                    ])
-                    ->action(fn (RefundRequest $record, array $data) => self::rejectRefund($record, $data['admin_note']))
+                Tables\Actions\Action::make('process')
+                    ->label('Proses Refund')
+                    ->icon('heroicon-o-arrow-right-circle')
+                    ->color('warning')
+                    ->url(fn (RefundRequest $record): string => self::getUrl('process', ['record' => $record]))
                     ->visible(fn (RefundRequest $record): bool => $record->status === RefundRequest::STATUS_PENDING),
             ])
             ->bulkActions([]);
@@ -239,6 +220,12 @@ class RefundRequestResource extends Resource
                             ->label('Catatan Admin')
                             ->columnSpanFull()
                             ->placeholder('-'),
+
+                        Infolists\Components\ImageEntry::make('refund_proof')
+                            ->label('Bukti Refund')
+                            ->disk('public')
+                            ->columnSpanFull()
+                            ->visible(fn (RefundRequest $record): bool => filled($record->refund_proof)),
                     ])
                     ->columns(3),
             ]);
@@ -254,15 +241,17 @@ class RefundRequestResource extends Resource
     {
         return [
             'index' => Pages\ListRefundRequests::route('/'),
+            'process' => Pages\ProcessRefund::route('/{record}/process'),
         ];
     }
 
-    private static function approveRefund(RefundRequest $record, ?string $adminNote): void
+    public static function approveRefund(RefundRequest $record, ?string $adminNote, string $refundProof): void
     {
-        DB::transaction(function () use ($record, $adminNote): void {
+        DB::transaction(function () use ($record, $adminNote, $refundProof): void {
             $record->update([
                 'status' => RefundRequest::STATUS_APPROVED,
                 'admin_note' => $adminNote,
+                'refund_proof' => $refundProof,
                 'processed_by' => Auth::id(),
                 'processed_at' => now(),
             ]);
@@ -288,11 +277,12 @@ class RefundRequestResource extends Resource
         );
     }
 
-    private static function rejectRefund(RefundRequest $record, string $adminNote): void
+    public static function rejectRefund(RefundRequest $record, string $adminNote): void
     {
         $record->update([
             'status' => RefundRequest::STATUS_REJECTED,
             'admin_note' => $adminNote,
+            'refund_proof' => null,
             'processed_by' => Auth::id(),
             'processed_at' => now(),
         ]);
