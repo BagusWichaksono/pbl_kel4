@@ -113,8 +113,7 @@ class TransactionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->label('Detail')
-                    ->url(fn (App $record): string => self::getUrl('view', ['record' => $record])),
+                    ->label('Detail'),
 
                 Tables\Actions\Action::make('ajukanRefund')
                     ->label('Ajukan Refund')
